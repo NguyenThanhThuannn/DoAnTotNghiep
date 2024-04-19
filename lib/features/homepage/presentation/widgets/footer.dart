@@ -74,9 +74,12 @@ class _FooterCustomState extends State<FooterCustom> {
             ),
             child: Column(
               children: [
-                Text(
-                  'Get the latest deals and more',
-                  style: textStyleInterMedium14,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(
+                    'Get the latest deals and more',
+                    style: textStyleInterMedium14,
+                  ),
                 ),
                 Text(
                   'Subscribe our newsletter and get discount 30% off',
