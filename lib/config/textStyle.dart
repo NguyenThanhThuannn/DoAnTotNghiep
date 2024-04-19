@@ -67,3 +67,21 @@ TextStyle textStyleKeaniaOne14W = GoogleFonts.keaniaOne(
   fontSize: 14,
   color:Colors.white,
 );
+
+//Anybody-Regular
+TextStyle textStyleAnybodyRegular18 = GoogleFonts.anybody(
+  fontSize: 18,
+  fontWeight: FontWeight.w400,
+);
+
+//Newsreader-Regular
+TextStyle textStyleNewsReaderRegular18 = GoogleFonts.newsreader(
+  fontSize: 18,
+  fontWeight: FontWeight.w400,
+);
+
+//Nobile-Regular
+TextStyle textStyleNobileRegular12 = GoogleFonts.nobile(
+  fontSize: 12,
+  fontWeight: FontWeight.w400,
+);
