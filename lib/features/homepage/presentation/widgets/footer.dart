@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -25,7 +26,7 @@ class _FooterCustomState extends State<FooterCustom> {
   Widget build(final BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height / 2.5,
+      height: MediaQuery.of(context).size.height/2,
       child: Column(
         children: [
           SizedBox(
@@ -63,46 +64,49 @@ class _FooterCustomState extends State<FooterCustom> {
               },
             ), */
           ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromRGBO(240, 239, 239, 1),
-                  Colors.white,
-                ],
+          Expanded(
+            child: Container(
+              height: MediaQuery.of(context).size.height/2,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(240, 239, 239, 1),
+                    Colors.white,
+                  ],
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    'Get the latest deals and more',
-                    style: textStyleInterMedium14,
-                  ),
-                ),
-                Text(
-                  'Subscribe our newsletter and get discount 30% off',
-                  style: GoogleFonts.inter(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      border: UnderlineInputBorder(borderSide: BorderSide.none),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,),
-                      hintText: 'Enter your email address',
-                      filled: true,
-                      fillColor: Colors.white,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(
+                      'Get the latest deals and more',
+                      style: textStyleInterMedium14,
                     ),
                   ),
-                ),
-              ],
+                  Text(
+                    'Subscribe our newsletter and get discount 30% off',
+                    style: GoogleFonts.inter(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    child: const TextField(
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(borderSide: BorderSide.none),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide.none,),
+                        hintText: 'Enter your email address',
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
