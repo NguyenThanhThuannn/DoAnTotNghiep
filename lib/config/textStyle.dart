@@ -26,6 +26,11 @@ TextStyle textStyleInterMedium18 = GoogleFonts.inter(
   fontSize: 18,
   fontWeight: FontWeight.w500,
 );
+TextStyle textStyleInterMedium14W = GoogleFonts.inter(
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
+  color: Colors.white
+);
 
 //Inter-SemiBold
 TextStyle textStyleInterSemiBold10 = GoogleFonts.inter(
@@ -42,6 +47,11 @@ TextStyle textStyleInterSemiBold16 = GoogleFonts.inter(
 );
 TextStyle textStyleInterSemiBold12W = GoogleFonts.inter(
   fontSize: 12,
+  fontWeight: FontWeight.w600,
+  color: Colors.white,
+);
+TextStyle textStyleInterSemiBold18W = GoogleFonts.inter(
+  fontSize: 18,
   fontWeight: FontWeight.w600,
   color: Colors.white,
 );
@@ -63,6 +73,9 @@ TextStyle textStyleInterExtraBold14 = GoogleFonts.inter(
 );
 
 //KeaniaOne
+TextStyle textStyleKeaniaOne14 = GoogleFonts.keaniaOne(
+  fontSize: 14,
+);
 TextStyle textStyleKeaniaOne14W = GoogleFonts.keaniaOne(
   fontSize: 14,
   color:Colors.white,
