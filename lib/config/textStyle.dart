@@ -29,7 +29,12 @@ TextStyle textStyleInterMedium18 = GoogleFonts.inter(
 TextStyle textStyleInterMedium14W = GoogleFonts.inter(
   fontSize: 14,
   fontWeight: FontWeight.w500,
-  color: Colors.white
+  color: Colors.white,
+);
+TextStyle textStyleInterMedium20W = GoogleFonts.inter(
+  fontSize: 20,
+  fontWeight: FontWeight.w500,
+  color: Colors.white,
 );
 
 //Inter-SemiBold
@@ -97,4 +102,16 @@ TextStyle textStyleNewsReaderRegular18 = GoogleFonts.newsreader(
 TextStyle textStyleNobileRegular12 = GoogleFonts.nobile(
   fontSize: 12,
   fontWeight: FontWeight.w400,
+);
+//PlusJakartaSans-Regular
+TextStyle textStylePlusJakartaSansRegular14=GoogleFonts.plusJakartaSans(
+  fontSize: 14,
+  fontWeight: FontWeight.w400,
+  color: Colors.white,
+);
+//PlusJakartaSans-Bold
+TextStyle textStylePlusJakartaSansBold24=GoogleFonts.plusJakartaSans(
+  fontSize: 24,
+  fontWeight: FontWeight.w700,
+  color: Colors.white,
 );

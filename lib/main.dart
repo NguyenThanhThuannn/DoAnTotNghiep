@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'features/homepage/presentation/view/home_page_screen.dart';
 import 'features/shopcartpage/presentation/view/shop_cart_screen.dart';
+import 'widgets/onboarding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ShopCartScreen(),
+      home: const OnboardingScreen(),
     );
   }
 }
