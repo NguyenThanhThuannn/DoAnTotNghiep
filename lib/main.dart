@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-
-import 'features/homepage/presentation/view/home_page_screen.dart';
 import 'features/shopcartpage/presentation/view/shop_cart_screen.dart';
+import 'injection_container.dart';
 import 'widgets/onboarding_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDependencies();
   runApp(const MyApp());
 }
 

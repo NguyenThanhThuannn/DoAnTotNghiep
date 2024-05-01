@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../data/models/product_models_response.dart';
+import '../../domain/entities/product.dart';
 
 class BestSellingItem extends StatefulWidget {
   BestSellingItem({super.key, required this.pro});
-  Product pro;
+  BestSellingEntity pro;
 
   @override
   State<BestSellingItem> createState() => _BestSellingItemState();
@@ -52,7 +51,7 @@ class _BestSellingItemState extends State<BestSellingItem> {
               SizedBox(
                 width: 136,
                 child: Text(
-                  widget.pro.title,
+                  widget.pro.title!,
                   softWrap: true,
                 ),
               ),

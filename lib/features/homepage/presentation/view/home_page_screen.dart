@@ -1,9 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../injection_container.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
 import '../../data/models/product_models_response.dart';
+import '../../domain/entities/product.dart';
+import '../bloc/home_page_bloc.dart';
+import '../bloc/home_page_dailydeals_bloc.dart';
+import '../bloc/home_page_dailydealsweek2_bloc.dart';
+import '../bloc/home_page_dailydealsweek_bloc.dart';
+import '../bloc/home_page_hotnewarrival_bloc.dart';
+import '../bloc/home_page_recentbrowsing_bloc.dart';
+import '../bloc/home_page_todaysdeals_bloc.dart';
 import '../widgets/bestSellingItem_widget.dart';
 import '../widgets/dailyDeal.dart';
 import '../widgets/dailyDealItem_widget.dart';
@@ -21,170 +33,187 @@ class HomePageScreen extends StatefulWidget {
 class _HomePageScreenState extends State<HomePageScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  List<Product> proBestSelling = [
-    Product(
-      price: '3,665,184Đ',
-      title: 'Google Chromecast Audio Black',
-      price_sale: '2,523,484Đ',
-    ),
-    Product(
-      price: '3,665,184Đ',
-      title: 'Google Chromecast Audio Black',
-      price_sale: '2,523,484Đ',
-    ),
-    Product(
-      price: '3,665,184Đ',
-      title: 'Google Chromecast Audio Black',
-      price_sale: '2,523,484Đ',
-      tag: 'K',
-    ),
-    Product(
-      price: '3,665,184Đ',
-      title: 'Google Chromecast Audio Black',
-      price_sale: '2,523,484Đ',
-      tag: 'K',
-    ),
-    Product(
-      price: '3,665,184Đ',
-      title: 'Google Chromecast Audio Black',
-      price_sale: '2,523,484Đ',
-      tag: 'K',
-    ),
-  ];
-  List<Product> proRecentBrowsing = [
-    Product(
-      price: '11,234,225Đ',
-      title: 'DJI Goggles Immersive FPV',
-    ),
-    Product(
-      price: '873.792Đ',
-      title: 'Google Chromecast Audio Black',
-    ),
-    Product(
-      price: '11,234,225Đ',
-      title: 'DJI Goggles Immersive FPV',
-    ),
-    Product(
-      price: '11,234,225Đ',
-      title: 'DJI Goggles Immersive FPV',
-    ),
-  ];
-
   @override
   Widget build(final BuildContext context) {
-    return Scaffold(
-      appBar: const AppBarCustom(),
-      drawer: const DrawerCustom(),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 370,
-                child: Stack(
-                  children: [
-                    PageView(
-                      controller: _pageController,
-                      onPageChanged: (final value) {
-                        setState(() {
-                          _currentPage = value;
-                        });
-                      },
-                      children: [
-                        _buildPageOne(context),
-                        _buildPageOne(context),
-                        _buildPageOne(context),
-                      ],
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      left: 0,
-                      right: 0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (final index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white),
-                                borderRadius: BorderRadius.circular(25),
-                                color:
-                                    _currentPage == index ? Colors.white : null,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomePageBloc>(
+          create: (final context) => sl()..add(GetBestSellings()),
+        ),
+        BlocProvider<HomePageDailydealsBloc>(
+          create: (final context) => sl()..add(GetDailyDeals()),
+        ),
+        BlocProvider<HomePageRecentbrowsingBloc>(
+          create: (final context) => sl()..add(GetRecentBrowsing()),
+        ),
+        BlocProvider<HomePageDailydealsweekBloc>(
+          create: (context) => sl()..add(GetDailyDealsWeek()),
+        ),
+        BlocProvider<HomePageDailydealsweek2Bloc>(
+          create: (context) => sl()..add(GetDailyDealsWeek2()),
+        ),
+        BlocProvider<HomePageHotnewarrivalBloc>(
+          create: (context) => sl()..add(GetHotNewArrivals()),
+        ),
+        BlocProvider<HomePageTodaysdealsBloc>(
+          create: (context) => sl()..add(GetTodaysDeals()),
+        ),
+      ],
+      child: BlocBuilder<HomePageBloc, HomePageState>(
+        builder: (final context, final state) {
+          if (state is HomePageLoading) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          if (state is HomePageError) {
+            return const Scaffold(
+              body: Center(
+                child: Icon(Icons.replay_outlined),
+              ),
+            );
+          }
+          if (state is HomePageLoaded) {
+            return Scaffold(
+              appBar: const AppBarCustom(),
+              drawer: const DrawerCustom(),
+              body: GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                },
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 370,
+                        child: Stack(
+                          children: [
+                            PageView(
+                              controller: _pageController,
+                              onPageChanged: (final value) {
+                                setState(() {
+                                  _currentPage = value;
+                                });
+                              },
+                              children: [
+                                _buildPageOne(context),
+                                _buildPageOne(context),
+                                _buildPageOne(context),
+                              ],
+                            ),
+                            Positioned(
+                              bottom: 10,
+                              left: 0,
+                              right: 0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(3, (final index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Container(
+                                      width: 12,
+                                      height: 12,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.white),
+                                        borderRadius: BorderRadius.circular(25),
+                                        color: _currentPage == index
+                                            ? Colors.white
+                                            : null,
+                                      ),
+                                    ),
+                                  );
+                                }),
                               ),
                             ),
-                          );
-                        }),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      child: ListTile(
-                        trailing: const Icon(
-                          Icons.keyboard_arrow_right_outlined,
-                          color: Colors.white,
-                        ),
-                        title: Text(
-                          'SHOP BY CATEGORY',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    _buildContainerLiner(
-                      context,
-                      'GEAR ',
-                      'CONTROLLER',
-                      'Step into Rift',
-                      const Color.fromRGBO(58, 37, 188, 1),
-                      const Color.fromRGBO(128, 117, 194, 1),
-                      'assets/img/gear.png',
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    _buildContainerLiner(
-                      context,
-                      'OSMO ',
-                      'MOBILE',
-                      'Beyond Smart',
-                      const Color.fromRGBO(60, 187, 49, 1),
-                      const Color.fromRGBO(137, 233, 129, 1),
-                      'assets/img/osmo.png',
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: ListTile(
+                                trailing: const Icon(
+                                  Icons.keyboard_arrow_right_outlined,
+                                  color: Colors.white,
+                                ),
+                                title: Text(
+                                  'SHOP BY CATEGORY',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            _buildContainerLiner(
+                              context,
+                              'GEAR ',
+                              'CONTROLLER',
+                              'Step into Rift',
+                              const Color.fromRGBO(58, 37, 188, 1),
+                              const Color.fromRGBO(128, 117, 194, 1),
+                              'assets/img/gear.png',
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            _buildContainerLiner(
+                              context,
+                              'OSMO ',
+                              'MOBILE',
+                              'Beyond Smart',
+                              const Color.fromRGBO(60, 187, 49, 1),
+                              const Color.fromRGBO(137, 233, 129, 1),
+                              'assets/img/osmo.png',
+                            ),
+                          ],
+                        ),
+                      ),
+                      _buildBestSelling(context, state.bestSelling),
+                      const DailyDeal(),
+                      BlocBuilder<HomePageRecentbrowsingBloc,
+                          HomePageRecentbrowsingState>(
+                        builder: (final context, final state) {
+                          if (state is HomePageRecentbrowsingLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (state is HomePageRecentbrowsingError) {
+                            return const Center(child: Icon(Icons.replay));
+                          }
+                          if (state is HomePageRecentbrowsingLoaded) {
+                            return _buildRecentBrowsing(
+                              context,
+                              state.recentBrowsing!,
+                            );
+                          }
+                          return const SizedBox();
+                        },
+                      ),
+                      const HotNewArrival(),
+                      const TodayDeal(),
+                      const FooterCustom(),
+                    ],
+                  ),
                 ),
               ),
-              _buildBestSelling(context, proBestSelling),
-              const DailyDeal(),
-              _buildRecentBrowsing(context, proRecentBrowsing),
-              const HotNewArrival(),
-              const TodayDeal(),
-              const FooterCustom(),
-            ],
-          ),
-        ),
+            );
+          }
+          return const SizedBox();
+        },
       ),
     );
   }
@@ -335,7 +364,7 @@ Container _buildContainerLiner(
 
 Stack _buildBestSelling(
   final BuildContext context,
-  final List<Product> proBestSelling,
+  final List<BestSellingEntity>? proBestSelling,
 ) {
   final PageController pageController = PageController();
   int currentPage = 0;
@@ -389,7 +418,7 @@ Stack _buildBestSelling(
                         backgroundColor: MaterialStatePropertyAll(Colors.white),
                       ),
                       onPressed: () {
-                        if (currentPage < proBestSelling.length) {
+                        if (currentPage < proBestSelling!.length) {
                           pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.ease,
@@ -411,7 +440,7 @@ Stack _buildBestSelling(
                 onPageChanged: (final index) {
                   currentPage = index;
                 },
-                itemCount: proBestSelling.length,
+                itemCount: proBestSelling!.length,
                 itemBuilder: (final context, final index) {
                   return BestSellingItem(
                     pro: proBestSelling[index],
@@ -428,7 +457,7 @@ Stack _buildBestSelling(
 
 Container _buildRecentBrowsing(
   final BuildContext context,
-  final List<Product> proRecentBrowsing,
+  final List<ProductEntity> proRecentBrowsing,
 ) {
   return Container(
     color: Colors.grey[200],
