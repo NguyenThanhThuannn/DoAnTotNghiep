@@ -1,8 +1,18 @@
 import 'package:equatable/equatable.dart';
 
 import '../../data/models/product_response_model.dart';
+class SubDescriptionEntity extends Equatable{
+  SubDescriptionEntity({
+    this.item
+  });
+  final String? item;
+  @override
+  List<Object?> get props {
+    return [item];
+  }
+}
 class ProductEntity extends Equatable{
-  const ProductEntity({
+  /* const ProductEntity({
     this.price,
     this.title,
     this.price_sale,
@@ -17,7 +27,37 @@ class ProductEntity extends Equatable{
   final String ? tag;
   final int ? SLTon;
   final int ? SLDaBan;
+  final int ? review; */
+  ProductEntity({
+    this.price,
+    this.title,
+    this.price_sale,
+    this.tag,
+    this.SLTon,
+    this.SLDaBan,
+    this.review,
+    this.type,
+    this.status,
+    this.SKU,
+    this.description,
+    this.subDesItem,
+    this.pro,
+    this.relatePro
+  });
+  final String? type;
+  final String? tag;
+  final String? title;
+  final String? price_sale;
+  final String? price;
+  final int ? SLTon;
+  final int ? SLDaBan;
   final int ? review;
+  final bool? status;
+  final String? description;
+  final List<SubDescriptionModel>? subDesItem;
+  final String? SKU;
+  final List<BundleProModel>? pro;
+  final List<RelateProModel>? relatePro;
 
   @override
   List<Object?> get props {

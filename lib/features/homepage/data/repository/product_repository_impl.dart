@@ -9,7 +9,7 @@ class ProductRepositoryImpl implements ProductRepository{
   final Api _api;
 
   @override
-  Future<DataState<List<BestSellingEntity>>> getBestSellingUseCase() async{
+  Future<DataState<List<ProductEntity>>> getBestSellingUseCase() async{
    try{
     final res = await _api.getbestselling();
     return DataSucces(res!.data.bestselling);

@@ -59,15 +59,76 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
 
 BestSellingModel _$BestSellingModelFromJson(Map<String, dynamic> json) =>
     BestSellingModel(
+      type: json['type'] as String?,
       price: json['price'] as String,
       title: json['title'] as String,
       price_sale: json['price_sale'] as String,
+      tag: json['tag'] as String?,
+      status: json['status'] as bool?,
+      description: json['description'] as String?,
+      subDesItem: (json['subDesItem'] as List<dynamic>?)
+          ?.map((e) => SubDescriptionModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      SKU: json['SKU'] as String?,
+      pro: (json['pro'] as List<dynamic>?)
+          ?.map((e) => BundleProModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      relatePro: (json['relatePro'] as List<dynamic>?)
+          ?.map((e) => RelateProModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$BestSellingModelToJson(BestSellingModel instance) =>
     <String, dynamic>{
+      'type': instance.type,
       'price': instance.price,
       'title': instance.title,
+      'price_sale': instance.price_sale,
+      'tag': instance.tag,
+      'status': instance.status,
+      'description': instance.description,
+      'subDesItem': instance.subDesItem,
+      'SKU': instance.SKU,
+      'pro': instance.pro,
+      'relatePro': instance.relatePro,
+    };
+
+SubDescriptionModel _$SubDescriptionModelFromJson(Map<String, dynamic> json) =>
+    SubDescriptionModel(
+      item: json['item'] as String,
+    );
+
+Map<String, dynamic> _$SubDescriptionModelToJson(
+        SubDescriptionModel instance) =>
+    <String, dynamic>{
+      'item': instance.item,
+    };
+
+BundleProModel _$BundleProModelFromJson(Map<String, dynamic> json) =>
+    BundleProModel(
+      price: json['price'] as String,
+      title: json['title'] as String,
+    );
+
+Map<String, dynamic> _$BundleProModelToJson(BundleProModel instance) =>
+    <String, dynamic>{
+      'price': instance.price,
+      'title': instance.title,
+    };
+
+RelateProModel _$RelateProModelFromJson(Map<String, dynamic> json) =>
+    RelateProModel(
+      price: json['price'] as String,
+      title: json['title'] as String,
+      price_sale: json['price_sale'] as String?,
+      tag: json['tag'] as String?,
+    );
+
+Map<String, dynamic> _$RelateProModelToJson(RelateProModel instance) =>
+    <String, dynamic>{
+      'price': instance.price,
+      'title': instance.title,
+      'tag': instance.tag,
       'price_sale': instance.price_sale,
     };
 

@@ -7,6 +7,7 @@ import '../../../../config/textStyle.dart';
 import '../../../../injection_container.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
+import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
 import '../../data/models/product_models_response.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/home_page_bloc.dart';
@@ -364,7 +365,7 @@ Container _buildContainerLiner(
 
 Stack _buildBestSelling(
   final BuildContext context,
-  final List<BestSellingEntity>? proBestSelling,
+  final List<ProductEntity>? proBestSelling,
 ) {
   final PageController pageController = PageController();
   int currentPage = 0;
@@ -442,8 +443,13 @@ Stack _buildBestSelling(
                 },
                 itemCount: proBestSelling!.length,
                 itemBuilder: (final context, final index) {
-                  return BestSellingItem(
-                    pro: proBestSelling[index],
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ShopCartScreen(sCart: proBestSelling[index]),));
+                    },
+                    child: BestSellingItem(
+                      pro: proBestSelling[index],
+                    ),
                   );
                 },
               ),

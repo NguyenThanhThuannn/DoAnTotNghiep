@@ -4,7 +4,7 @@ import '../../domain/entities/product.dart';
 
 class BestSellingItem extends StatefulWidget {
   BestSellingItem({super.key, required this.pro});
-  BestSellingEntity pro;
+  ProductEntity pro;
 
   @override
   State<BestSellingItem> createState() => _BestSellingItemState();
@@ -51,7 +51,9 @@ class _BestSellingItemState extends State<BestSellingItem> {
               SizedBox(
                 width: 136,
                 child: Text(
-                  widget.pro.title!,
+                  widget.pro.title!.length <= 30
+                      ? widget.pro.title!
+                      : widget.pro.title!.substring(0, 30) + '...',
                   softWrap: true,
                 ),
               ),

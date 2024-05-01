@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
+import '../../../homepage/domain/entities/product.dart';
 import '../../data/models/shop_cart_response_model.dart';
 import 'colorDropDown_widget.dart';
 
 class InfoProduct extends StatefulWidget {
   InfoProduct({super.key, required this.sCart});
-  ShopCartData sCart;
+  ProductEntity sCart;
 
   @override
   State<InfoProduct> createState() => _InfoProductState();
@@ -26,7 +27,7 @@ class _InfoProductState extends State<InfoProduct> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                widget.sCart.type,
+                widget.sCart.type!,
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
@@ -49,7 +50,7 @@ class _InfoProductState extends State<InfoProduct> {
             ],
           ),
           Text(
-            widget.sCart.title,
+            widget.sCart.title!,
             style: textStyleInterSemiBold16,
             maxLines: 2,
             softWrap: true,
@@ -83,7 +84,7 @@ class _InfoProductState extends State<InfoProduct> {
                   )
                 else
                   Text(
-                    widget.sCart.price,
+                    widget.sCart.price!,
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -100,11 +101,11 @@ class _InfoProductState extends State<InfoProduct> {
                     ),
                     children: [
                       TextSpan(
-                        text: widget.sCart.status ? 'CÒN HÀNG' : 'HẾT HÀNG',
+                        text: widget.sCart.status! ? 'CÒN HÀNG' : 'HẾT HÀNG',
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: widget.sCart.status
+                          color: widget.sCart.status!
                               ? const Color.fromRGBO(47, 255, 29, 1)
                               : Colors.red,
                         ),
@@ -154,7 +155,7 @@ class _InfoProductState extends State<InfoProduct> {
             ),
           ),
           Text(
-            widget.sCart.description,
+            widget.sCart.description!,
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -167,10 +168,10 @@ class _InfoProductState extends State<InfoProduct> {
             height: MediaQuery.of(context).size.width / 4.5,
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: widget.sCart.subDesItem.length,
+              itemCount: widget.sCart.subDesItem!.length,
               itemBuilder: (final context, final index) {
                 return Text(
-                  widget.sCart.subDesItem[index].item,
+                  widget.sCart.subDesItem![index].item,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

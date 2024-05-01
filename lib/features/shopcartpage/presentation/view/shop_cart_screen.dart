@@ -9,6 +9,8 @@ import 'package:heroicons/heroicons.dart';
 import '../../../../config/textStyle.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
+import '../../../homepage/data/models/product_models_response.dart';
+import '../../../homepage/domain/entities/product.dart';
 import '../../../homepage/presentation/widgets/dailyDealItemTab_widget.dart';
 import '../../../homepage/presentation/widgets/footer.dart';
 import '../../data/models/shop_cart_response_model.dart';
@@ -18,14 +20,14 @@ import '../widgets/infoProduct.dart';
 import '../widgets/relateProduct.dart';
 
 class ShopCartScreen extends StatefulWidget {
-  const ShopCartScreen({super.key});
-
+  ShopCartScreen({super.key,required this.sCart});
+  ProductEntity sCart;
   @override
   State<ShopCartScreen> createState() => _ShopCartScreenState();
 }
 
 class _ShopCartScreenState extends State<ShopCartScreen> {
-  ShopCartData sCart = ShopCartData(
+  /* ShopCartData sCart = ShopCartData(
     type: 'AUDIO',
     title:
         'Bose SoundLink Revolve+ Portable Bluetooth Speaker, with Bose Charging',
@@ -65,7 +67,7 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
       Product(price: '2,590,000Đ', title: 'Beats Black Earphones',tag: 'HOT'),
       Product(price: '12,950,000Đ', title: 'August Smart Lock HomeKit Enabled'),
     ],
-  );
+  ); */
 
   @override
   Widget build(final BuildContext context) {
@@ -76,12 +78,12 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
         child: Column(
           children: [
             _buildImage(context),
-            InfoProduct(sCart: sCart),
-            _buildBundle(context, sCart),
+            InfoProduct(sCart: widget.sCart),
+            _buildBundle(context, widget.sCart),
             ShopCartTab(
-              sCart: sCart,
+              sCart: widget.sCart,
             ),
-            RelateProduct(sCart: sCart),
+            RelateProduct(sCart: widget.sCart),
             const FooterCustom(),
           ],
         ),
@@ -155,7 +157,7 @@ Stack _buildImage(final BuildContext context) {
   );
 }
 
-Container _buildBundle(final BuildContext context, final ShopCartData sCart) {
+Container _buildBundle(final BuildContext context, final ProductEntity sCart) {
   final ValueNotifier<int> total = ValueNotifier<int>(0);
   String addDiacritics(final String price) {
     // Thêm dấu "." vào vị trí phù hợp
@@ -203,7 +205,7 @@ Container _buildBundle(final BuildContext context, final ShopCartData sCart) {
             scrollDirection: Axis.horizontal,
             itemBuilder: (final context, final index) {
               return BundleItem(
-                pro: sCart.pro[index],
+                pro: sCart.pro![index],
                 total: total,
               );
             },
@@ -214,7 +216,7 @@ Container _buildBundle(final BuildContext context, final ShopCartData sCart) {
                 color: Colors.grey,
               );
             },
-            itemCount: sCart.pro.length,
+            itemCount: sCart.pro!.length,
           ),
         ),
         Row(
@@ -277,7 +279,7 @@ Container _buildBundle(final BuildContext context, final ShopCartData sCart) {
 
 class ShopCartTab extends StatefulWidget {
   ShopCartTab({super.key, required this.sCart});
-  ShopCartData sCart;
+  ProductEntity sCart;
 
   @override
   State<ShopCartTab> createState() => _ShopCartTabState();
@@ -494,9 +496,9 @@ class _ShopCartTabState extends State<ShopCartTab> {
                       ],
                     ),
                   ),
-                  Text(widget.sCart.title, style: textStyleInterSemiBold18W),
+                  Text(widget.sCart.title!, style: textStyleInterSemiBold18W),
                   Text(
-                    widget.sCart.description,
+                    widget.sCart.description!,
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

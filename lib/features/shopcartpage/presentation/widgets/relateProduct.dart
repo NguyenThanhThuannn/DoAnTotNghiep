@@ -5,11 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
 import '../../../homepage/data/models/product_models_response.dart' as sCart;
+import '../../../homepage/domain/entities/product.dart';
 import '../../data/models/shop_cart_response_model.dart';
 
 class RelateProduct extends StatefulWidget {
   RelateProduct({super.key, required this.sCart});
-  ShopCartData sCart;
+  ProductEntity sCart;
 
   @override
   State<RelateProduct> createState() => _RelateProductState();
@@ -61,7 +62,7 @@ class _RelateProductState extends State<RelateProduct> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_currentPage < widget.sCart.relatePro.length) {
+                          if (_currentPage < widget.sCart.relatePro!.length) {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.ease,
@@ -86,15 +87,15 @@ class _RelateProductState extends State<RelateProduct> {
               },
               physics: const NeverScrollableScrollPhysics(),
               controller: _pageController,
-              itemCount: (widget.sCart.relatePro.length / 6).ceil(),
+              itemCount: (widget.sCart.relatePro!.length / 6).ceil(),
               itemBuilder: (final context, final index) {
                 final int startIndex = index * 6;
                 final int endIndex = startIndex + 6;
-                final products = widget.sCart.relatePro.sublist(
+                final products = widget.sCart.relatePro!.sublist(
                   startIndex,
-                  endIndex < widget.sCart.relatePro.length
+                  endIndex < widget.sCart.relatePro!.length
                       ? endIndex
-                      : widget.sCart.relatePro.length,
+                      : widget.sCart.relatePro!.length,
                 );
                 return GridView.count(
                   physics: const NeverScrollableScrollPhysics(),
@@ -115,7 +116,7 @@ class _RelateProductState extends State<RelateProduct> {
 
 class relateProductItem extends StatelessWidget {
   relateProductItem({super.key, required this.pro});
-  Product pro;
+  ProductEntity pro;
 
   @override
   Widget build(final BuildContext context) {
@@ -155,7 +156,7 @@ class relateProductItem extends StatelessWidget {
           )
         else
           Text(
-            pro.price,
+            pro.price!,
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -165,7 +166,7 @@ class relateProductItem extends StatelessWidget {
         SizedBox(
           width: MediaQuery.of(context).size.width / 3,
           child: Text(
-            pro.title,
+            pro.title!,
             softWrap: true,
             maxLines: 2,
             textAlign: TextAlign.center,

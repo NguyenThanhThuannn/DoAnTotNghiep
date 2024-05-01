@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
+import '../../../homepage/domain/entities/product.dart';
 import '../../data/models/shop_cart_response_model.dart';
 
 class BundleItem extends StatefulWidget {
   BundleItem({super.key, required this.pro, required this.total});
-  Product pro;
+  ProductEntity pro;
   ValueNotifier<int> total;
 
   @override
@@ -43,13 +44,13 @@ class _BundleItemState extends State<BundleItem> {
             height: MediaQuery.of(context).size.width / 4,
             color: Colors.amberAccent,
           ),
-          Text(widget.pro.price,style: GoogleFonts.inter(
+          Text(widget.pro.price!,style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).primaryColor,
                 ),),
           Text(
-            widget.pro.title,
+            widget.pro.title!,
             maxLines: 2,
             softWrap: true,
             textAlign: TextAlign.center,
@@ -67,10 +68,10 @@ class _BundleItemState extends State<BundleItem> {
                     isChecked = !isChecked;
                     if (isChecked) {
                       widget.total.value +=
-                          int.parse(priceWithoutDiacritics(widget.pro.price));
+                          int.parse(priceWithoutDiacritics(widget.pro.price!));
                     } else {
                       widget.total.value -=
-                          int.parse(priceWithoutDiacritics(widget.pro.price));
+                          int.parse(priceWithoutDiacritics(widget.pro.price!));
                     }
                   });
                 },
