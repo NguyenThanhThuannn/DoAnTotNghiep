@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
-import '../../data/models/product_models_response.dart';
+import '../../domain/entities/product.dart';
 
 // ignore: must_be_immutable
 class DailyDealItem2 extends StatelessWidget {
   DailyDealItem2({super.key, required this.pro});
-  Product pro;
+  ProductEntity pro;
 
   @override
   Widget build(final BuildContext context) {
@@ -24,7 +24,7 @@ class DailyDealItem2 extends StatelessWidget {
           ],
         ),
         Text(
-          pro.price,
+          pro.price!,
           style: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -34,7 +34,7 @@ class DailyDealItem2 extends StatelessWidget {
         SizedBox(
           width: MediaQuery.of(context).size.width / 2.5,
           child: Text(
-            pro.title,
+            pro.title!,
             softWrap: true,
             maxLines: 2,
             textAlign: TextAlign.center,

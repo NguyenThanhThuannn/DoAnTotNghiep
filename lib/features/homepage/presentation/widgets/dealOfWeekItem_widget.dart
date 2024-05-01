@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/textStyle.dart';
-import '../../data/models/product_models_response.dart';
+import '../../domain/entities/product.dart';
 // ignore: must_be_immutable
 class DealOfWeekItem extends StatelessWidget {
   DealOfWeekItem({super.key, required this.pro});
-  Product pro;
+  ProductEntity pro;
 
   @override
   Widget build(final BuildContext context) {
@@ -70,7 +70,7 @@ class DealOfWeekItem extends StatelessWidget {
           ),
         ),
         Text(
-          pro.title,
+          pro.title!,
           softWrap: true,
           maxLines: 2,
           textAlign: TextAlign.center,
