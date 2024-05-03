@@ -107,11 +107,35 @@ TextStyle textStyleNobileRegular12 = GoogleFonts.nobile(
 TextStyle textStylePlusJakartaSansRegular14=GoogleFonts.plusJakartaSans(
   fontSize: 14,
   fontWeight: FontWeight.w400,
-  color: Colors.white,
+);
+
+TextStyle textStylePlusJakartaSansMedium14=GoogleFonts.plusJakartaSans(
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
 );
 //PlusJakartaSans-Bold
 TextStyle textStylePlusJakartaSansBold24=GoogleFonts.plusJakartaSans(
   fontSize: 24,
   fontWeight: FontWeight.w700,
   color: Colors.white,
+);
+//Montserrat-Regular
+TextStyle textStyleMontserratRegular14=GoogleFonts.montserrat(
+  fontSize: 14,
+  fontWeight: FontWeight.w400,
+);
+//Montserrat-Medium
+TextStyle textStyleMontserratMedium14=GoogleFonts.montserrat(
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
+);
+//Montserrat-SemiBold
+TextStyle textStyleMontserratSemiBold20=GoogleFonts.montserrat(
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
+);
+//Montserrat-Bold
+TextStyle textStyleMontserratBold36=GoogleFonts.montserrat(
+  fontSize: 36,
+  fontWeight: FontWeight.w700,
 );
