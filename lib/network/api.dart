@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:developer';
 import '../features/homepage/data/models/product_response_model.dart';
+import '../features/shopbycategorypage/data/models/category_response_model.dart';
 import 'api_provider.dart';
 import 'end_points.dart';
 import 'network_helper.dart';
@@ -30,7 +31,7 @@ class Api {
       handleExceptionCase(result.code);
       return result;
     } catch(e){
-      log('Lỗi $e');
+      log('ProductResponseModel lỗi $e');
       return null;
     }
   }
@@ -55,6 +56,18 @@ class Api {
       return result;
     } catch(e){
       log('Lỗi $e');
+      return null;
+    }
+  }
+  
+  Future<CategoryResponseModel?> getCategory() async{
+    try{
+      final res = await http.getRequest(EndPoints.Category);
+      final result = CategoryResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('CategoryResponseModel lỗi $e');
       return null;
     }
   }

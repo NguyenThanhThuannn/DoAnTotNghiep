@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'features/shopcartpage/presentation/view/shop_cart_screen.dart';
 import 'injection_container.dart';
 import 'widgets/onboarding_screen.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const OnboardingScreen(),
+      home: const ShopByCategoryScreen(),
     );
   }
 }

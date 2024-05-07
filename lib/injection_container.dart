@@ -17,6 +17,10 @@ import 'features/homepage/presentation/bloc/home_page_dailydealsweek_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_hotnewarrival_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_recentbrowsing_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_todaysdeals_bloc.dart';
+import 'features/shopbycategorypage/data/repository/category_repository_impl.dart';
+import 'features/shopbycategorypage/domain/repository/category_repository.dart';
+import 'features/shopbycategorypage/domain/usecases/get_category.dart';
+import 'features/shopbycategorypage/presentation/bloc/shopbycategory_page_bloc.dart';
 import 'network/api.dart';
 import 'network/api_provider.dart';
 final sl=GetIt.instance;
@@ -28,6 +32,7 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<ApiProvider>(ApiProvider());
   sl.registerSingleton<Api>(Api());
   sl.registerSingleton<ProductRepository>(ProductRepositoryImpl(sl()));
+  sl.registerSingleton<CategoryRepository>(CategoryRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -38,6 +43,8 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<GetHotNewArrivalUseCase>(GetHotNewArrivalUseCase(sl()));
   sl.registerSingleton<GetTodaysDealsUseCase>(GetTodaysDealsUseCase(sl()));
 
+  sl.registerSingleton<GetCategoryUseCase>(GetCategoryUseCase(sl()));
+
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -47,4 +54,5 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => HomePageHotnewarrivalBloc(sl()));
   sl.registerFactory(() => HomePageTodaysdealsBloc(sl()));
 
+  sl.registerFactory(() => ShopbycategoryPageBloc(sl()));
 }
