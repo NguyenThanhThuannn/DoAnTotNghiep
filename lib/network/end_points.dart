@@ -9,4 +9,5 @@ class EndPoints {
   static const String baseUrl =
       'https://raw.githubusercontent.com/NguyenThanhThuannn/linhtinh/master/';
   static const String product = 'product.json';
+  static const String Category ='category.json';
 }
