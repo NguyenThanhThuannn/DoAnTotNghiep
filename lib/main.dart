@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/policypage/presentation/view/policy_screen.dart';
 import 'features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'features/shopcartpage/presentation/view/shop_cart_screen.dart';
 import 'injection_container.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ShopByCategoryScreen(),
+      home: const PolicyScreen(),
     );
   }
 }

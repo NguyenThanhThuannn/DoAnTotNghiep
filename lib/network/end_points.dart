@@ -10,4 +10,7 @@ class EndPoints {
       'https://raw.githubusercontent.com/NguyenThanhThuannn/linhtinh/master/';
   static const String product = 'product.json';
   static const String Category ='category.json';
+  static const String policy = 'policy.json';
+  static const String term = 'term.json';
+  static const String taq = 'taq.json';
 }
