@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:developer';
 import '../features/homepage/data/models/product_response_model.dart';
+import '../features/policypage/data/models/policy_response_model.dart';
 import '../features/shopbycategorypage/data/models/category_response_model.dart';
 import 'api_provider.dart';
 import 'end_points.dart';
@@ -64,6 +65,18 @@ class Api {
     try{
       final res = await http.getRequest(EndPoints.Category);
       final result = CategoryResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('CategoryResponseModel lỗi $e');
+      return null;
+    }
+  }
+
+  Future<PolicyResponseModel?> getPolicy() async {
+    try{
+      final res = await http.getRequest(EndPoints.policy);
+      final result = PolicyResponseModel.fromJson(res!);
       handleExceptionCase(result.code);
       return result;
     } catch(e){
