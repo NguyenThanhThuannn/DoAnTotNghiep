@@ -25,6 +25,10 @@ import 'features/shopbycategorypage/data/repository/category_repository_impl.dar
 import 'features/shopbycategorypage/domain/repository/category_repository.dart';
 import 'features/shopbycategorypage/domain/usecases/get_category.dart';
 import 'features/shopbycategorypage/presentation/bloc/shopbycategory_page_bloc.dart';
+import 'features/termpage/data/repository/term_repository_impl.dart';
+import 'features/termpage/domain/repository/term_repository.dart';
+import 'features/termpage/domain/usecases/get_term.dart';
+import 'features/termpage/presentation/bloc/term_page_bloc.dart';
 import 'network/api.dart';
 import 'network/api_provider.dart';
 final sl=GetIt.instance;
@@ -38,6 +42,7 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<ProductRepository>(ProductRepositoryImpl(sl()));
   sl.registerSingleton<CategoryRepository>(CategoryRepositoryImpl(sl()));
   sl.registerSingleton<PolicyRepository>(PolicyRepositoryImpl(sl()));
+  sl.registerSingleton<TermRepository>(TermRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -52,6 +57,8 @@ Future<void> initializeDependencies() async{
 
   sl.registerSingleton<GetPolicyUseCase>(GetPolicyUseCase(sl()));
 
+  sl.registerSingleton<GetTermUseCase>(GetTermUseCase(sl()));
+
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -64,4 +71,6 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => ShopbycategoryPageBloc(sl()));
 
   sl.registerFactory(() => PolicyScreenBloc(sl()));
+
+  sl.registerFactory(() => TermPageBloc(sl()));
 }
