@@ -4,6 +4,7 @@ import 'dart:developer';
 import '../features/homepage/data/models/product_response_model.dart';
 import '../features/policypage/data/models/policy_response_model.dart';
 import '../features/shopbycategorypage/data/models/category_response_model.dart';
+import '../features/termpage/data/models/term_response_model.dart';
 import 'api_provider.dart';
 import 'end_points.dart';
 import 'network_helper.dart';
@@ -80,7 +81,19 @@ class Api {
       handleExceptionCase(result.code);
       return result;
     } catch(e){
-      log('CategoryResponseModel lỗi $e');
+      log('PolicyResponseModel lỗi $e');
+      return null;
+    }
+  }
+
+  Future<TermResponseModel?> getTerm() async {
+    try{
+      final res = await http.getRequest(EndPoints.term);
+      final result = TermResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('TermResponseModel lỗi $e');
       return null;
     }
   }
