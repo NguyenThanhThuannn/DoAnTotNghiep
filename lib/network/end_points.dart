@@ -12,5 +12,5 @@ class EndPoints {
   static const String Category ='category.json';
   static const String policy = 'policy.json';
   static const String term = 'term.json';
-  static const String taq = 'taq.json';
+  static const String faq = 'faq.json';
 }

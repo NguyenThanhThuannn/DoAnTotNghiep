@@ -104,11 +104,15 @@ TextStyle textStyleNobileRegular12 = GoogleFonts.nobile(
   fontWeight: FontWeight.w400,
 );
 //PlusJakartaSans-Regular
+TextStyle textStylePlusJakartaSansRegular12=GoogleFonts.plusJakartaSans(
+  fontSize: 12,
+  fontWeight: FontWeight.w400,
+);
 TextStyle textStylePlusJakartaSansRegular14=GoogleFonts.plusJakartaSans(
   fontSize: 14,
   fontWeight: FontWeight.w400,
 );
-
+//PlusJakartaSans-Medium
 TextStyle textStylePlusJakartaSansMedium14=GoogleFonts.plusJakartaSans(
   fontSize: 14,
   fontWeight: FontWeight.w500,
@@ -117,7 +121,8 @@ TextStyle textStylePlusJakartaSansMedium14=GoogleFonts.plusJakartaSans(
 TextStyle textStylePlusJakartaSansMedium14Height1point5=GoogleFonts.plusJakartaSans(
   fontSize: 14,
   fontWeight: FontWeight.w500,
-  height: 1.5
+  height: 1.5,
+  letterSpacing: 0.5,
 );
 //PlusJakartaSans-Bold
 TextStyle textStylePlusJakartaSansBold24=GoogleFonts.plusJakartaSans(

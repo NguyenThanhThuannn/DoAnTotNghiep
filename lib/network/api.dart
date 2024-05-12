@@ -1,6 +1,7 @@
 // ignore_for_file: only_throw_errors
 import 'dart:async';
 import 'dart:developer';
+import '../features/faqpage/data/models/faq_response_model.dart';
 import '../features/homepage/data/models/product_response_model.dart';
 import '../features/policypage/data/models/policy_response_model.dart';
 import '../features/shopbycategorypage/data/models/category_response_model.dart';
@@ -94,6 +95,18 @@ class Api {
       return result;
     } catch(e){
       log('TermResponseModel lỗi $e');
+      return null;
+    }
+  }
+  
+  Future<FAQResponseModel?> getFAQ() async {
+    try{
+      final res = await http.getRequest(EndPoints.faq);
+      final result = FAQResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('FAQResponseModel lỗi $e');
       return null;
     }
   }
