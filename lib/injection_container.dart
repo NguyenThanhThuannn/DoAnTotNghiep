@@ -1,6 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 
+import 'features/faqpage/data/repository/faq_repository_impl.dart';
+import 'features/faqpage/domain/repository/faq_repository.dart';
+import 'features/faqpage/domain/usecases/get_faq.dart';
+import 'features/faqpage/presentation/bloc/faq_page_bloc.dart';
 import 'features/homepage/data/repository/product_repository_impl.dart';
 import 'features/homepage/domain/repository/product_repository.dart';
 import 'features/homepage/domain/usecases/get_bestselling.dart';
@@ -43,6 +47,7 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<CategoryRepository>(CategoryRepositoryImpl(sl()));
   sl.registerSingleton<PolicyRepository>(PolicyRepositoryImpl(sl()));
   sl.registerSingleton<TermRepository>(TermRepositoryImpl(sl()));
+  sl.registerSingleton<FAQRepository>(FAQRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -59,6 +64,7 @@ Future<void> initializeDependencies() async{
 
   sl.registerSingleton<GetTermUseCase>(GetTermUseCase(sl()));
 
+  sl.registerSingleton<GetFAQUseCase>(GetFAQUseCase(sl()));
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -73,4 +79,6 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => PolicyScreenBloc(sl()));
 
   sl.registerFactory(() => TermPageBloc(sl()));
+
+  sl.registerFactory(() => FaqPageBloc(sl()));
 }

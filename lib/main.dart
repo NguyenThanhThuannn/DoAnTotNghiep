@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/faqpage/presentation/view/faq_screen.dart';
 import 'features/policypage/presentation/view/policy_screen.dart';
 import 'features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'features/shopcartpage/presentation/view/shop_cart_screen.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TermScreen(),
+      home: const FAQScreen(),
     );
   }
 }
