@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
 import '../../../../widgets/onboarding_screen.dart';
+import '../../../homepage/presentation/view/home_page_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -115,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (final context) =>
-                                  const OnboardingScreen(),
+                                  const HomePageScreen(),
                             ),);
                       });
                     },
@@ -170,6 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onTap: () {
                               setState(() {
                                 print('clicked ĐK');
+                                Navigator.push(context, MaterialPageRoute(builder: (final context) => const RegisterScreen(),));
                               });
                             },
                             child: Text('Đăng ký',

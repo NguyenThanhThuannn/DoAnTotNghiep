@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/themechange/bloc/theme_bloc.dart';
+import 'features/themechange/data/theme.dart';
 import 'features/faqpage/presentation/view/faq_screen.dart';
 import 'features/policypage/presentation/view/policy_screen.dart';
 import 'features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'features/shopcartpage/presentation/view/shop_cart_screen.dart';
 import 'features/termpage/presentation/view/term_screen.dart';
+import 'features/themechange/domain/themeEntity.dart';
 import 'injection_container.dart';
 import 'widgets/onboarding_screen.dart';
 
@@ -19,14 +23,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(final BuildContext context) {
-    return MaterialApp(
-      title: 'DoAnTotNghiep',
-      theme: ThemeData(
-        primaryColor: const Color.fromRGBO(0, 148, 255, 1),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return BlocProvider<ThemeBloc>(
+      create: (final context) => sl(),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (final context, final state) {
+          return MaterialApp(
+            title: 'DoAnTotNghiep',
+            theme: state.theme.themeData,
+            darkTheme: darkTheme,
+            home: const OnboardingScreen(),
+          );
+        },
       ),
-      home: const FAQScreen(),
     );
   }
 }

@@ -33,6 +33,11 @@ import 'features/termpage/data/repository/term_repository_impl.dart';
 import 'features/termpage/domain/repository/term_repository.dart';
 import 'features/termpage/domain/usecases/get_term.dart';
 import 'features/termpage/presentation/bloc/term_page_bloc.dart';
+import 'features/themechange/bloc/theme_bloc.dart';
+import 'features/themechange/data/theme_repository_impl.dart';
+import 'features/themechange/domain/get_theme.dart';
+import 'features/themechange/domain/set_theme.dart';
+import 'features/themechange/domain/theme_repository.dart';
 import 'network/api.dart';
 import 'network/api_provider.dart';
 final sl=GetIt.instance;
@@ -48,6 +53,7 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<PolicyRepository>(PolicyRepositoryImpl(sl()));
   sl.registerSingleton<TermRepository>(TermRepositoryImpl(sl()));
   sl.registerSingleton<FAQRepository>(FAQRepositoryImpl(sl()));
+  sl.registerSingleton<ThemeRepository>(ThemeRepositoryImpl());
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -65,6 +71,10 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<GetTermUseCase>(GetTermUseCase(sl()));
 
   sl.registerSingleton<GetFAQUseCase>(GetFAQUseCase(sl()));
+
+  sl.registerSingleton<GetThemeUseCase>(GetThemeUseCase(sl()));
+  sl.registerSingleton<SetThemeUseCase>(SetThemeUseCase(sl()));
+
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -81,4 +91,6 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => TermPageBloc(sl()));
 
   sl.registerFactory(() => FaqPageBloc(sl()));
+  
+  sl.registerFactory(() => ThemeBloc(sl(), sl()));
 }

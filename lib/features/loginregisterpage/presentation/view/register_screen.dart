@@ -117,7 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: GoogleFonts.montserrat(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Colors.red,
+                            color: Theme.of(context).brightness == Brightness.light? Colors.red:const Color.fromARGB(255, 234, 184, 89),
                           ),
                         ),
                         TextSpan(text: ' button, you agree to the public offer',style: textStyleMontserratRegular14),
@@ -200,6 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onTap: () {
                               setState(() {
                                 print('clicked ĐK');
+                                Navigator.push(context, MaterialPageRoute(builder: (final context) => const LoginScreen(),));
                               });
                             },
                             child: Text('Đăng nhập',

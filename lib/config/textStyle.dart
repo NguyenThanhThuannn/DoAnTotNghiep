@@ -31,6 +31,10 @@ TextStyle textStyleInterMedium14W = GoogleFonts.inter(
   fontWeight: FontWeight.w500,
   color: Colors.white,
 );
+TextStyle textStyleInterMedium20 = GoogleFonts.inter(
+  fontSize: 20,
+  fontWeight: FontWeight.w500,
+);
 TextStyle textStyleInterMedium20W = GoogleFonts.inter(
   fontSize: 20,
   fontWeight: FontWeight.w500,

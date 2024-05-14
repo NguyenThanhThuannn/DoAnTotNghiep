@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../config/textStyle.dart';
+import '../features/themechange/data/theme.dart';
 import '../features/homepage/presentation/view/home_page_screen.dart';
+import '../features/loginregisterpage/presentation/view/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -50,26 +52,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onTap: () {
                       setState(() {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (final context) => const HomePageScreen(),
-                            ),);
+                          context,
+                          MaterialPageRoute(
+                            builder: (final context) => const LoginScreen(),
+                          ),
+                        );
                       });
                     },
                     child: Container(
                       margin: const EdgeInsets.only(top: 20),
                       alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width/2,
-                      height: MediaQuery.of(context).size.width/8,
-                      decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                              colors: [
-                            Color.fromRGBO(0, 138, 238, 0.85),
-                            Color.fromRGBO(124, 200, 255, 1),
+                      width: MediaQuery.of(context).size.width / 2,
+                      height: MediaQuery.of(context).size.width / 8,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(context).brightness == Brightness.light? Color.fromRGBO(0, 138, 238, 0.85):Color.fromARGB(255, 255, 120, 17),
+                            Theme.of(context).brightness == Brightness.light?Color.fromRGBO(124, 200, 255, 1):Color.fromARGB(255, 245, 203, 171),
                           ],
                         ),
                       ),
-                      child: Text('Bắt đầu',style: textStyleInterMedium20W,),
+                      child: Text(
+                        'Bắt đầu',
+                        style: Theme.of(context).brightness == Brightness.light
+                            ? textStyleInterMedium20W
+                            : textStyleInterMedium20,
+                      ),
                     ),
                   ),
                 ],
