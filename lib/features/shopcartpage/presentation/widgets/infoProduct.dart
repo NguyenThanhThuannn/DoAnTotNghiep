@@ -187,15 +187,12 @@ class _InfoProductState extends State<InfoProduct> {
               Text.rich(
                 TextSpan(
                   text: 'SKU: ',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: textStyleInterSemiBold14,
                   children: [
                     TextSpan(
                       text: widget.sCart.SKU,
                       style: GoogleFonts.inter(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey,
                       ),
@@ -214,11 +211,8 @@ class _InfoProductState extends State<InfoProduct> {
                     children: [
                       Text(
                         'QTY',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                        style: textStyleInterSemiBold14,
                         ),
-                      ),
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
@@ -227,8 +221,8 @@ class _InfoProductState extends State<InfoProduct> {
                         width: MediaQuery.of(context).size.width / 4,
                         height: MediaQuery.of(context).size.width / 8 + 2,
                         child: quanlity < 10
-                            ? Text('0$quanlity')
-                            : Text('$quanlity'),
+                            ? Text('0$quanlity', style: textStyleInterSemiBold14)
+                            : Text('$quanlity', style: textStyleInterSemiBold14),
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width / 12,
