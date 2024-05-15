@@ -8,6 +8,7 @@ import '../../domain/entities/product.dart';
 import '../bloc/home_page_dailydeals_bloc.dart';
 import '../bloc/home_page_dailydealsweek2_bloc.dart';
 import '../bloc/home_page_dailydealsweek_bloc.dart';
+import 'countDown_widget.dart';
 import 'dailyDealItem2_widget.dart';
 import 'dailyDealItemTab_widget.dart';
 import 'dailyDealItem_widget.dart';
@@ -140,7 +141,7 @@ class _DailyDealState extends State<DailyDeal> {
                 padding: const EdgeInsets.all(10),
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 2 + 200,
+                  height: MediaQuery.of(context).size.height-100,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: const Color.fromRGBO(47, 255, 29, 1),
@@ -231,21 +232,13 @@ class _DailyDealState extends State<DailyDeal> {
                                 },
                               ),
                             ),
-                            _buildDailyDealHurryUp(context),
                             Container(
                               margin: const EdgeInsets.only(top: 20),
-                              width: MediaQuery.of(context).size.width / 2,
-                              height: MediaQuery.of(context).size.width / 6,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  _buildDailyDealTimeOut(context, 6, 'DAYS'),
-                                  _buildDailyDealTimeOut(context, 7, 'HOURS'),
-                                  _buildDailyDealTimeOut(context, 35, 'MNS'),
-                                  _buildDailyDealTimeOut(context, 24, 'SECS'),
-                                ],
-                              ),
+                              width: MediaQuery.of(context).size.width / 2 + 50,
+                              height: MediaQuery.of(context).size.width / 2,
+                              child: CountdownTimerPage(
+        targetDateTime: DateTime.now().add(const Duration(days: 6, hours: 7, minutes: 35, seconds: 24)),
+      ),
                             ),
                           ],
                         );
@@ -313,21 +306,6 @@ class _DailyDealState extends State<DailyDeal> {
       },
     );
   }
-}
-
-Column _buildDailyDealHurryUp(final BuildContext context) {
-  return Column(
-    children: [
-      Text(
-        'HURRY UP!',
-        style: textStyleInterBold16,
-      ),
-      Text(
-        'Offer Ends In:',
-        style: textStyleInterExtraLight14,
-      ),
-    ],
-  );
 }
 
 Column _buildDailyDealTimeOut(

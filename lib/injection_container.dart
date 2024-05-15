@@ -14,6 +14,7 @@ import 'features/homepage/domain/usecases/get_dailydealsweek2.dart';
 import 'features/homepage/domain/usecases/get_hotnewarrival.dart';
 import 'features/homepage/domain/usecases/get_recentbrowsing.dart';
 import 'features/homepage/domain/usecases/get_todaysdeals.dart';
+import 'features/homepage/presentation/bloc/countdown_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_dailydeals_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_dailydealsweek2_bloc.dart';
@@ -93,4 +94,6 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => FaqPageBloc(sl()));
   
   sl.registerFactory(() => ThemeBloc(sl(), sl()));
+
+  sl.registerFactory(() => CountdownBloc());
 }

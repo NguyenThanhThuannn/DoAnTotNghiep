@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 //Inter-ExtraLight
-TextStyle textStyleInterExtraLight14 = GoogleFonts.inter(
-  fontSize: 14,
+TextStyle textStyleInterExtraLight18 = GoogleFonts.inter(
+  fontSize: 18,
   fontWeight: FontWeight.w200,
 );
 
@@ -64,6 +64,10 @@ TextStyle textStyleInterSemiBold18W = GoogleFonts.inter(
   fontWeight: FontWeight.w600,
   color: Colors.white,
 );
+TextStyle textStyleInterSemiBold18 = GoogleFonts.inter(
+  fontSize: 18,
+  fontWeight: FontWeight.w600,
+);
 
 //Inter-Bold
 TextStyle textStyleInterBold16 = GoogleFonts.inter(
@@ -80,7 +84,15 @@ TextStyle textStyleInterExtraBold14 = GoogleFonts.inter(
   fontSize: 14,
   fontWeight: FontWeight.w800,
 );
-
+TextStyle textStyleInterExtraBold24 = GoogleFonts.inter(
+  fontSize: 24,
+  fontWeight: FontWeight.w800,
+);
+TextStyle textStyleInterExtraBold24W = GoogleFonts.inter(
+  fontSize: 24,
+  fontWeight: FontWeight.w800,
+  color:Colors.white,
+);
 //KeaniaOne
 TextStyle textStyleKeaniaOne14 = GoogleFonts.keaniaOne(
   fontSize: 14,

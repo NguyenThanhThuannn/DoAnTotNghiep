@@ -51,6 +51,7 @@ class _ShopByCategoryScreenState extends State<ShopByCategoryScreen> {
                 leading: GestureDetector(
                     onTap: () {
                       setState(() {
+                        Navigator.pop(context);
                       });
                     },
                     child: const Icon(Icons.keyboard_arrow_left_outlined),
@@ -138,7 +139,7 @@ class _CateWithProState extends State<CateWithPro> {
                         Navigator.of(context).pop();
                       });
                     },
-                    child: const Icon(Icons.keyboard_arrow_left_outlined),
+                    child: const Icon(Icons.navigate_before),
                   ),
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1.0),

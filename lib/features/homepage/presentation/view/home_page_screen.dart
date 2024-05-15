@@ -7,6 +7,7 @@ import '../../../../config/textStyle.dart';
 import '../../../../injection_container.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
+import '../../../shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
 import '../../data/models/product_models_response.dart';
 import '../../domain/entities/product.dart';
@@ -48,16 +49,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
           create: (final context) => sl()..add(GetRecentBrowsing()),
         ),
         BlocProvider<HomePageDailydealsweekBloc>(
-          create: (context) => sl()..add(GetDailyDealsWeek()),
+          create: (final context) => sl()..add(GetDailyDealsWeek()),
         ),
         BlocProvider<HomePageDailydealsweek2Bloc>(
-          create: (context) => sl()..add(GetDailyDealsWeek2()),
+          create: (final context) => sl()..add(GetDailyDealsWeek2()),
         ),
         BlocProvider<HomePageHotnewarrivalBloc>(
-          create: (context) => sl()..add(GetHotNewArrivals()),
+          create: (final context) => sl()..add(GetHotNewArrivals()),
         ),
         BlocProvider<HomePageTodaysdealsBloc>(
-          create: (context) => sl()..add(GetTodaysDeals()),
+          create: (final context) => sl()..add(GetTodaysDeals()),
         ),
       ],
       child: BlocBuilder<HomePageBloc, HomePageState>(
@@ -145,6 +146,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                   Icons.keyboard_arrow_right_outlined,
                                   color: Colors.white,
                                 ),
+                                onTap: () {
+                                  setState(() {
+                                    Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
+                                  });
+                                },
                                 title: Text(
                                   'SHOP BY CATEGORY',
                                   style: GoogleFonts.inter(
@@ -445,7 +451,7 @@ Stack _buildBestSelling(
                 itemBuilder: (final context, final index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ShopCartScreen(sCart: proBestSelling[index]),));
+                      Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proBestSelling[index]),));
                     },
                     child: BestSellingItem(
                       pro: proBestSelling[index],
