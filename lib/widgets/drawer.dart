@@ -403,7 +403,6 @@ class _DrawerCustomState extends State<DrawerCustom> {
                 ),
               ),
             ),
-            const Spacer(),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: Row(

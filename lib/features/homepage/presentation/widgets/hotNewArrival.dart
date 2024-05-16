@@ -183,11 +183,12 @@ class hotNewArrivalItem extends StatefulWidget {
 }
 
 class _hotNewArrivalItemState extends State<hotNewArrivalItem> {
-  bool isFav= false;
+  bool isFav = false;
   @override
   Widget build(final BuildContext context) {
     return widget.isClicked
         ? Container(
+            padding: const EdgeInsets.fromLTRB(10,10,10,0),
             decoration: BoxDecoration(
               border: Border.all(color: Theme.of(context).primaryColor),
               borderRadius: BorderRadius.circular(8),
@@ -202,25 +203,29 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> {
                         height: MediaQuery.of(context).size.width / 4,
                         color: Colors.amber,
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'ADD TO CART',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).primaryColor,
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'ADD TO CART',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 2.5,
-                        child: Text(
-                          widget.pro.title!,
-                          softWrap: true,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: textStyleInterMedium14,
+                      Expanded(
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width / 2.5,
+                          child: Text(
+                            widget.pro.title!,
+                            softWrap: true,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            style: textStyleInterMedium14,
+                          ),
                         ),
                       ),
                     ],
@@ -235,11 +240,16 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> {
                     ),
                     onPressed: () {
                       setState(() {
-                        isFav=!isFav;
+                        isFav = !isFav;
                       });
                     },
                     icon: /* Icon(Icons.favorite_border,color: isFav?Colors.red:null,), */
-                    isFav?const Icon(Icons.favorite,color: Colors.red,):const Icon(Icons.favorite_border_outlined),
+                        isFav
+                            ? const Icon(
+                                Icons.favorite,
+                                color: Colors.red,
+                              )
+                            : const Icon(Icons.favorite_border_outlined),
                   ),
                 ),
                 Positioned(
@@ -253,7 +263,7 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> {
                     icon: const Icon(Icons.compare_arrows_outlined),
                   ),
                 ),
-                _buildSwitchCaseTag(context, widget.pro.tag, 25),
+                _buildSwitchCaseTag(context, widget.pro.tag, 15),
               ],
             ),
           )
@@ -297,7 +307,10 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> {
 }
 
 Widget _buildSwitchCaseTag(
-    final BuildContext context, final String? tag, final double right,) {
+  final BuildContext context,
+  final String? tag,
+  final double right,
+) {
   switch (tag) {
     case 'SALE':
       return Positioned(

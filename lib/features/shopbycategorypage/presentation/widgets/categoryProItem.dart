@@ -21,11 +21,11 @@ class _CategoryProItemState extends State<CategoryProItem> {
   List<CategoryProductModel> Cate = [];
   @override
   void initState() {
-    Cate.isEmpty ? Cate.addAll(widget.cate) : null;
+    Cate.isEmpty ? Cate.addAll(widget.cate) : Cate;
     super.initState();
   }
 
-  void _sortProducts(final bool isAscending, final bool isDescening) {
+  /* void _sortProducts(final bool isAscending, final bool isDescening) {
     setState(() {
       if (isAscending) {
         widget.cate.sort((final a, final b) => a.price.compareTo(b.price));
@@ -84,6 +84,38 @@ class _CategoryProItemState extends State<CategoryProItem> {
         });
       }
     });
+  } */
+  String _selectedSortOption = 'Không';
+  bool _isAscending = true;
+
+  void _selectSortOption(final String option) {
+    setState(() {
+      if (_selectedSortOption == option) {
+        _isAscending = !_isAscending;
+      } else {
+        _selectedSortOption = option;
+        _isAscending = true;
+      }
+      _sortItems();
+    });
+  }
+
+  void _sortItems() {
+    if (_selectedSortOption == 'Sắp xếp từ A-Z') {
+      widget.cate.sort(
+        (final a, final b) => _isAscending
+            ? a.title.compareTo(b.title)
+            : b.title.compareTo(a.title),
+      );
+    } else if (_selectedSortOption == 'Giá từ thấp đến cao') {
+      widget.cate.sort(
+        (final a, final b) => _isAscending
+            ? a.price.compareTo(b.price)
+            : b.price.compareTo(a.price),
+      );
+    } else {
+      widget.cate=Cate;
+    }
   }
 
   @override
@@ -120,10 +152,67 @@ class _CategoryProItemState extends State<CategoryProItem> {
                             ? const Icon(Icons.view_list_rounded)
                             : const Icon(Icons.grid_view_outlined),
                       ),
-                      IconButton(
+                      PopupMenuButton<String>(
                         icon: const Icon(Icons.filter_list),
-                        onPressed: () {
-                          showFilterOptions(context);
+                        onSelected: _selectSortOption,
+                        itemBuilder: (final BuildContext context) {
+                          return [
+                            const PopupMenuItem<String>(
+                              value: 'Không',
+                              child: Text('Không'),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'Sắp xếp từ A-Z',
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Sắp xếp từ A-Z',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: _selectedSortOption ==
+                                                'Sắp xếp từ A-Z'
+                                            ? Theme.of(context).primaryColor
+                                            : null,),
+                                  ),
+                                  const Spacer(),
+                                  if (_selectedSortOption == 'Sắp xếp từ A-Z')
+                                    Icon(
+                                      _isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'Giá từ thấp đến cao',
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Giá từ thấp đến cao',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: _selectedSortOption ==
+                                                'Giá từ thấp đến cao'
+                                            ? Theme.of(context).primaryColor
+                                            : null,),
+                                  ),
+                                  const Spacer(),
+                                  if (_selectedSortOption ==
+                                      'Giá từ thấp đến cao')
+                                    Icon(
+                                      _isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ];
                         },
                       ),
                     ],
@@ -136,44 +225,44 @@ class _CategoryProItemState extends State<CategoryProItem> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                width: MediaQuery.of(context).size.width / 2.2,
-                margin: const EdgeInsets.only(left: 10),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(35),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _selectedFilter,
-                      style: textStyleInterMedium14,
+                    width: MediaQuery.of(context).size.width / 2.2,
+                    margin: const EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(35),
                     ),
-                    const SizedBox(
-                      width: 10,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _selectedFilter,
+                          style: textStyleInterMedium14,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedFilter = '';
+                              widget.cate = Cate;
+                            });
+                          },
+                          child: const Icon(Icons.close),
+                        ),
+                      ],
                     ),
-                    GestureDetector(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: GestureDetector(
                       onTap: () {
                         setState(() {
                           _selectedFilter = '';
                           widget.cate = Cate;
                         });
                       },
-                      child: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                          _selectedFilter = '';
-                          widget.cate = Cate;
-                        });
-                  },
                       child: Text(
                         'Xóa tất cả',
                         style: GoogleFonts.inter(
@@ -183,7 +272,7 @@ class _CategoryProItemState extends State<CategoryProItem> {
                         ),
                       ),
                     ),
-              ),
+                  ),
                 ],
               )
             else

@@ -474,7 +474,7 @@ Container _buildRecentBrowsing(
   return Container(
     color: Colors.grey[200],
     width: MediaQuery.of(context).size.width,
-    height: MediaQuery.of(context).size.height / 3.5,
+    height: MediaQuery.of(context).size.height / 3,
     child: Column(
       children: [
         SizedBox(
@@ -497,7 +497,7 @@ Container _buildRecentBrowsing(
         ),
         SizedBox(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height / 5,
+          height: MediaQuery.of(context).size.height / 4,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: proRecentBrowsing.length,
