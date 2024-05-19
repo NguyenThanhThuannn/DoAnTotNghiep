@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
 import '../config/textStyle.dart';
-import '../features/themechange/data/theme.dart';
-import '../features/homepage/presentation/view/home_page_screen.dart';
 import '../features/loginregisterpage/presentation/view/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {

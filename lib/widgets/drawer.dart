@@ -67,7 +67,6 @@ class _DrawerCustomState extends State<DrawerCustom> {
   ];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     log(drawer.toString());
   }
@@ -222,16 +221,12 @@ class _drawerItemState extends State<drawerItem> {
 }
  */
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroicons/heroicons.dart';
 
 import '../config/textStyle.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';
 import '../features/homepage/presentation/view/home_page_screen.dart';
-import '../features/themechange/bloc/theme_bloc.dart';
-import '../features/themechange/data/theme.dart';
-import '../features/themechange/domain/themeEntity.dart';
 
 class DrawerCustom extends StatefulWidget {
   const DrawerCustom({super.key});
@@ -373,19 +368,6 @@ class _DrawerCustomState extends State<DrawerCustom> {
                 endIndent: 15,
               ),
               _buildDrawerItem(context, 'GIFT CARDS'),
-              BlocBuilder<ThemeBloc, ThemeState>(
-                builder: (final context, final state) {
-                  final isLightTheme = state.theme.themeData == darkTheme;
-                  return SwitchListTile.adaptive(
-                    title: Text('Chế độ tối', style: textStyleAnybodyRegular18,),
-                    value: isLightTheme, onChanged: (final value) {
-                      final newTheme = value
-                          ? ThemeEntity(darkTheme)
-                          : ThemeEntity(lightTheme);
-                      context.read<ThemeBloc>().add(ChangeTheme(newTheme));
-                    },);
-                },
-              ),
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: TextField(
