@@ -40,16 +40,17 @@ class CateGridItem extends StatelessWidget {
           imageUrl: '',
           progressIndicatorBuilder: (final context, final url, final progress) {
             return Padding(
-                padding: const EdgeInsetsDirectional.only(end: 14),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width / 3,
-                    decoration:
-                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                    child: const CupertinoActivityIndicator(),
-                  ),
-                ),);
+              padding: const EdgeInsetsDirectional.only(end: 14),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  decoration:
+                      BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                  child: const CupertinoActivityIndicator(),
+                ),
+              ),
+            );
           },
           errorWidget: (final context, final url, final error) {
             return Container(
@@ -60,9 +61,13 @@ class CateGridItem extends StatelessWidget {
           },
         ),
         Text(
-          pro.title!.length <= 30
-              ? pro.title!
-              : '${pro.title!.substring(0, 29)}..',
+          pro.title!,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         Text(
           pro.price_sale!,

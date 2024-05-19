@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -182,7 +183,8 @@ class hotNewArrivalItem extends StatefulWidget {
   State<hotNewArrivalItem> createState() => _hotNewArrivalItemState();
 }
 
-class _hotNewArrivalItemState extends State<hotNewArrivalItem> {
+class _hotNewArrivalItemState extends State<hotNewArrivalItem> with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
   bool isFav = false;
   @override
   Widget build(final BuildContext context) {

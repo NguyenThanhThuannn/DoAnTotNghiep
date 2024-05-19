@@ -13,18 +13,22 @@ class CateListItem extends StatelessWidget {
   Widget build(final BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: pro),));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (final context) => ShopCartScreen(sCart: pro),
+            ));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.width/3,
+        height: MediaQuery.of(context).size.width / 3,
         child: Row(
           children: [
             Container(
               margin: const EdgeInsets.only(left: 8),
-              width: MediaQuery.of(context).size.width/3,
-              height: MediaQuery.of(context).size.height/3,
+              width: MediaQuery.of(context).size.width / 3,
+              height: MediaQuery.of(context).size.height / 3,
               color: Colors.amber,
             ),
             Container(
@@ -34,51 +38,56 @@ class CateListItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width/1.5-50,
-                    child: Text(pro.title!.length <= 30
-                            ? pro.title!
-                            : '${pro.title!.substring(0, 29)}..',softWrap: true,
-                                maxLines: 2,style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),),
-                  ),
-                  Text(pro.price!,style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).primaryColor,
-              ),),
-                  Row(
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star_half,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        Text(
-                          '(${pro.review})',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    width: MediaQuery.of(context).size.width / 1.5 - 50,
+                    child: Text(
+                      pro.title!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                  ),
+                  Text(
+                    pro.price!,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        color: Color.fromRGBO(245, 236, 11, 1),
+                      ),
+                      const Icon(
+                        Icons.star,
+                        color: Color.fromRGBO(245, 236, 11, 1),
+                      ),
+                      const Icon(
+                        Icons.star,
+                        color: Color.fromRGBO(245, 236, 11, 1),
+                      ),
+                      const Icon(
+                        Icons.star,
+                        color: Color.fromRGBO(245, 236, 11, 1),
+                      ),
+                      const Icon(
+                        Icons.star_half,
+                        color: Color.fromRGBO(245, 236, 11, 1),
+                      ),
+                      Text(
+                        '(${pro.review})',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

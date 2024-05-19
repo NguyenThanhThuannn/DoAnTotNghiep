@@ -246,192 +246,188 @@ class _DrawerCustomState extends State<DrawerCustom> {
   bool isCart = true;
   @override
   Widget build(final BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Drawer(
-        width: MediaQuery.of(context).size.width,
-        child: ListView(
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 10 - 23,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        if (Theme.of(context).brightness == Brightness.light)
-                          const Color.fromRGBO(0, 138, 238, 0.85)
-                        else
-                          const Color.fromARGB(255, 255, 120, 17),
-                        if (Theme.of(context).brightness == Brightness.light)
-                          const Color.fromRGBO(124, 200, 255, 1)
-                        else
-                          const Color.fromARGB(255, 245, 203, 171),
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Drawer(
+          width: MediaQuery.of(context).size.width,
+          child: ListView(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height / 10 - 23,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          if (Theme.of(context).brightness == Brightness.light)
+                            const Color.fromRGBO(0, 138, 238, 0.85)
+                          else
+                            const Color.fromARGB(255, 255, 120, 17),
+                          if (Theme.of(context).brightness == Brightness.light)
+                            const Color.fromRGBO(124, 200, 255, 1)
+                          else
+                            const Color.fromARGB(255, 245, 203, 171),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(left: 5, top: 5),
+                          width: 40,
+                          height: 40,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.yellow,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                Navigator.of(context).pop();
+                              });
+                            },
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            _buildTranfer(context, isTransfer),
+                            _buildFavorite(context, isFavorite),
+                            _buildCart(context, isCart),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(left: 5, top: 5),
-                        width: 40,
-                        height: 40,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.yellow,
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              Navigator.of(context).pop();
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          _buildTranfer(context, isTransfer),
-                          _buildFavorite(context, isFavorite),
-                          _buildCart(context, isCart),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            _buildDrawerItem(context, 'HOME'),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildExpandableDrawerItem(context, 'SHOP'),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildExpandableDrawerItem(context, 'BLOG'),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildExpandableDrawerItem(context, 'PAGES', [
-              'Contact',
-              'FAQ',
-              '404 Page',
-              'Coming Soon',
-            ]),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildDrawerItem(context, 'PRODUCTS'),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildDrawerItem(context, 'BRANDS'),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildDrawerItem(context, "TODAY'S DEALS"),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildDrawerItem(context, 'NEW ARRIVALS'),
-            const Divider(
-              height: 1,
-              color: Colors.grey,
-              indent: 15,
-              endIndent: 15,
-            ),
-            _buildDrawerItem(context, 'GIFT CARDS'),
-            BlocBuilder<ThemeBloc, ThemeState>(
-              builder: (final context, final state) {
-                final isLightTheme = state.theme.themeData == darkTheme;
-                return Row(
-                  children: [
-                    const Text('DarkMode: '),
-                    Switch(
-                      value: isLightTheme,
-                      onChanged: (final value) {
-                        final newTheme = value
-                            ? ThemeEntity(darkTheme)
-                            : ThemeEntity(lightTheme);
-                        context.read<ThemeBloc>().add(ChangeTheme(newTheme));
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: const UnderlineInputBorder(),
-                  hintText: 'Search for products...',
-                  hintStyle: textStyleNewsReaderRegular18,
-                  suffixIcon: const Icon(Icons.search),
-                  suffixIconColor: Colors.grey,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                      icon: const Icon(Icons.facebook), onPressed: () {},),
-                  IconButton(
-                    icon: const Icon(Icons.facebook_outlined),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.food_bank_outlined),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.facebook_sharp),
-                    onPressed: () {},
-                  ),
                 ],
               ),
-            ),
-            const Center(
-              child: Text(
-                '© Mediamarket 2017. All Rights Reserved',
-                style: TextStyle(fontSize: 12),
+              _buildDrawerItem(context, 'HOME'),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
               ),
-            ),
-          ],
+              _buildExpandableDrawerItem(context, 'SHOP'),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
+              ),
+              _buildExpandableDrawerItem(context, 'BLOG'),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
+              ),
+              _buildExpandableDrawerItem(context, 'PAGES', [
+                'Contact',
+                'FAQ',
+                '404 Page',
+                'Coming Soon',
+              ]),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
+              ),
+              _buildDrawerItem(context, 'PRODUCTS'),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
+              ),
+              _buildDrawerItem(context, 'BRANDS'),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
+              ),
+              _buildDrawerItem(context, "TODAY'S DEALS"),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
+              ),
+              _buildDrawerItem(context, 'NEW ARRIVALS'),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+                indent: 15,
+                endIndent: 15,
+              ),
+              _buildDrawerItem(context, 'GIFT CARDS'),
+              BlocBuilder<ThemeBloc, ThemeState>(
+                builder: (final context, final state) {
+                  final isLightTheme = state.theme.themeData == darkTheme;
+                  return SwitchListTile.adaptive(
+                    title: Text('Chế độ tối', style: textStyleAnybodyRegular18,),
+                    value: isLightTheme, onChanged: (final value) {
+                      final newTheme = value
+                          ? ThemeEntity(darkTheme)
+                          : ThemeEntity(lightTheme);
+                      context.read<ThemeBloc>().add(ChangeTheme(newTheme));
+                    },);
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: const UnderlineInputBorder(),
+                    hintText: 'Search for products...',
+                    hintStyle: textStyleNewsReaderRegular18,
+                    suffixIcon: const Icon(Icons.search),
+                    suffixIconColor: Colors.grey,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        icon: const Icon(Icons.facebook), onPressed: () {},),
+                    IconButton(
+                      icon: const Icon(Icons.facebook_outlined),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.food_bank_outlined),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.facebook_sharp),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ),
+              const Center(
+                child: Text(
+                  '© Mediamarket 2017. All Rights Reserved',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

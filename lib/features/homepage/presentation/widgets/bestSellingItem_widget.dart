@@ -50,12 +50,7 @@ class _BestSellingItemState extends State<BestSellingItem> {
               ),
               SizedBox(
                 width: 136,
-                child: Text(
-                  widget.pro.title!.length <= 30
-                      ? widget.pro.title!
-                      : widget.pro.title!.substring(0, 30) + '...',
-                  softWrap: true,
-                ),
+                child: Text(widget.pro.title!,overflow: TextOverflow.ellipsis,maxLines: 2,),
               ),
               Row(
                 children: [

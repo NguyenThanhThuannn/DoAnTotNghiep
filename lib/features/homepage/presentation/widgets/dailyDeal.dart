@@ -276,7 +276,7 @@ class _DailyDealState extends State<DailyDeal> {
                         itemBuilder: (final context, final index) {
                           return GestureDetector(
                             onTap: () {},
-                            child: index % 2 == 0
+                            child: index.isEven
                                 ? Container(
                                     alignment: Alignment.center,
                                     decoration: const BoxDecoration(
