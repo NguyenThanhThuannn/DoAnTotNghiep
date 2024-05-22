@@ -8,19 +8,12 @@ abstract class CountdownEvent extends Equatable {
 }
 
 class StartCountdown extends CountdownEvent {
-  final DateTime targetDateTime;
 
-  const StartCountdown(this.targetDateTime);
-
-  @override
-  List<Object> get props => [targetDateTime];
-}
-
-class Tick extends CountdownEvent {
-  final DateTime targetDateTime;
-
-  const Tick(this.targetDateTime);
+  const StartCountdown(this.endTime);
+  final DateTime endTime;
 
   @override
-  List<Object> get props => [targetDateTime];
+  List<Object> get props => [endTime];
 }
+
+class Tick extends CountdownEvent {}

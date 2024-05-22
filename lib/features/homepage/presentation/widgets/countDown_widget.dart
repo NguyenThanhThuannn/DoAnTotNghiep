@@ -7,54 +7,69 @@ import '../../../../injection_container.dart';
 import '../bloc/countdown_bloc.dart';
 
 class CountdownTimerPage extends StatelessWidget {
+  const CountdownTimerPage({super.key});
+  static DateTime _nextInstanceOfWeekdayAndTime(
+      final DayOfWeek weekday, final TimeOfDay time,) {
+    final DateTime now = DateTime.now();
+    final int daysToAdd = (weekday.index - now.weekday + 7) % 7;
+    final DateTime nextWeekday =
+        DateTime(now.year, now.month, now.day).add(Duration(days: daysToAdd));
+    DateTime nextInstance = DateTime(nextWeekday.year, nextWeekday.month,
+        nextWeekday.day, time.hour, time.minute,);
 
-  const CountdownTimerPage({super.key, required this.targetDateTime});
-  final DateTime targetDateTime;
+    if (nextInstance.isBefore(now)) {
+      nextInstance = nextInstance.add(const Duration(days: 7));
+    }
+
+    return nextInstance;
+  }
 
   @override
   Widget build(final BuildContext context) {
     return BlocProvider<CountdownBloc>(
-      create: (final context) => sl()..add(StartCountdown(targetDateTime)),
-          child: BlocBuilder<CountdownBloc, CountdownState>(
-            builder: (final context, final state) {
-              final duration = state.duration;
-              final days = duration.inDays;
-              final hours = duration.inHours % 24;
-              final minutes = duration.inMinutes % 60;
-              final seconds = duration.inSeconds % 60;
-              return Column(
+      create: (final context) => sl()
+        ..add(StartCountdown(_nextInstanceOfWeekdayAndTime(
+            DayOfWeek.monday, const TimeOfDay(hour: 12, minute: 0),),),),
+      child: BlocBuilder<CountdownBloc, CountdownState>(
+        builder: (final context, final state) {
+          final int days = state.remainingTime.inDays;
+          final int hours = state.remainingTime.inHours % 24;
+          final int minutes = state.remainingTime.inMinutes % 60;
+          final int seconds = state.remainingTime.inSeconds % 60;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'HURRY UP!',
+                style: textStyleInterExtraBold24,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Offer Ends In:',
+                style: textStyleInterExtraLight18,
+              ),
+              const SizedBox(height: 16),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                   Text(
-                    'HURRY UP!',
-                    style:textStyleInterExtraBold24,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Offer Ends In:',
-                    style: textStyleInterExtraLight18,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      _buildTimeCard(context,days, 'DAYS'),
-                      const SizedBox(width: 8),
-                      _buildTimeCard(context,hours, 'HOURS'),
-                      const SizedBox(width: 8),
-                      _buildTimeCard(context,minutes, 'MINS'),
-                      const SizedBox(width: 8),
-                      _buildTimeCard(context,seconds, 'SECS'),
-                    ],
-                  ),
+                  _buildTimeCard(context, days, 'DAYS'),
+                  const SizedBox(width: 8),
+                  _buildTimeCard(context, hours, 'HOURS'),
+                  const SizedBox(width: 8),
+                  _buildTimeCard(context, minutes, 'MINS'),
+                  const SizedBox(width: 8),
+                  _buildTimeCard(context, seconds, 'SECS'),
                 ],
-              );
-            },
-          ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildTimeCard(final BuildContext context,final int time, final String label) {
+  Widget _buildTimeCard(
+      final BuildContext context, final int time, final String label,) {
     return Column(
       children: <Widget>[
         Container(
@@ -65,11 +80,13 @@ class CountdownTimerPage extends StatelessWidget {
           ),
           child: Text(
             time.toString().padLeft(2, '0'),
-            style: Theme.of(context).brightness==Brightness.light? textStyleInterExtraBold24: GoogleFonts.inter(
-  fontSize: 24,
-  fontWeight: FontWeight.w800,
-  color: Colors.black,
-),
+            style: Theme.of(context).brightness == Brightness.light
+                ? textStyleInterExtraBold24
+                : GoogleFonts.inter(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                  ),
           ),
         ),
         const SizedBox(height: 4),
@@ -79,5 +96,36 @@ class CountdownTimerPage extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+enum DayOfWeek {
+  monday,
+  tuesday,
+  wednesday,
+  thursday,
+  friday,
+  saturday,
+  sunday
+}
+
+extension DayOfWeekExtension on DayOfWeek {
+  int get index {
+    switch (this) {
+      case DayOfWeek.monday:
+        return DateTime.monday;
+      case DayOfWeek.tuesday:
+        return DateTime.tuesday;
+      case DayOfWeek.wednesday:
+        return DateTime.wednesday;
+      case DayOfWeek.thursday:
+        return DateTime.thursday;
+      case DayOfWeek.friday:
+        return DateTime.friday;
+      case DayOfWeek.saturday:
+        return DateTime.saturday;
+      case DayOfWeek.sunday:
+        return DateTime.sunday;
+    }
   }
 }
