@@ -236,9 +236,7 @@ class _DailyDealState extends State<DailyDeal> {
                               margin: const EdgeInsets.only(top: 20),
                               width: MediaQuery.of(context).size.width / 2 + 50,
                               height: MediaQuery.of(context).size.width / 2,
-                              child: CountdownTimerPage(
-        targetDateTime: DateTime.now().add(const Duration(days: 6, hours: 7, minutes: 35, seconds: 24)),
-      ),
+                              child: CountdownTimerPage(),
                             ),
                           ],
                         );
