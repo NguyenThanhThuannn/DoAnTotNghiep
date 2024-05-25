@@ -220,13 +220,20 @@ class _drawerItemState extends State<drawerItem> {
   }
 }
  */
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroicons/heroicons.dart';
 
 import '../config/textStyle.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';
 import '../features/homepage/presentation/view/home_page_screen.dart';
+import '../features/search/data/models/search_model.dart';
+import '../features/search/domain/entities/search.dart';
+import '../features/search/presentation/bloc/local_search_bloc.dart';
+import '../features/search/presentation/widgets/search_tile_widget.dart';
 
 class DrawerCustom extends StatefulWidget {
   const DrawerCustom({super.key});
@@ -371,6 +378,10 @@ class _DrawerCustomState extends State<DrawerCustom> {
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: TextField(
+                  onTap: () {
+                    showSearch(context: context, delegate: CustomSearch());
+                  },
+                  readOnly: true,
                   decoration: InputDecoration(
                     border: const UnderlineInputBorder(),
                     hintText: 'Search for products...',
@@ -386,7 +397,9 @@ class _DrawerCustomState extends State<DrawerCustom> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                        icon: const Icon(Icons.facebook), onPressed: () {},),
+                      icon: const Icon(Icons.facebook),
+                      onPressed: () {},
+                    ),
                     IconButton(
                       icon: const Icon(Icons.facebook_outlined),
                       onPressed: () {},
@@ -435,20 +448,22 @@ class _DrawerCustomState extends State<DrawerCustom> {
           switch (title) {
             case 'HOME':
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (final context) => const HomePageScreen(),
-                  ),);
+                context,
+                MaterialPageRoute(
+                  builder: (final context) => const HomePageScreen(),
+                ),
+              );
               break;
             case 'PRODUCTS':
               Navigator.of(context).pop();
               break;
             case 'BRANDS':
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (final context) => const FAQScreen(),
-                  ),);
+                context,
+                MaterialPageRoute(
+                  builder: (final context) => const FAQScreen(),
+                ),
+              );
               break;
             case "TODAY'S DEALS":
               Navigator.of(context).pop();
@@ -594,4 +609,85 @@ Stack _buildCart(final BuildContext context, final bool isCart) {
       ),
     ],
   );
+}
+
+class CustomSearch extends SearchDelegate {
+  @override
+  List<Widget>? buildActions(final BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+/*           BlocProvider.of<LocalSearchBloc>(context)
+              .add(SaveItemSearch(SearchEntity())); */
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.black,
+            content: Text('$query saved successfully.'),
+          ),);
+        },
+        icon: const Icon(Icons.save_alt_outlined),
+      ),
+      IconButton(
+        onPressed: () {
+          query = '';
+        },
+        icon: const Icon(Icons.clear),
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(final BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        close(context, null);
+      },
+      child: const Icon(Icons.navigate_before_outlined),
+    );
+  }
+
+  @override
+  Widget buildResults(final BuildContext context) {
+    return _buildSearchResults(context);
+  }
+
+  @override
+  Widget buildSuggestions(final BuildContext context) {
+    return _buildSearchResults(context);
+  }
+
+  Widget _buildSearchResults(final BuildContext context) {
+    return BlocBuilder<LocalSearchBloc, LocalSearchState>(
+      builder: (final context, final state) {
+        if (state is LocalSearchLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is LocalSearchDone) {
+          final searches = state.searches;
+          log(searches.toString());
+          final filteredSearches = searches?.where((final search) {
+            return search.title!.contains(query);
+          }).toList();
+
+          if (filteredSearches == null || filteredSearches.isEmpty) {
+            return const Center(child: Text('No results found'));
+          }
+          return ListView.builder(
+            itemCount: filteredSearches.length,
+            itemBuilder: (final context, final index) {
+              final search = filteredSearches[index];
+              return ItemSearchWidget(
+                search: search,
+                isRemovable: true,
+                onRemove: (final search) =>
+                    BlocProvider.of<LocalSearchBloc>(context)
+                        .add(RemoveItemSearch(search)),
+                onItemSearchPressed: (final title) => query = title,
+              );
+            },
+          );
+        } else {
+          return const Center(child: Text('An error occurred'));
+        }
+      },
+    );
+  }
 }
