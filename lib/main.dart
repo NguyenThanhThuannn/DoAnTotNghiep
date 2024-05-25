@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/search/presentation/bloc/local_search_bloc.dart';
 import 'features/themechange/bloc/theme_bloc.dart';
 import 'features/themechange/data/theme.dart';
 import 'injection_container.dart';
@@ -17,8 +18,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(final BuildContext context) {
-    return BlocProvider<ThemeBloc>(
-      create: (final context) => sl(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeBloc>(
+          create: (final context) => sl(),
+        ),
+        BlocProvider<LocalSearchBloc>(
+          create: (final context) => sl()..add(const GetSavedSearches()),
+        ),
+      ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (final context, final state) {
           return MaterialApp(

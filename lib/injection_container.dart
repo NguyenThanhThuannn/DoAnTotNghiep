@@ -26,6 +26,13 @@ import 'features/policypage/data/repository/policy_repository_impl.dart';
 import 'features/policypage/domain/repository/policy_repository.dart';
 import 'features/policypage/domain/usecases/get_policy.dart';
 import 'features/policypage/presentation/bloc/policy_screen_bloc.dart';
+import 'features/search/data/data_sources/local/app_database.dart';
+import 'features/search/data/repository/search_repository_impl.dart';
+import 'features/search/domain/repository/search_repository.dart';
+import 'features/search/domain/usecases/get_saved_search.dart';
+import 'features/search/domain/usecases/remove_itemsearch.dart';
+import 'features/search/domain/usecases/save_itemsearch.dart';
+import 'features/search/presentation/bloc/local_search_bloc.dart';
 import 'features/shopbycategorypage/data/repository/category_repository_impl.dart';
 import 'features/shopbycategorypage/domain/repository/category_repository.dart';
 import 'features/shopbycategorypage/domain/usecases/get_category.dart';
@@ -43,6 +50,10 @@ import 'network/api.dart';
 import 'network/api_provider.dart';
 final sl=GetIt.instance;
 Future<void> initializeDependencies() async{
+
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  sl.registerSingleton<AppDatabase>(database);
+
   //Dio
   sl.registerSingleton<Dio>(Dio());
 
@@ -55,6 +66,7 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<TermRepository>(TermRepositoryImpl(sl()));
   sl.registerSingleton<FAQRepository>(FAQRepositoryImpl(sl()));
   sl.registerSingleton<ThemeRepository>(ThemeRepositoryImpl());
+  sl.registerSingleton<SearchRepository>(SearchRepositoryImpl(sl(), sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -76,6 +88,10 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<GetThemeUseCase>(GetThemeUseCase(sl()));
   sl.registerSingleton<SetThemeUseCase>(SetThemeUseCase(sl()));
 
+  sl.registerSingleton<GetSavedSearchUseCase>(GetSavedSearchUseCase(sl()));
+  sl.registerSingleton<RemoveItemSearchUseCase>(RemoveItemSearchUseCase(sl()));
+  sl.registerSingleton<SaveItemSearchUseCase>(SaveItemSearchUseCase(sl()));
+
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -96,4 +112,6 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => ThemeBloc(sl(), sl()));
 
   sl.registerFactory(() => CountdownBloc());
+
+  sl.registerFactory(() => LocalSearchBloc(sl(), sl(), sl()));
 }
