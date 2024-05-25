@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heroicons/heroicons.dart';
+
+import '../features/search/domain/entities/search.dart';
+import '../features/search/presentation/bloc/local_search_bloc.dart';
+import '../injection_container.dart';
 
 class AppBarCustom extends StatefulWidget implements PreferredSizeWidget {
   const AppBarCustom({super.key});
@@ -24,13 +29,15 @@ class _AppBarCustomState extends State<AppBarCustom> {
         },
         icon: Icon(
           Icons.menu,
-          color: Theme.of(context).brightness == Brightness.light? Colors.white:Colors.black,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.white
+              : Colors.black,
         ),
       ),
       actions: [
-        _buildTranfer(context,isTransfer),
-        _buildFavorite(context,isFavorite),
-        _buildCart(context,isCart),
+        _buildTranfer(context, isTransfer),
+        _buildFavorite(context, isFavorite),
+        _buildCart(context, isCart),
         const SizedBox(
           width: 20,
         ),
@@ -40,8 +47,14 @@ class _AppBarCustomState extends State<AppBarCustom> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              if (Theme.of(context).brightness == Brightness.light) const Color.fromRGBO(0, 138, 238, 0.85) else const Color.fromARGB(255, 255, 120, 17),
-              if (Theme.of(context).brightness == Brightness.light) const Color.fromRGBO(124, 200, 255, 1) else const Color.fromARGB(255, 245, 203, 171),
+              if (Theme.of(context).brightness == Brightness.light)
+                const Color.fromRGBO(0, 138, 238, 0.85)
+              else
+                const Color.fromARGB(255, 255, 120, 17),
+              if (Theme.of(context).brightness == Brightness.light)
+                const Color.fromRGBO(124, 200, 255, 1)
+              else
+                const Color.fromARGB(255, 245, 203, 171),
             ],
           ),
         ),
@@ -50,14 +63,16 @@ class _AppBarCustomState extends State<AppBarCustom> {
   }
 }
 
-Stack _buildTranfer(final BuildContext context,final bool isTransfer) {
+Stack _buildTranfer(final BuildContext context, final bool isTransfer) {
   return Stack(
     children: [
       IconButton(
         onPressed: () {},
         icon: Icon(
           Icons.compare_arrows_outlined,
-          color: Theme.of(context).brightness==Brightness.light?Colors.white:Colors.black,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.white
+              : Colors.black,
         ),
       ),
       Positioned(
@@ -71,23 +86,26 @@ Stack _buildTranfer(final BuildContext context,final bool isTransfer) {
             color: isTransfer ? Colors.red : Colors.white,
             borderRadius: BorderRadius.circular(25),
           ),
-          child: Text('0',
-              style:
-                  TextStyle(color: isTransfer ? Colors.white : Colors.black),),
+          child: Text(
+            '0',
+            style: TextStyle(color: isTransfer ? Colors.white : Colors.black),
+          ),
         ),
       ),
     ],
   );
 }
 
-Stack _buildFavorite(final BuildContext context,final bool isFavorite) {
+Stack _buildFavorite(final BuildContext context, final bool isFavorite) {
   return Stack(
     children: [
       IconButton(
         onPressed: () {},
         icon: Icon(
           Icons.favorite_border,
-          color: Theme.of(context).brightness==Brightness.light?Colors.white:Colors.black,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.white
+              : Colors.black,
         ),
       ),
       Positioned(
@@ -101,23 +119,26 @@ Stack _buildFavorite(final BuildContext context,final bool isFavorite) {
             color: isFavorite ? Colors.red : Colors.white,
             borderRadius: BorderRadius.circular(25),
           ),
-          child: Text('0',
-              style:
-                  TextStyle(color: isFavorite ? Colors.white : Colors.black),),
+          child: Text(
+            '0',
+            style: TextStyle(color: isFavorite ? Colors.white : Colors.black),
+          ),
         ),
       ),
     ],
   );
 }
 
-Stack _buildCart(final BuildContext context,final bool isCart) {
+Stack _buildCart(final BuildContext context, final bool isCart) {
   return Stack(
     children: [
       IconButton(
         onPressed: () {},
         icon: HeroIcon(
           HeroIcons.shoppingBag,
-          color: Theme.of(context).brightness==Brightness.light?Colors.white:Colors.black,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.white
+              : Colors.black,
         ),
       ),
       Positioned(
@@ -131,8 +152,10 @@ Stack _buildCart(final BuildContext context,final bool isCart) {
             color: isCart ? Colors.red : Colors.white,
             borderRadius: BorderRadius.circular(25),
           ),
-          child: Text('2',
-              style: TextStyle(color: isCart ? Colors.white : Colors.black),),
+          child: Text(
+            '2',
+            style: TextStyle(color: isCart ? Colors.white : Colors.black),
+          ),
         ),
       ),
     ],

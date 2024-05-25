@@ -9,6 +9,7 @@ import '../../../../config/textStyle.dart';
 import '../../../../injection_container.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
+import '../../../search/presentation/bloc/local_search_bloc.dart';
 import '../../../shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
 import '../../data/models/product_models_response.dart';
