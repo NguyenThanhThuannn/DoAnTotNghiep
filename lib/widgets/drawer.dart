@@ -617,8 +617,8 @@ class CustomSearch extends SearchDelegate {
     return [
       IconButton(
         onPressed: () {
-/*           BlocProvider.of<LocalSearchBloc>(context)
-              .add(SaveItemSearch(SearchEntity())); */
+          BlocProvider.of<LocalSearchBloc>(context)
+              .add(SaveItemSearch(SearchEntity(title: query)));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.black,
             content: Text('$query saved successfully.'),

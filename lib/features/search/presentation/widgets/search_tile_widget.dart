@@ -15,6 +15,7 @@ class ItemSearchWidget extends StatelessWidget {
       onLongPress: () {
         showDialog(context: context, builder: (final context) => AlertDialog.adaptive(
           content: Text('Xóa ${search!.title!}?'),
+          title: Text('Xóa ${search!.title!}?'),
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -23,6 +24,7 @@ class ItemSearchWidget extends StatelessWidget {
                   if(onRemove!=null){
                     onRemove!(search!);
                   }
+                  Navigator.of(context).pop();
                 }, child: const Text('OK'),),
                 const SizedBox(width: 10,),
                 TextButton(onPressed: () {
