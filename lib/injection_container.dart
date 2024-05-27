@@ -1,6 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 
+import 'features/blogpage/data/data_source/remote/newapiS.dart';
+import 'features/blogpage/data/repository/article_repository_impl.dart';
+import 'features/blogpage/domain/repository/article_repository.dart';
+import 'features/blogpage/domain/usecases/get_article.dart';
+import 'features/blogpage/presentation/bloc/blog_page_bloc.dart';
 import 'features/faqpage/data/repository/faq_repository_impl.dart';
 import 'features/faqpage/domain/repository/faq_repository.dart';
 import 'features/faqpage/domain/usecases/get_faq.dart';
@@ -56,6 +61,7 @@ Future<void> initializeDependencies() async{
 
   //Dio
   sl.registerSingleton<Dio>(Dio());
+  sl.registerSingleton<NewApiS>(NewApiS(sl()));
 
   //Dependencies
   sl.registerSingleton<ApiProvider>(ApiProvider());
@@ -67,6 +73,7 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<FAQRepository>(FAQRepositoryImpl(sl()));
   sl.registerSingleton<ThemeRepository>(ThemeRepositoryImpl());
   sl.registerSingleton<SearchRepository>(SearchRepositoryImpl(sl(), sl()));
+  sl.registerSingleton<ArticleRepository>(ArticleRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -92,6 +99,8 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<RemoveItemSearchUseCase>(RemoveItemSearchUseCase(sl()));
   sl.registerSingleton<SaveItemSearchUseCase>(SaveItemSearchUseCase(sl()));
 
+  sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
+
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -114,4 +123,6 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => CountdownBloc());
 
   sl.registerFactory(() => LocalSearchBloc(sl(), sl(), sl()));
+
+  sl.registerFactory(() => BlogPageBloc(sl()));
 }
