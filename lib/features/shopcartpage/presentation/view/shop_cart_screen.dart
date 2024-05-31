@@ -1,10 +1,5 @@
-import 'dart:ffi';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:heroicons/heroicons.dart';
 
 import '../../../../config/textStyle.dart';
 import '../../../../widgets/appbar.dart';
@@ -18,9 +13,10 @@ import '../widgets/bundleItem_widget.dart';
 import '../widgets/colorDropDown_widget.dart';
 import '../widgets/infoProduct.dart';
 import '../widgets/relateProduct.dart';
+import '../widgets/reviewUsernameUI_widget.dart';
 
 class ShopCartScreen extends StatefulWidget {
-  ShopCartScreen({super.key,required this.sCart});
+  ShopCartScreen({super.key, required this.sCart});
   ProductEntity sCart;
   @override
   State<ShopCartScreen> createState() => _ShopCartScreenState();
@@ -293,6 +289,8 @@ class _ShopCartTabState extends State<ShopCartTab> {
     'REVIEWS',
   ];
   int selectedIndex = 0;
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
   @override
   Widget build(final BuildContext context) {
     return Column(
@@ -308,6 +306,17 @@ class _ShopCartTabState extends State<ShopCartTab> {
                 onTap: () {
                   setState(() {
                     selectedIndex = index;
+                    if (index == 0) {
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                      );
+                    } else if (index == 3) {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                      );
+                    }
                   });
                 },
                 child: Padding(
@@ -321,136 +330,155 @@ class _ShopCartTabState extends State<ShopCartTab> {
             },
           ),
         ),
-        Stack(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height / 1.5 - 50,
-              width: MediaQuery.of(context).size.width,
-              color: Colors.grey[300],
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 200),
-              padding: const EdgeInsets.all(6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.width,
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (final value) {
+              setState(() {
+                _currentPage = value;
+              });
+            },
+            children: [
+              Stack(
                 children: [
-                  Row(
-                    children: [
-                      Image.asset('assets/icon/youtube.png'),
-                      Text(
-                        'Tutorials available on Youtube',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    'Leave your phone alone',
-                    style: textStyleInterSemiBold14,
-                  ),
-                  Text(
-                    'This true 360° speaker was engineered to spread deep, jaw-dropping sound in every direction. That means, when everyone stands around it, everyone gets the same experience.',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                    ),
+                  Container(
+                    height: MediaQuery.of(context).size.height / 1.5 - 50,
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.grey[300],
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    margin: const EdgeInsets.only(top: 100),
+                    padding: const EdgeInsets.all(6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Image.asset('assets/icon/leaf.png'),
+                            Image.asset('assets/icon/youtube.png'),
                             Text(
-                              'DESIGN & DEVELOPING',
-                              style: textStyleInterSemiBold14,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width / 2 - 10,
-                              child: Text(
-                                'The best-performing portable speaker from Bose',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                                softWrap: true,
-                                maxLines: 2,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {},
-                              child: Text(
-                                'READ MORE',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).primaryColor,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor:
-                                      Theme.of(context).primaryColor,
-                                ),
+                              'Tutorials available on Youtube',
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
                               ),
                             ),
                           ],
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.asset('assets/icon/ribbon.png'),
-                            Text(
-                              'HIGH-QUALITY',
-                              style: textStyleInterSemiBold14,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width / 2 - 10,
-                              child: Text(
-                                'The best-performing portable speaker from Bose',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                                softWrap: true,
-                                maxLines: 2,
+                        Text(
+                          'Leave your phone alone',
+                          style: textStyleInterSemiBold14,
+                        ),
+                        Text(
+                          'This true 360° speaker was engineered to spread deep, jaw-dropping sound in every direction. That means, when everyone stands around it, everyone gets the same experience.',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Image.asset('assets/icon/leaf.png'),
+                                  Text(
+                                    'DESIGN & DEVELOPING',
+                                    style: textStyleInterSemiBold14,
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 2 -
+                                            10,
+                                    child: Text(
+                                      'The best-performing portable speaker from Bose',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey,
+                                      ),
+                                      softWrap: true,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Text(
+                                      'READ MORE',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context).primaryColor,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor:
+                                            Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: () {},
-                              child: Text(
-                                'READ MORE',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).primaryColor,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor:
-                                      Theme.of(context).primaryColor,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Image.asset('assets/icon/ribbon.png'),
+                                  Text(
+                                    'HIGH-QUALITY',
+                                    style: textStyleInterSemiBold14,
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 2 -
+                                            10,
+                                    child: Text(
+                                      'The best-performing portable speaker from Bose',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey,
+                                      ),
+                                      softWrap: true,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Text(
+                                      'READ MORE',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context).primaryColor,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor:
+                                            Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+              const ReviewPageView(),
+            ],
+          ),
         ),
         Stack(
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width-20,
+              height: MediaQuery.of(context).size.width - 20,
               color: Colors.black,
             ),
             Container(
@@ -507,7 +535,7 @@ class _ShopCartTabState extends State<ShopCartTab> {
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 20),
-                    height: MediaQuery.of(context).size.width/3,
+                    height: MediaQuery.of(context).size.width / 3,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -572,6 +600,40 @@ class _ShopCartTabState extends State<ShopCartTab> {
           ],
         ),
       ],
+    );
+  }
+}
+
+class ReviewPageView extends StatelessWidget {
+  const ReviewPageView({
+    super.key,
+  });
+
+  @override
+  Widget build(final BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.04),
+      ),
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Reviews'),
+              GestureDetector(
+                //onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ,)),
+                child: const Icon(Icons.navigate_next_outlined),
+              ),
+            ],
+          ),
+          ReviewUsernameUI(star: 5,),
+          const SizedBox(height: 15,),
+          ReviewUsernameUI(star: 1,),
+        ],
+      ),
     );
   }
 }

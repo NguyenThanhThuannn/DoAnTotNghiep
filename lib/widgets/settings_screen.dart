@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../config/textStyle.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';
+import '../features/loginregisterpage/presentation/view/login_screen.dart';
 import '../features/policypage/presentation/view/policy_screen.dart';
 import '../features/termpage/presentation/view/term_screen.dart';
 import '../features/themechange/bloc/theme_bloc.dart';
@@ -51,6 +52,14 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ),
               Positioned(
+                top: 30,
+                left: 15,
+                child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.navigate_before_outlined),),),
+              Positioned(
                 top: 50,
                 left: 140,
                 child: CircleAvatar(
@@ -69,18 +78,27 @@ class _SettingScreenState extends State<SettingScreen> {
                 top: 140,
                 left: 230,
                 child: Container(
-                    width: size.width / 7,
-                    height: size.width / 7,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white,width: 4),
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
-                    ),
-                    child: IconButton(onPressed: () {
-                      showAdaptiveDialog(context: context, builder: (final context) {
-                        return const AlertDialog.adaptive(title: Text('TEST'),content: Text('CONTENT'),);
-                      },);
-                    }, icon: const Icon(Icons.edit),),
+                  width: size.width / 7,
+                  height: size.width / 7,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 4),
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.all(Radius.circular(50)),
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      showAdaptiveDialog(
+                        context: context,
+                        builder: (final context) {
+                          return const AlertDialog.adaptive(
+                            title: Text('TEST'),
+                            content: Text('CONTENT'),
+                          );
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.edit),
+                  ),
                 ),
               ),
               Positioned(
@@ -94,61 +112,123 @@ class _SettingScreenState extends State<SettingScreen> {
             ],
           ),
           BlocBuilder<ThemeBloc, ThemeState>(
-                builder: (final context, final state) {
-                  final isLightTheme = state.theme.themeData == darkTheme;
-                  return SwitchListTile.adaptive(
-                    title: Text('DarkMode', style: textStyleAnybodyRegular18,),
-                    value: isLightTheme, onChanged: (final value) {
-                      final newTheme = value
-                          ? ThemeEntity(darkTheme)
-                          : ThemeEntity(lightTheme);
-                      context.read<ThemeBloc>().add(ChangeTheme(newTheme));
-                    },);
+            builder: (final context, final state) {
+              final isLightTheme = state.theme.themeData == darkTheme;
+              return SwitchListTile.adaptive(
+                title: Text(
+                  'DarkMode',
+                  style: textStyleAnybodyRegular18,
+                ),
+                value: isLightTheme,
+                onChanged: (final value) {
+                  final newTheme =
+                      value ? ThemeEntity(darkTheme) : ThemeEntity(lightTheme);
+                  context.read<ThemeBloc>().add(ChangeTheme(newTheme));
                 },
-              ),
+              );
+            },
+          ),
           const Spacer(),
           ListTile(
-            leading: Icon(Icons.question_mark_outlined, color: Theme.of(context).primaryColor,),
-            title: Text('Câu hỏi thường gặp', style: textStyleInterRegular16,),
+            leading: Icon(
+              Icons.question_mark_outlined,
+              color: Theme.of(context).primaryColor,
+            ),
+            title: Text(
+              'Câu hỏi thường gặp',
+              style: textStyleInterRegular16,
+            ),
             trailing: const Icon(Icons.navigate_next_outlined),
             onTap: () {
               setState(() {
-                Navigator.push(context, MaterialPageRoute(builder: (final context) => const FAQScreen(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (final context) => const FAQScreen(),
+                    ),);
               });
             },
           ),
           ListTile(
-            leading: Icon(Icons.policy_outlined, color: Theme.of(context).primaryColor,),
-            title: Text('Chính sách bảo mật', style: textStyleInterRegular16,),
+            leading: Icon(
+              Icons.policy_outlined,
+              color: Theme.of(context).primaryColor,
+            ),
+            title: Text(
+              'Chính sách bảo mật',
+              style: textStyleInterRegular16,
+            ),
             trailing: const Icon(Icons.navigate_next_outlined),
             onTap: () {
               setState(() {
-                Navigator.push(context, MaterialPageRoute(builder: (final context) => const PolicyScreen(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (final context) => const PolicyScreen(),
+                    ),);
               });
             },
           ),
           ListTile(
-            leading: Icon(Icons.confirmation_number_rounded, color: Theme.of(context).primaryColor,),
-            title: Text('Điều khoản và điều kiện', style: textStyleInterRegular16,),
+            leading: Icon(
+              Icons.confirmation_number_rounded,
+              color: Theme.of(context).primaryColor,
+            ),
+            title: Text(
+              'Điều khoản và điều kiện',
+              style: textStyleInterRegular16,
+            ),
             trailing: const Icon(Icons.navigate_next_outlined),
             onTap: () {
               setState(() {
-                Navigator.push(context, MaterialPageRoute(builder: (final context) => const TermScreen(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (final context) => const TermScreen(),
+                    ),);
               });
             },
           ),
           Container(
             margin: const EdgeInsets.all(10),
             width: size.width,
-            height: size.width/7,
+            height: size.width / 7,
             child: ElevatedButton(
               style: ButtonStyle(
                 foregroundColor: const MaterialStatePropertyAll(Colors.white),
-                backgroundColor: MaterialStatePropertyAll(Theme.of(context).primaryColor),
-                shape: const MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),),
-              onPressed: () {
-              
-            }, child: Text('Đăng Xuất',style: textStyleInterSemiBold16,),),
+                backgroundColor:
+                    MaterialStatePropertyAll(Theme.of(context).primaryColor),
+                shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),),),
+              ),
+              onPressed: () async{
+                showDialog(
+                  context: context,
+                  builder: (final context) {
+                    return AlertDialog.adaptive(
+                      title: const Text('Bạn muốn đăng xuất?'),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (final context) =>
+                                      const LoginScreen(),
+                                ),),
+                            child: const Text('OK'),),
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Text(
+                'Đăng Xuất',
+                style: textStyleInterSemiBold16,
+              ),
+            ),
           ),
         ],
       ),

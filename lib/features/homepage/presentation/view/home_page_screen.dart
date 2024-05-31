@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -40,48 +42,26 @@ class _HomePageScreenState extends State<HomePageScreen> {
   int _currentPage = 0;
   @override
   Widget build(final BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<HomePageBloc>(
-          create: (final context) => sl()..add(GetBestSellings()),
-        ),
-        BlocProvider<HomePageDailydealsBloc>(
-          create: (final context) => sl()..add(GetDailyDeals()),
-        ),
-        BlocProvider<HomePageRecentbrowsingBloc>(
-          create: (final context) => sl()..add(GetRecentBrowsing()),
-        ),
-        BlocProvider<HomePageDailydealsweekBloc>(
-          create: (final context) => sl()..add(GetDailyDealsWeek()),
-        ),
-        BlocProvider<HomePageDailydealsweek2Bloc>(
-          create: (final context) => sl()..add(GetDailyDealsWeek2()),
-        ),
-        BlocProvider<HomePageHotnewarrivalBloc>(
-          create: (final context) => sl()..add(GetHotNewArrivals()),
-        ),
-        BlocProvider<HomePageTodaysdealsBloc>(
-          create: (final context) => sl()..add(GetTodaysDeals()),
-        ),
-      ],
-      child: BlocBuilder<HomePageBloc, HomePageState>(
-        builder: (final context, final state) {
-          if (state is HomePageLoading) {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          if (state is HomePageError) {
-            return const Scaffold(
-              body: Center(
-                child: Icon(Icons.replay_outlined),
-              ),
-            );
-          }
-          if (state is HomePageLoaded) {
-            return Scaffold(
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      builder: (final context, final state) {
+        if (state is HomePageLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (state is HomePageError) {
+          return const Scaffold(
+            body: Center(
+              child: Icon(Icons.replay_outlined),
+            ),
+          );
+        }
+        if (state is HomePageLoaded) {
+          return PopScope(
+            canPop: false,
+            child: Scaffold(
               appBar: const AppBarCustom(),
               drawer: const DrawerCustom(),
               body: GestureDetector(
@@ -220,11 +200,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   ),
                 ),
               ),
-            );
-          }
-          return const SizedBox();
-        },
-      ),
+            ),
+          );
+        }
+        return const SizedBox();
+      },
     );
   }
 }
@@ -234,13 +214,13 @@ Container _buildPageOne(final BuildContext context) {
     width: MediaQuery.of(context).size.width,
     height: 370,
     alignment: Alignment.center,
-    decoration: const BoxDecoration(
+    decoration: BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          Color.fromRGBO(217, 217, 217, 1),
-          Color.fromRGBO(155, 167, 171, 1),
+          const Color.fromRGBO(217, 217, 217, 1),
+          Color.fromRGBO(Random().nextInt(255), 167, 171, 1),
         ],
       ),
     ),

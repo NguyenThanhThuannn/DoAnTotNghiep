@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
 import '../../data/models/category_response_model.dart';
 import 'categoryGridItem_widget.dart';
 import 'categoryListItem_widget.dart';
+import 'shimmer_widget.dart';
 
 class CategoryProItem extends StatefulWidget {
   CategoryProItem({super.key, required this.cate});
@@ -23,6 +27,7 @@ class _CategoryProItemState extends State<CategoryProItem> {
   void initState() {
     Cate.isEmpty ? Cate.addAll(widget.cate) : Cate;
     super.initState();
+    log(widget.cate.toString());
   }
 
   /* void _sortProducts(final bool isAscending, final bool isDescening) {
@@ -114,7 +119,7 @@ class _CategoryProItemState extends State<CategoryProItem> {
             : b.price.compareTo(a.price),
       );
     } else {
-      widget.cate=Cate;
+      widget.cate = Cate;
     }
   }
 
@@ -168,12 +173,13 @@ class _CategoryProItemState extends State<CategoryProItem> {
                                   Text(
                                     'Sắp xếp từ A-Z',
                                     style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: _selectedSortOption ==
-                                                'Sắp xếp từ A-Z'
-                                            ? Theme.of(context).primaryColor
-                                            : null,),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: _selectedSortOption ==
+                                              'Sắp xếp từ A-Z'
+                                          ? Theme.of(context).primaryColor
+                                          : null,
+                                    ),
                                   ),
                                   const Spacer(),
                                   if (_selectedSortOption == 'Sắp xếp từ A-Z')
@@ -193,12 +199,13 @@ class _CategoryProItemState extends State<CategoryProItem> {
                                   Text(
                                     'Giá từ thấp đến cao',
                                     style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: _selectedSortOption ==
-                                                'Giá từ thấp đến cao'
-                                            ? Theme.of(context).primaryColor
-                                            : null,),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: _selectedSortOption ==
+                                              'Giá từ thấp đến cao'
+                                          ? Theme.of(context).primaryColor
+                                          : null,
+                                    ),
                                   ),
                                   const Spacer(),
                                   if (_selectedSortOption ==
@@ -277,7 +284,9 @@ class _CategoryProItemState extends State<CategoryProItem> {
               )
             else
               const SizedBox(),
-            if (isClicked)
+            if (widget.cate.isEmpty)
+              const Shimmer()
+            else if (isClicked)
               Container(
                 margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 width: MediaQuery.of(context).size.width,

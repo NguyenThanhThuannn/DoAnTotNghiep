@@ -3,6 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/blogpage/presentation/bloc/blog_page_bloc.dart';
 import 'features/blogpage/presentation/view/blog_screen.dart';
+import 'features/homepage/presentation/bloc/home_page_bloc.dart';
+import 'features/homepage/presentation/bloc/home_page_dailydeals_bloc.dart';
+import 'features/homepage/presentation/bloc/home_page_dailydealsweek2_bloc.dart';
+import 'features/homepage/presentation/bloc/home_page_dailydealsweek_bloc.dart';
+import 'features/homepage/presentation/bloc/home_page_hotnewarrival_bloc.dart';
+import 'features/homepage/presentation/bloc/home_page_recentbrowsing_bloc.dart';
+import 'features/homepage/presentation/bloc/home_page_todaysdeals_bloc.dart';
 import 'features/search/presentation/bloc/local_search_bloc.dart';
 import 'features/themechange/bloc/theme_bloc.dart';
 import 'features/themechange/data/theme.dart';
@@ -32,6 +39,27 @@ class MyApp extends StatelessWidget {
         BlocProvider<ThemeBloc>(
           create: (final context) => sl(),
         ),
+        BlocProvider<HomePageBloc>(
+          create: (final context) => sl()..add(GetBestSellings()),
+        ),
+        BlocProvider<HomePageDailydealsBloc>(
+          create: (final context) => sl()..add(GetDailyDeals()),
+        ),
+        BlocProvider<HomePageRecentbrowsingBloc>(
+          create: (final context) => sl()..add(GetRecentBrowsing()),
+        ),
+        BlocProvider<HomePageDailydealsweekBloc>(
+          create: (final context) => sl()..add(GetDailyDealsWeek()),
+        ),
+        BlocProvider<HomePageDailydealsweek2Bloc>(
+          create: (final context) => sl()..add(GetDailyDealsWeek2()),
+        ),
+        BlocProvider<HomePageHotnewarrivalBloc>(
+          create: (final context) => sl()..add(GetHotNewArrivals()),
+        ),
+        BlocProvider<HomePageTodaysdealsBloc>(
+          create: (final context) => sl()..add(GetTodaysDeals()),
+        ),
         BlocProvider<LocalSearchBloc>(
           create: (final context) => sl()..add(const GetSavedSearches()),
         ),
@@ -45,7 +73,7 @@ class MyApp extends StatelessWidget {
             title: 'DoAnTotNghiep',
             theme: state.theme.themeData,
             darkTheme: darkTheme,
-            home: const BlogScreen(),
+            home: const OnboardingScreen(),
           );
         },
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
@@ -26,10 +27,10 @@ class _FooterCustomState extends State<FooterCustom> {
   Widget build(final BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height/2,
+      height: MediaQuery.of(context).size.height / 2,
       child: Column(
         children: [
-          SizedBox(
+          /* SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height / 4,
             child: ListView.separated(
@@ -63,10 +64,173 @@ class _FooterCustomState extends State<FooterCustom> {
                 return footerItem(f: footer[index]);
               },
             ), */
+          ), */
+          Column(
+            children: [
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  FaIcon(
+                    FontAwesomeIcons.truckFast,
+                    size: 50,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Free Delivery',
+                        style: textStyleInterSemiBold14,
+                      ),
+                      Text(
+                        r'From $50 and up ',
+                        style: textStyleInterRegular14,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  FaIcon(
+                    FontAwesomeIcons.headset,
+                    size: 50,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Support Customer',
+                        style: textStyleInterSemiBold14,
+                      ),
+                      Text(
+                        'Always 24/7',
+                        style: textStyleInterRegular14,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Divider(),
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  FaIcon(
+                    FontAwesomeIcons.shield,
+                    size: 50,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Secure Payments',
+                        style: textStyleInterSemiBold14,
+                      ),
+                      Text(
+                        'Safe shopping',
+                        style: textStyleInterRegular14,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  FaIcon(
+                    FontAwesomeIcons.idBadge,
+                    size: 50,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Discount',
+                        style: textStyleInterSemiBold14,
+                      ),
+                      Text(
+                        'From 10%',
+                        style: textStyleInterRegular14,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Divider(),
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 25,
+                  ),
+                  FaIcon(
+                    FontAwesomeIcons.dollarSign,
+                    size: 50,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Cashback',
+                        style: textStyleInterSemiBold14,
+                      ),
+                      Text(
+                        'Buy online',
+                        style: textStyleInterRegular14,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 50,
+                  ),
+                  FaIcon(
+                    FontAwesomeIcons.gift,
+                    size: 50,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bonus',
+                        style: textStyleInterSemiBold14,
+                      ),
+                      Text(
+                        'Daily deals',
+                        style: textStyleInterRegular14,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 50,),
+            ],
           ),
           Expanded(
             child: Container(
-              height: MediaQuery.of(context).size.height/2,
+              height: MediaQuery.of(context).size.height / 2,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -96,9 +260,11 @@ class _FooterCustomState extends State<FooterCustom> {
                     padding: const EdgeInsets.all(8.0),
                     child: const TextField(
                       decoration: InputDecoration(
-                        border: UnderlineInputBorder(borderSide: BorderSide.none),
+                        border:
+                            UnderlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,),
+                          borderSide: BorderSide.none,
+                        ),
                         hintText: 'Enter your email address',
                         filled: true,
                         fillColor: Colors.white,
@@ -107,47 +273,6 @@ class _FooterCustomState extends State<FooterCustom> {
                   ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class footerItem extends StatelessWidget {
-  footerItem({super.key, required this.f});
-  FooterItemModel f;
-  @override
-  Widget build(final BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.width / 9,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-         Icon(
-            Icons.call_end_sharp,
-            size: 40,
-            color: Theme.of(context).primaryColor,
-          ),
-          const SizedBox(
-            width: 5,
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.width / 8,
-            width: MediaQuery.of(context).size.width / 2 - 50,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  f.title,
-                  style: textStyleInterSemiBold16,
-                ),
-                Text(
-                  f.subtitle,
-                  style: textStyleInterRegular14,
-                ),
-              ],
             ),
           ),
         ],
