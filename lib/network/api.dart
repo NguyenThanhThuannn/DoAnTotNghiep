@@ -65,7 +65,7 @@ class Api {
   
   Future<CategoryResponseModel?> getCategory() async{
     try{
-      final res = await http.getRequest(EndPoints.Category);
+      final res = await http.getRequest(EndPoints.category);
       final result = CategoryResponseModel.fromJson(res!);
       handleExceptionCase(result.code);
       return result;
