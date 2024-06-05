@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/blogpage/presentation/bloc/blog_page_bloc.dart';
 import 'features/blogpage/presentation/view/blog_screen.dart';
+import 'features/checkoutpage/presentation/view/checkout_screen.dart';
 import 'features/homepage/presentation/bloc/home_page_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_dailydeals_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_dailydealsweek2_bloc.dart';
@@ -11,6 +12,7 @@ import 'features/homepage/presentation/bloc/home_page_hotnewarrival_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_recentbrowsing_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_todaysdeals_bloc.dart';
 import 'features/search/presentation/bloc/local_search_bloc.dart';
+import 'features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'features/themechange/bloc/theme_bloc.dart';
 import 'features/themechange/data/theme.dart';
 import 'injection_container.dart';
@@ -71,6 +73,7 @@ class MyApp extends StatelessWidget {
         builder: (final context, final state) {
           return MaterialApp(
             title: 'DoAnTotNghiep',
+            debugShowCheckedModeBanner: false,
             theme: state.theme.themeData,
             darkTheme: darkTheme,
             home: const OnboardingScreen(),

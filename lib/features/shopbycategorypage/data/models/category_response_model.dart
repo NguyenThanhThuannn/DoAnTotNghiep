@@ -4,6 +4,7 @@ import '../../../homepage/domain/entities/product.dart';
 import '../../domain/entities/category.dart';
 
 part 'category_response_model.g.dart';
+
 @JsonSerializable()
 class CategoryResponseModel {
   CategoryResponseModel({

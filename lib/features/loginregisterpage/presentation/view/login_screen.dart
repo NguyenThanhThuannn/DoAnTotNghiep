@@ -119,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         setState(() {
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -126,6 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   const HomePageScreen(),
                             ),
                           );
+                          
                         });
                       },
                       child: Text(
@@ -196,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       MaterialPageRoute(
                                         builder: (final context) =>
                                             const RegisterScreen(),
-                                      ));
+                                      ),);
                                 });
                               },
                               child: Text(

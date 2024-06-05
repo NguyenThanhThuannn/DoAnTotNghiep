@@ -59,145 +59,142 @@ class _HomePageScreenState extends State<HomePageScreen> {
           );
         }
         if (state is HomePageLoaded) {
-          return PopScope(
-            canPop: false,
-            child: Scaffold(
-              appBar: const AppBarCustom(),
-              drawer: const DrawerCustom(),
-              body: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: 370,
-                        child: Stack(
-                          children: [
-                            PageView(
-                              controller: _pageController,
-                              onPageChanged: (final value) {
+          return Scaffold(
+            appBar: const AppBarCustom(),
+            drawer: const DrawerCustom(),
+            body: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 370,
+                      child: Stack(
+                        children: [
+                          PageView(
+                            controller: _pageController,
+                            onPageChanged: (final value) {
+                              setState(() {
+                                _currentPage = value;
+                              });
+                            },
+                            children: [
+                              _buildPageOne(context),
+                              _buildPageOne(context),
+                              _buildPageOne(context),
+                            ],
+                          ),
+                          Positioned(
+                            bottom: 10,
+                            left: 0,
+                            right: 0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(3, (final index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(25),
+                                      color: _currentPage == index
+                                          ? Colors.white
+                                          : null,
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            child: ListTile(
+                              trailing: const Icon(
+                                Icons.keyboard_arrow_right_outlined,
+                                color: Colors.white,
+                              ),
+                              onTap: () {
                                 setState(() {
-                                  _currentPage = value;
+                                  Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
                                 });
                               },
-                              children: [
-                                _buildPageOne(context),
-                                _buildPageOne(context),
-                                _buildPageOne(context),
-                              ],
-                            ),
-                            Positioned(
-                              bottom: 10,
-                              left: 0,
-                              right: 0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(3, (final index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Container(
-                                      width: 12,
-                                      height: 12,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.white),
-                                        borderRadius: BorderRadius.circular(25),
-                                        color: _currentPage == index
-                                            ? Colors.white
-                                            : null,
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              child: ListTile(
-                                trailing: const Icon(
-                                  Icons.keyboard_arrow_right_outlined,
+                              title: Text(
+                                'SHOP BY CATEGORY',
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                   color: Colors.white,
                                 ),
-                                onTap: () {
-                                  setState(() {
-                                    Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
-                                  });
-                                },
-                                title: Text(
-                                  'SHOP BY CATEGORY',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                  ),
-                                ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            _buildContainerLiner(
-                              context,
-                              'GEAR ',
-                              'CONTROLLER',
-                              'Step into Rift',
-                              const Color.fromRGBO(58, 37, 188, 1),
-                              const Color.fromRGBO(128, 117, 194, 1),
-                              'assets/img/gear.png',
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            _buildContainerLiner(
-                              context,
-                              'OSMO ',
-                              'MOBILE',
-                              'Beyond Smart',
-                              const Color.fromRGBO(60, 187, 49, 1),
-                              const Color.fromRGBO(137, 233, 129, 1),
-                              'assets/img/osmo.png',
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          _buildContainerLiner(
+                            context,
+                            'GEAR ',
+                            'CONTROLLER',
+                            'Step into Rift',
+                            const Color.fromRGBO(58, 37, 188, 1),
+                            const Color.fromRGBO(128, 117, 194, 1),
+                            'assets/img/gear.png',
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          _buildContainerLiner(
+                            context,
+                            'OSMO ',
+                            'MOBILE',
+                            'Beyond Smart',
+                            const Color.fromRGBO(60, 187, 49, 1),
+                            const Color.fromRGBO(137, 233, 129, 1),
+                            'assets/img/osmo.png',
+                          ),
+                        ],
                       ),
-                      _buildBestSelling(context, state.bestSelling),
-                      const DailyDeal(),
-                      BlocBuilder<HomePageRecentbrowsingBloc,
-                          HomePageRecentbrowsingState>(
-                        builder: (final context, final state) {
-                          if (state is HomePageRecentbrowsingLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          if (state is HomePageRecentbrowsingError) {
-                            return const Center(child: Icon(Icons.replay));
-                          }
-                          if (state is HomePageRecentbrowsingLoaded) {
-                            return _buildRecentBrowsing(
-                              context,
-                              state.recentBrowsing!,
-                            );
-                          }
-                          return const SizedBox();
-                        },
-                      ),
-                      const HotNewArrival(),
-                      const TodayDeal(),
-                      const FooterCustom(),
-                    ],
-                  ),
+                    ),
+                    _buildBestSelling(context, state.bestSelling),
+                    const DailyDeal(),
+                    BlocBuilder<HomePageRecentbrowsingBloc,
+                        HomePageRecentbrowsingState>(
+                      builder: (final context, final state) {
+                        if (state is HomePageRecentbrowsingLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (state is HomePageRecentbrowsingError) {
+                          return const Center(child: Icon(Icons.replay));
+                        }
+                        if (state is HomePageRecentbrowsingLoaded) {
+                          return _buildRecentBrowsing(
+                            context,
+                            state.recentBrowsing!,
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                    const HotNewArrival(),
+                    const TodayDeal(),
+                    const FooterCustom(),
+                  ],
                 ),
               ),
             ),
