@@ -21,12 +21,6 @@ import 'features/homepage/domain/usecases/get_recentbrowsing.dart';
 import 'features/homepage/domain/usecases/get_todaysdeals.dart';
 import 'features/homepage/presentation/bloc/countdown_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_dailydeals_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_dailydealsweek2_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_dailydealsweek_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_hotnewarrival_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_recentbrowsing_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_todaysdeals_bloc.dart';
 import 'features/policypage/data/repository/policy_repository_impl.dart';
 import 'features/policypage/domain/repository/policy_repository.dart';
 import 'features/policypage/domain/usecases/get_policy.dart';
@@ -67,7 +61,7 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<ApiProvider>(ApiProvider());
   sl.registerSingleton<Api>(Api());
   sl.registerSingleton<ProductRepository>(ProductRepositoryImpl(sl()));
-  sl.registerSingleton<CategoryRepository>(CategoryRepositoryImpl(sl()));
+  //sl.registerSingleton<CategoryRepository>(CategoryRepositoryImpl(sl()));
   sl.registerSingleton<PolicyRepository>(PolicyRepositoryImpl(sl()));
   sl.registerSingleton<TermRepository>(TermRepositoryImpl(sl()));
   sl.registerSingleton<FAQRepository>(FAQRepositoryImpl(sl()));
@@ -77,14 +71,14 @@ Future<void> initializeDependencies() async{
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
-  sl.registerSingleton<GetDailyDealsUseCase>(GetDailyDealsUseCase(sl()));
+  /* sl.registerSingleton<GetDailyDealsUseCase>(GetDailyDealsUseCase(sl()));
   sl.registerSingleton<GetRecentBrowsingUseCase>(GetRecentBrowsingUseCase(sl()));
   sl.registerSingleton<GetDailyDealsWeekUseCase>(GetDailyDealsWeekUseCase(sl()));
   sl.registerSingleton<GetDailyDealsWeek2UseCase>(GetDailyDealsWeek2UseCase(sl()));
   sl.registerSingleton<GetHotNewArrivalUseCase>(GetHotNewArrivalUseCase(sl()));
   sl.registerSingleton<GetTodaysDealsUseCase>(GetTodaysDealsUseCase(sl()));
 
-  sl.registerSingleton<GetCategoryUseCase>(GetCategoryUseCase(sl()));
+  sl.registerSingleton<GetCategoryUseCase>(GetCategoryUseCase(sl())); */
 
   sl.registerSingleton<GetPolicyUseCase>(GetPolicyUseCase(sl()));
 
@@ -103,14 +97,14 @@ Future<void> initializeDependencies() async{
 
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
-  sl.registerFactory(() => HomePageDailydealsBloc(sl()));
+ /*  sl.registerFactory(() => HomePageDailydealsBloc(sl()));
   sl.registerFactory(() => HomePageRecentbrowsingBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsweekBloc(sl()));
   sl.registerFactory(() => HomePageDailydealsweek2Bloc(sl()));
   sl.registerFactory(() => HomePageHotnewarrivalBloc(sl()));
-  sl.registerFactory(() => HomePageTodaysdealsBloc(sl()));
+  sl.registerFactory(() => HomePageTodaysdealsBloc(sl())); */
 
-  sl.registerFactory(() => ShopbycategoryPageBloc(sl()));
+  //sl.registerFactory(() => ShopbycategoryPageBloc(sl()));
 
   sl.registerFactory(() => PolicyScreenBloc(sl()));
 

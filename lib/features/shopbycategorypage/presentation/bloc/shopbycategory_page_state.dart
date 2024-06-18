@@ -1,4 +1,4 @@
-part of 'shopbycategory_page_bloc.dart';
+/* part of 'shopbycategory_page_bloc.dart';
 
 sealed class ShopbycategoryPageState extends Equatable {
   const ShopbycategoryPageState({this.category,this.error});
@@ -14,4 +14,4 @@ final class ShopbycategoryPageLoaded extends ShopbycategoryPageState {
 }
 final class ShopbycategoryPageLError extends ShopbycategoryPageState {
   ShopbycategoryPageLError(DioError error):super(error: error);
-}
+} */

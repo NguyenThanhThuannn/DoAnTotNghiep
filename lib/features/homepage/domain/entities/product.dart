@@ -1,70 +1,78 @@
 import 'package:equatable/equatable.dart';
-
 import '../../data/models/product_response_model.dart';
-class SubDescriptionEntity extends Equatable{
-  SubDescriptionEntity({
-    this.item
+
+/* class SubDescriptionEntity extends Equatable {
+  const SubDescriptionEntity({
+    this.item,
   });
   final String? item;
   @override
   List<Object?> get props {
     return [item];
   }
-}
-class ProductEntity extends Equatable{
-  /* const ProductEntity({
-    this.price,
-    this.title,
-    this.price_sale,
-    this.tag,
-    this.SLTon,
-    this.SLDaBan,
-    this.review
-  });
-  final String ? price;
-  final String ? title;
-  final String ? price_sale;
-  final String ? tag;
-  final int ? SLTon;
-  final int ? SLDaBan;
-  final int ? review; */
-  ProductEntity({
-    this.price,
-    this.title,
-    this.price_sale,
-    this.tag,
-    this.SLTon,
-    this.SLDaBan,
-    this.review,
-    this.type,
-    this.status,
-    this.SKU,
-    this.description,
-    this.subDesItem,
-    this.pro,
-    this.relatePro
-  });
-  final String? type;
-  final String? tag;
-  final String? title;
-  final String? price_sale;
-  final String? price;
-  final int ? SLTon;
-  final int ? SLDaBan;
-  final int ? review;
-  final bool? status;
-  final String? description;
-  final List<SubDescriptionModel>? subDesItem;
-  final String? SKU;
-  final List<BundleProModel>? pro;
-  final List<RelateProModel>? relatePro;
+} */
 
+class ProductEntity extends Equatable {
+  ProductEntity({
+    this.id,
+    this.category_id,
+    this.product_id,
+    this.parent_category_id,
+    this.category_name,
+    this.SKU,
+    this.qty_in_stock,
+    this.price,
+    this.name,
+    this.description,
+    this.product_image,
+    this.create_at,
+    this.update_at,
+    this.rating,
+    this.type,
+    this.product_item,
+    this.category,
+  });
+  final int? id;
+  final int? category_id;
+  final int? product_id;
+  final int? parent_category_id;
+  final String? category_name;
+  final int? SKU;
+  final int? qty_in_stock;
+  final String? price;
+  final String? name;
+  final String? description;
+  final String? product_image;
+  final String? create_at;
+  final String? update_at;
+  final int ? rating;
+  final String ? type;
+  ProductItemsModel ? product_item;
+  ProductCategoryModel ? category;
   @override
   List<Object?> get props {
-    return [price,title,price_sale,tag,SLTon,SLDaBan,review];
+    return [
+      id,
+      category_id,
+      name,
+      description,
+      product_image,
+      create_at,
+      update_at,
+      product_id,
+      SKU,
+      qty_in_stock,
+      price,
+      category_name,
+      parent_category_id,
+      rating,
+      type,
+      product_item,
+      category,
+    ];
   }
 }
-class BestSellingEntity extends Equatable{
+/* class BestSellingEntity extends Equatable{
   const BestSellingEntity({
     this.price,
     this.title,
@@ -131,4 +139,4 @@ class TodaysDealsEntity extends Equatable{
   List<Object?> get props{
     return [tab,pro];
   }
-}
+} */

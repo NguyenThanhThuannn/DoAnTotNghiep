@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../../../../core/data_state.dart';
 import '../../../../network/api.dart';
 import '../../domain/entities/product.dart';
@@ -9,16 +11,17 @@ class ProductRepositoryImpl implements ProductRepository{
   final Api _api;
 
   @override
-  Future<DataState<List<ProductEntity>>> getBestSellingUseCase() async{
+  Future<DataState<List<ProductEntity>>> getProducts() async{
    try{
-    final res = await _api.getbestselling();
-    return DataSucces(res!.data.bestselling);
+    final res = await _api.getProduct();
+    log('Du lieu:$res');
+    return DataSucces(res!.data);
    } on DioError catch(e){
     return DataFailed(e);
    }
   }
   
-  @override
+  /* @override
   Future<DataState<List<DailyDealsEntity>>> getDailyDealsUseCase()async {
     try{
       final res = await _api.getdailydeals();
@@ -75,5 +78,5 @@ class ProductRepositoryImpl implements ProductRepository{
     }on DioError catch(e){
       return DataFailed(e);
     }
-  }
+  } */
 }

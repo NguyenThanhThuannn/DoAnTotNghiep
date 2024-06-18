@@ -1,16 +1,16 @@
 import 'dart:developer';
-
+import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../../../../config/format_number.dart';
 import '../../../../config/textStyle.dart';
-import '../../data/models/product_models_response.dart';
 import '../../domain/entities/product.dart';
-import '../bloc/home_page_hotnewarrival_bloc.dart';
+import '../bloc/home_page_bloc.dart';
 import 'dailyDealItemTab_widget.dart';
 
 class HotNewArrival extends StatefulWidget {
@@ -25,30 +25,50 @@ class _HotNewArrivalState extends State<HotNewArrival> {
   bool isItemSelected = true;
   late int itemClicked = -1;
   List<String> tab = [];
-  List<HotNewArrivalEntity> filterPro = [];
-  List<ProductEntity> pro = [];
+  final List<ProductEntity> proHot = [];
+  int getRandomProductId(final List<ProductEntity> products) {
+    final random = Random();
+    final int randomIndex = random.nextInt(products.length);
+    return products[randomIndex].id!;
+  }
 
   @override
   Widget build(final BuildContext context) {
-    return BlocBuilder<HomePageHotnewarrivalBloc, HomePageHotnewarrivalState>(
+    return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (final context, final state) {
-        if (state is HomePageHotnewarrivalLoading) {
+        if (state is HomePageLoading) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
-        if (state is HomePageHotnewarrivalError) {
+        if (state is HomePageError) {
           return Center(
             child: Text(state.error.toString()),
           );
         }
-        if (state is HomePageHotnewarrivalLoaded) {
-          if (tab.isEmpty) {
+        if (state is HomePageLoaded) {
+          List<ProductEntity> filterPro = [];
+          filterPro = state.bestSelling!
+              .where((final element) => element.type!.contains('New'))
+              .toList();
+          if (proHot.isEmpty) {
+            for (var i = 0; i < 4; i++) {
+              final int randomProductId = getRandomProductId(filterPro);
+              proHot.addAll(
+                filterPro
+                    .where(
+                      (final element) => element.id == randomProductId,
+                    )
+                    .toList(),
+              );
+            }
+          }
+          /* if (tab.isEmpty) {
             for (final i in state.hotnewarrival!) {
               tab.add(i.tab!);
             }
-          }
-          if (filterPro.isEmpty) {
+          } */
+          /* if (filterPro.isEmpty) {
             filterPro = state.hotnewarrival!
                 .where((final element) => element.tab! == tab[0])
                 .toList();
@@ -56,7 +76,7 @@ class _HotNewArrivalState extends State<HotNewArrival> {
             for (final i in filterPro) {
               pro.addAll(i.pro!);
             }
-          }
+          } */
           return Column(
             children: [
               Padding(
@@ -74,7 +94,7 @@ class _HotNewArrivalState extends State<HotNewArrival> {
                   ),
                 ),
               ),
-              SizedBox(
+              /* SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: 50,
                 child: ListView.builder(
@@ -109,7 +129,7 @@ class _HotNewArrivalState extends State<HotNewArrival> {
                     );
                   },
                 ),
-              ),
+              ), */
               const Divider(
                 thickness: 1,
               ),
@@ -123,7 +143,7 @@ class _HotNewArrivalState extends State<HotNewArrival> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 50,
                   ),
-                  itemCount: pro.length,
+                  itemCount: proHot.length,
                   itemBuilder: (final context, final index) {
                     return /* index%2==0
                 ? Container(
@@ -153,12 +173,12 @@ class _HotNewArrivalState extends State<HotNewArrival> {
                                 ),
                               ),
                               child: hotNewArrivalItem(
-                                pro: pro[index],
+                                pro: proHot[index],
                                 isClicked: itemClicked == index,
                               ),
                             )
                           : hotNewArrivalItem(
-                              pro: pro[index],
+                              pro: proHot[index],
                               isClicked: itemClicked == index,
                             ),
                     );
@@ -183,14 +203,18 @@ class hotNewArrivalItem extends StatefulWidget {
   State<hotNewArrivalItem> createState() => _hotNewArrivalItemState();
 }
 
-class _hotNewArrivalItemState extends State<hotNewArrivalItem> with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+class _hotNewArrivalItemState extends State<hotNewArrivalItem>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
   bool isFav = false;
   @override
   Widget build(final BuildContext context) {
     return widget.isClicked
         ? Container(
-            padding: const EdgeInsets.fromLTRB(10,10,10,0),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             decoration: BoxDecoration(
               border: Border.all(color: Theme.of(context).primaryColor),
               borderRadius: BorderRadius.circular(8),
@@ -200,10 +224,41 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> with SingleTicker
                 Center(
                   child: Column(
                     children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 2.5 - 20,
-                        height: MediaQuery.of(context).size.width / 4,
-                        color: Colors.amber,
+                      CachedNetworkImage(
+                        imageUrl: widget.pro.product_image!,
+                        imageBuilder: (final context, final imageProvider) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width / 5,
+                            height: MediaQuery.of(context).size.width / 5,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.04),
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          );
+                        },
+                        progressIndicatorBuilder:
+                            (final context, final url, final progress) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(20.0),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 3,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.08),
+                              ),
+                              child: const CupertinoActivityIndicator(),
+                            ),
+                          );
+                        },
+                        errorWidget: (final context, final url, final error) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width / 3,
+                            height: MediaQuery.of(context).size.width / 2,
+                            color: Colors.black.withOpacity(0.04),
+                          );
+                        },
                       ),
                       Expanded(
                         child: TextButton(
@@ -222,7 +277,7 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> with SingleTicker
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 2.5,
                           child: Text(
-                            widget.pro.title!,
+                            widget.pro.name!,
                             softWrap: true,
                             maxLines: 2,
                             textAlign: TextAlign.center,
@@ -265,7 +320,7 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> with SingleTicker
                     icon: const Icon(Icons.compare_arrows_outlined),
                   ),
                 ),
-                _buildSwitchCaseTag(context, widget.pro.tag, 15),
+                //_buildSwitchCaseTag(context, widget.pro.tag, 15),
               ],
             ),
           )
@@ -273,16 +328,46 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> with SingleTicker
             children: [
               Stack(
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2.5 - 20,
-                    height: 85,
-                    color: Colors.amber,
+                  CachedNetworkImage(
+                    imageUrl: widget.pro.product_image!,
+                    imageBuilder: (final context, final imageProvider) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width / 3,
+                        height: MediaQuery.of(context).size.width / 3,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.04),
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      );
+                    },
+                    progressIndicatorBuilder:
+                        (final context, final url, final progress) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(20.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width / 3,
+                          decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.08),),
+                          child: const CupertinoActivityIndicator(),
+                        ),
+                      );
+                    },
+                    errorWidget: (final context, final url, final error) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width / 3,
+                        height: MediaQuery.of(context).size.width / 2,
+                        color: Colors.black.withOpacity(0.04),
+                      );
+                    },
                   ),
-                  _buildSwitchCaseTag(context, widget.pro.tag, 0),
+                  //_buildSwitchCaseTag(context, widget.pro.tag, 0),
                 ],
               ),
               Text(
-                widget.pro.price!,
+                CurrencyFormatter().formatNumber(widget.pro.product_item!.price!),
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -292,7 +377,7 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem> with SingleTicker
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2.5,
                 child: Text(
-                  widget.pro.title!,
+                  widget.pro.name!,
                   softWrap: true,
                   maxLines: 2,
                   textAlign: TextAlign.center,

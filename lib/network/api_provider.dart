@@ -45,7 +45,7 @@ class ApiProvider {
       cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
     );
-
+    //return response.data;
     return jsonDecode(response.data);
   }
 
@@ -77,6 +77,6 @@ class ApiProvider {
       onReceiveProgress: onReceiveProgress,
     );
 
-    return response.data as Map<String, dynamic>?;
+    return response.data;
   }
 }
