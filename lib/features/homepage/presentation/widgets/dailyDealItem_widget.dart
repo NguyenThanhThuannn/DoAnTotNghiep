@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../config/format_number.dart';
 import '../../../../config/textStyle.dart';
 import '../../domain/entities/product.dart';
 
@@ -15,15 +18,45 @@ class DailyDealItem extends StatelessWidget {
       children: [
         Stack(
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width / 2.5 - 20,
-              height: 85,
-              color: Colors.amber,
+            CachedNetworkImage(
+              imageUrl: pro.product_image!,
+              imageBuilder: (final context, final imageProvider) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
+              progressIndicatorBuilder:
+                  (final context, final url, final progress) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 3,
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                    child: const CupertinoActivityIndicator(),
+                  ),
+                );
+              },
+              errorWidget: (final context, final url, final error) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2,
+                  color: Colors.black.withOpacity(0.04),
+                );
+              },
             ),
-              _buildSwitchCaseTag(context, pro.tag),
+            //_buildSwitchCaseTag(context, pro.tag),
           ],
         ),
-        if (pro.price_sale != null)
+        /* if (pro.price_sale != null)
           Text.rich(
             TextSpan(
               text: pro.price_sale,
@@ -45,19 +78,19 @@ class DailyDealItem extends StatelessWidget {
               ],
             ),
           )
-        else
-          Text(
-            pro.price!,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).primaryColor,
-            ),
+        else */
+        Text(
+          CurrencyFormatter().formatNumber(pro.product_item!.price!),
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).primaryColor,
           ),
+        ),
         SizedBox(
           width: MediaQuery.of(context).size.width / 3,
           child: Text(
-            pro.title!,
+            pro.name!,
             softWrap: true,
             maxLines: 2,
             textAlign: TextAlign.center,
@@ -114,14 +147,16 @@ Widget _buildSwitchCaseTag(final BuildContext context, final String? tag) {
     default:
       return Positioned(
         right: 0,
-        child: tag!=null? Container(
-          padding: const EdgeInsets.only(left: 8, right: 8),
-          color: Colors.yellow,
-          child: Text(
-            tag,
-            style: textStyleKeaniaOne14W,
-          ),
-        ):const SizedBox(),
+        child: tag != null
+            ? Container(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                color: Colors.yellow,
+                child: Text(
+                  tag,
+                  style: textStyleKeaniaOne14W,
+                ),
+              )
+            : const SizedBox(),
       );
   }
 }

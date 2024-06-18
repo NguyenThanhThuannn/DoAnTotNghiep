@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:dio/dio.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
 import '../../../../widgets/onboarding_screen.dart';
 import '../../../homepage/presentation/view/home_page_screen.dart';
 import 'register_screen.dart';
@@ -119,14 +122,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          Navigator.pop(context);
+                          AuthService().login(txt1.text, txt2.text);
+                          /* Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (final context) =>
                                   const HomePageScreen(),
                             ),
-                          );
+                          ); */
                           
                         });
                       },
@@ -225,5 +229,39 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+}
+
+
+class AuthService {
+  final Dio _dio = Dio();
+
+  Future<Map<String, dynamic>> login(final String email, final String password) async {
+    try {
+      final Response response = await _dio.post(
+        '${EndPoints.baseUrl}login',
+        data: {
+          'email':email,
+          'password':password,
+        },
+      );
+      log('DN:${response.data}');
+      return response.data;
+    } catch (error) {
+      print('Login error: $error');
+      rethrow;
+    }
+  }
+  Future<Map<String, dynamic>> register(final String email, final String password) async {
+    try {
+      final Response response = await _dio.post(
+        '${EndPoints.baseUrl}signup',
+      );
+      log(response.data.toString());
+      return response.data;
+    } catch (error) {
+      print('Login error: $error');
+      rethrow; // Handle error appropriately in your app
+    }
   }
 }

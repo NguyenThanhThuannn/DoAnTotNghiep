@@ -9,7 +9,7 @@ class GetBestSellingUseCase implements UseCase<DataState<List<ProductEntity>>,vo
   
   @override
   Future<DataState<List<ProductEntity>>> call({void params}) {
-    return _productRepository.getBestSellingUseCase();
+    return _productRepository.getProducts();
   }
   
 }

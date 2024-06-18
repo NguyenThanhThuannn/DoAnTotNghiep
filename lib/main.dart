@@ -6,12 +6,8 @@ import 'features/blogpage/presentation/view/blog_screen.dart';
 import 'features/changepasswordpage/presentation/view/change_oldpw_screen.dart';
 import 'features/checkoutpage/presentation/view/checkout_screen.dart';
 import 'features/homepage/presentation/bloc/home_page_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_dailydeals_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_dailydealsweek2_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_dailydealsweek_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_hotnewarrival_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_recentbrowsing_bloc.dart';
-import 'features/homepage/presentation/bloc/home_page_todaysdeals_bloc.dart';
+import 'features/homepage/presentation/view/home_page_screen.dart';
+import 'features/loginregisterpage/presentation/view/login_screen.dart';
 import 'features/search/presentation/bloc/local_search_bloc.dart';
 import 'features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'features/themechange/bloc/theme_bloc.dart';
@@ -45,7 +41,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<HomePageBloc>(
           create: (final context) => sl()..add(GetBestSellings()),
         ),
-        BlocProvider<HomePageDailydealsBloc>(
+        /* BlocProvider<HomePageDailydealsBloc>(
           create: (final context) => sl()..add(GetDailyDeals()),
         ),
         BlocProvider<HomePageRecentbrowsingBloc>(
@@ -62,7 +58,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<HomePageTodaysdealsBloc>(
           create: (final context) => sl()..add(GetTodaysDeals()),
-        ),
+        ), */
         BlocProvider<LocalSearchBloc>(
           create: (final context) => sl()..add(const GetSavedSearches()),
         ),
@@ -77,7 +73,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: state.theme.themeData,
             darkTheme: darkTheme,
-            home: const OnboardingScreen(),
+            home: const HomePageScreen(),
           );
         },
       ),

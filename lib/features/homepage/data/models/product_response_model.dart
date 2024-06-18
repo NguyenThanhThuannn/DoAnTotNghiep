@@ -15,11 +15,10 @@ class ProductResponseModel{
   factory ProductResponseModel.fromJson(final Map<String, dynamic> json)=>_$ProductResponseModelFromJson(json);
   int? code;
   String? message;
-  ProductModel data;
+  List<ProductModel> data;
   Map<String, dynamic> toJson() => _$ProductResponseModelToJson(this);
 }
-@JsonSerializable()
-class ProductModel{
+/* class ProductModel{
   ProductModel({
     required this.bestselling,
     required this.dailydeals,
@@ -38,48 +37,101 @@ class ProductModel{
   List<HotNewArrivalModel> hotnewarrival;
   List<TodaysDealsModel> todaysdeals;
   Map<String, dynamic> toJson() => _$ProductModelToJson(this);
-}
+} */
 @JsonSerializable()
-class BestSellingModel extends ProductEntity{
-  BestSellingModel({
-    required this.type,
-    required this.price,
-    required this.title,
-    required this.price_sale,
-    required this.tag,
-    required this.status,
-    required this.description,
-    required this.subDesItem,
-    required this.SKU,
-    required this.pro,
-    required this.relatePro,
+class ProductModel extends ProductEntity{
+  ProductModel({
+    this.id,
+    this.category_id,
+    this.name,
+    this.description,
+    this.product_image,
+    this.create_at,
+    this.update_at,
+    this.type,
+    required this.product_item,
+    required this.category,
   });
-  factory BestSellingModel.fromJson(final Map<String, dynamic> json)=>_$BestSellingModelFromJson(json);
+  factory ProductModel.fromJson(final Map<String, dynamic> json)=>_$ProductModelFromJson(json);
   @override
-  String? type;
+  int ? id;
   @override
-  String price;
+  int ? category_id;
   @override
-  String title;
+  String ? name;
   @override
-  String price_sale;
+  String ? description;
   @override
-  String? tag;
+  String ? product_image;
   @override
-  bool? status;
+  String ? create_at;
   @override
-  String? description;
+  String ? update_at;
   @override
-  List<SubDescriptionModel>? subDesItem;
+  String ? type;
   @override
-  String? SKU;
+  ProductItemsModel ? product_item;
   @override
-  List<BundleProModel>? pro;
-  @override
-  List<RelateProModel>? relatePro;
-  Map<String, dynamic> toJson() => _$BestSellingModelToJson(this);
+  ProductCategoryModel ? category;
+  Map<String, dynamic> toJson() => _$ProductModelToJson(this);
 }
 @JsonSerializable()
+class ProductItemsModel extends ProductEntity {
+  ProductItemsModel({
+    this.id,
+    this.product_id,
+    this.SKU,
+    this.qty_in_stock,
+    this.product_image,
+    this.price,
+    this.create_at,
+    this.update_at,
+    this.rating,
+  });
+  factory ProductItemsModel.fromJson(final Map<String, dynamic> json)=>_$ProductItemsModelFromJson(json);
+  @override
+  int ? id;
+  @override
+  int ? product_id;
+  @override
+  int ? SKU;
+  @override
+  int ? qty_in_stock;
+  @override
+  String ? product_image;
+  @override
+  String ? price;
+  @override
+  String ? create_at;
+  @override
+  String ? update_at;
+  @override
+  int ? rating;
+  Map<String, dynamic> toJson() => _$ProductItemsModelToJson(this);
+}
+@JsonSerializable()
+class ProductCategoryModel extends ProductEntity{
+  ProductCategoryModel({
+    this.id,
+    this.parent_category_id,
+    this.category_name,
+    this.create_at,
+    this.update_at,
+  });
+  factory ProductCategoryModel.fromJson(final Map<String, dynamic> json)=>_$ProductCategoryModelFromJson(json);
+  @override
+  int ? id;
+  @override
+  int ? parent_category_id;
+  @override
+  String ? category_name;
+  @override
+  String ? create_at;
+  @override
+  String ? update_at;
+  Map<String, dynamic> toJson() => _$ProductCategoryModelToJson(this);
+}
+/* @JsonSerializable()
 class SubDescriptionModel extends SubDescriptionEntity{
   SubDescriptionModel({
     required this.item,
@@ -261,4 +313,4 @@ class TodaysDealsItemModel extends ProductEntity{
   @override
   int review;
   Map<String, dynamic> toJson()=>_$TodaysDealsItemModelToJson(this);
-}
+} */

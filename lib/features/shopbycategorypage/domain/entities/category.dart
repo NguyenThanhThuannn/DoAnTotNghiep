@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+/* import 'package:equatable/equatable.dart';
 import '../../data/models/category_response_model.dart';
 
 class CategoryDataEntity extends Equatable{
@@ -13,4 +13,4 @@ class CategoryDataEntity extends Equatable{
   List<Object?> get props {
     return [name,item];
   }
-}
+} */

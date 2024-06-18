@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../config/format_number.dart';
 import '../../../../config/textStyle.dart';
 import '../../domain/entities/product.dart';
 
@@ -15,16 +18,46 @@ class DailyDealItem2 extends StatelessWidget {
       children: [
         Stack(
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width / 2.5 - 20,
-              height: 85,
-              color: Colors.amber,
+            CachedNetworkImage(
+              imageUrl: pro.product_image!,
+              imageBuilder: (final context, final imageProvider) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 3,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.04),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
+              progressIndicatorBuilder:
+                  (final context, final url, final progress) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 3,
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                    child: const CupertinoActivityIndicator(),
+                  ),
+                );
+              },
+              errorWidget: (final context, final url, final error) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2,
+                  color: Colors.black.withOpacity(0.04),
+                );
+              },
             ),
-            _buildSwitchCaseTag(context, pro.tag),
+            //_buildSwitchCaseTag(context, pro.tag),
           ],
         ),
         Text(
-          pro.price!,
+          CurrencyFormatter().formatNumber(pro.product_item!.price!),
           style: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -34,7 +67,7 @@ class DailyDealItem2 extends StatelessWidget {
         SizedBox(
           width: MediaQuery.of(context).size.width / 2.5,
           child: Text(
-            pro.title!,
+            pro.name!,
             softWrap: true,
             maxLines: 2,
             textAlign: TextAlign.center,

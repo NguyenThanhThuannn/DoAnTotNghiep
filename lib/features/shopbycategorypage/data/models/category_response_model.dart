@@ -1,4 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
+/* import 'package:json_annotation/json_annotation.dart';
 import '../../../homepage/data/models/product_response_model.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../../domain/entities/category.dart';
@@ -54,7 +54,7 @@ class CategoryItemModel{
   factory CategoryItemModel.fromJson(Map<String, dynamic> json) => _$CategoryItemModelFromJson(json);
   Map<String, dynamic> toJson() => _$CategoryItemModelToJson(this);
 }
-@JsonSerializable()
+/* @JsonSerializable()
 class CategoryProductModel extends ProductEntity {
   CategoryProductModel({
     required this.type,
@@ -93,4 +93,4 @@ class CategoryProductModel extends ProductEntity {
   List<RelateProModel>? relatePro;
   factory CategoryProductModel.fromJson(Map<String, dynamic> json) => _$CategoryProductModelFromJson(json);
   Map<String, dynamic> toJson() => _$CategoryProductModelToJson(this);
-}
+} */ */

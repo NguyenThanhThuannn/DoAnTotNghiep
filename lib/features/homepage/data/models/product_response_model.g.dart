@@ -11,7 +11,9 @@ ProductResponseModel _$ProductResponseModelFromJson(
     ProductResponseModel(
       code: json['code'] as int?,
       message: json['message'] as String?,
-      data: ProductModel.fromJson(json['data'] as Map<String, dynamic>),
+      data: (json['data'] as List<dynamic>)
+          .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ProductResponseModelToJson(
@@ -23,251 +25,100 @@ Map<String, dynamic> _$ProductResponseModelToJson(
     };
 
 ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
-      bestselling: (json['bestselling'] as List<dynamic>)
-          .map((e) => BestSellingModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      dailydeals: (json['dailydeals'] as List<dynamic>)
-          .map((e) => DailyDealsModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      dailydealsweek: (json['dailydealsweek'] as List<dynamic>)
-          .map((e) => DailyDealsWeekModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      dailydealsweek2: (json['dailydealsweek2'] as List<dynamic>)
-          .map((e) => DailyDealsWeek2Model.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      recentbrowsing: (json['recentbrowsing'] as List<dynamic>)
-          .map((e) => RecentBrowsingModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      hotnewarrival: (json['hotnewarrival'] as List<dynamic>)
-          .map((e) => HotNewArrivalModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      todaysdeals: (json['todaysdeals'] as List<dynamic>)
-          .map((e) => TodaysDealsModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      id: json['id'] as int?,
+      category_id: json['category_id'] as int?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      product_image: json['product_image'] as String?,
+      create_at: json['create_at'] as String?,
+      update_at: json['update_at'] as String?,
+      type: json['type'] as String?,
+      product_item: json['product_item'] == null
+          ? null
+          : ProductItemsModel.fromJson(
+              json['product_item'] as Map<String, dynamic>),
+      category: json['category'] == null
+          ? null
+          : ProductCategoryModel.fromJson(
+              json['category'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
     <String, dynamic>{
-      'bestselling': instance.bestselling,
-      'dailydeals': instance.dailydeals,
-      'dailydealsweek': instance.dailydealsweek,
-      'dailydealsweek2': instance.dailydealsweek2,
-      'recentbrowsing': instance.recentbrowsing,
-      'hotnewarrival': instance.hotnewarrival,
-      'todaysdeals': instance.todaysdeals,
-    };
-
-BestSellingModel _$BestSellingModelFromJson(Map<String, dynamic> json) =>
-    BestSellingModel(
-      type: json['type'] as String?,
-      price: json['price'] as String,
-      title: json['title'] as String,
-      price_sale: json['price_sale'] as String,
-      tag: json['tag'] as String?,
-      status: json['status'] as bool?,
-      description: json['description'] as String?,
-      subDesItem: (json['subDesItem'] as List<dynamic>?)
-          ?.map((e) => SubDescriptionModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      SKU: json['SKU'] as String?,
-      pro: (json['pro'] as List<dynamic>?)
-          ?.map((e) => BundleProModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      relatePro: (json['relatePro'] as List<dynamic>?)
-          ?.map((e) => RelateProModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-
-Map<String, dynamic> _$BestSellingModelToJson(BestSellingModel instance) =>
-    <String, dynamic>{
-      'type': instance.type,
-      'price': instance.price,
-      'title': instance.title,
-      'price_sale': instance.price_sale,
-      'tag': instance.tag,
-      'status': instance.status,
+      'id': instance.id,
+      'category_id': instance.category_id,
+      'name': instance.name,
       'description': instance.description,
-      'subDesItem': instance.subDesItem,
+      'product_image': instance.product_image,
+      'create_at': instance.create_at,
+      'update_at': instance.update_at,
+      'type': instance.type,
+      'product_item': instance.product_item,
+      'category': instance.category,
+    };
+
+ProductItemsModel _$ProductItemsModelFromJson(Map<String, dynamic> json) =>
+    ProductItemsModel(
+      id: json['id'] as int?,
+      product_id: json['product_id'] as int?,
+      SKU: json['SKU'] as int?,
+      qty_in_stock: json['qty_in_stock'] as int?,
+      product_image: json['product_image'] as String?,
+      price: json['price'] as String?,
+      create_at: json['create_at'] as String?,
+      update_at: json['update_at'] as String?,
+      rating: json['rating'] as int?,
+    )
+      ..product_item = json['product_item'] == null
+          ? null
+          : ProductItemsModel.fromJson(
+              json['product_item'] as Map<String, dynamic>)
+      ..category = json['category'] == null
+          ? null
+          : ProductCategoryModel.fromJson(
+              json['category'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$ProductItemsModelToJson(ProductItemsModel instance) =>
+    <String, dynamic>{
+      'product_item': instance.product_item,
+      'category': instance.category,
+      'id': instance.id,
+      'product_id': instance.product_id,
       'SKU': instance.SKU,
-      'pro': instance.pro,
-      'relatePro': instance.relatePro,
-    };
-
-SubDescriptionModel _$SubDescriptionModelFromJson(Map<String, dynamic> json) =>
-    SubDescriptionModel(
-      item: json['item'] as String,
-    );
-
-Map<String, dynamic> _$SubDescriptionModelToJson(
-        SubDescriptionModel instance) =>
-    <String, dynamic>{
-      'item': instance.item,
-    };
-
-BundleProModel _$BundleProModelFromJson(Map<String, dynamic> json) =>
-    BundleProModel(
-      price: json['price'] as String,
-      title: json['title'] as String,
-    );
-
-Map<String, dynamic> _$BundleProModelToJson(BundleProModel instance) =>
-    <String, dynamic>{
+      'qty_in_stock': instance.qty_in_stock,
+      'product_image': instance.product_image,
       'price': instance.price,
-      'title': instance.title,
+      'create_at': instance.create_at,
+      'update_at': instance.update_at,
+      'rating': instance.rating,
     };
 
-RelateProModel _$RelateProModelFromJson(Map<String, dynamic> json) =>
-    RelateProModel(
-      price: json['price'] as String,
-      title: json['title'] as String,
-      price_sale: json['price_sale'] as String?,
-      tag: json['tag'] as String?,
-    );
-
-Map<String, dynamic> _$RelateProModelToJson(RelateProModel instance) =>
-    <String, dynamic>{
-      'price': instance.price,
-      'title': instance.title,
-      'tag': instance.tag,
-      'price_sale': instance.price_sale,
-    };
-
-DailyDealsModel _$DailyDealsModelFromJson(Map<String, dynamic> json) =>
-    DailyDealsModel(
-      tab: json['tab'] as String?,
-      pro: (json['pro'] as List<dynamic>?)
-          ?.map((e) => DailyDealsItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-
-Map<String, dynamic> _$DailyDealsModelToJson(DailyDealsModel instance) =>
-    <String, dynamic>{
-      'tab': instance.tab,
-      'pro': instance.pro,
-    };
-
-DailyDealsItemModel _$DailyDealsItemModelFromJson(Map<String, dynamic> json) =>
-    DailyDealsItemModel(
-      price: json['price'] as String,
-      title: json['title'] as String,
-      price_sale: json['price_sale'] as String?,
-      tag: json['tag'] as String?,
-    );
-
-Map<String, dynamic> _$DailyDealsItemModelToJson(
-        DailyDealsItemModel instance) =>
-    <String, dynamic>{
-      'price': instance.price,
-      'title': instance.title,
-      'price_sale': instance.price_sale,
-      'tag': instance.tag,
-    };
-
-DailyDealsWeekModel _$DailyDealsWeekModelFromJson(Map<String, dynamic> json) =>
-    DailyDealsWeekModel(
-      price: json['price'] as String,
-      title: json['title'] as String,
-      price_sale: json['price_sale'] as String,
-      SLTon: json['SLTon'] as int,
-      SLDaBan: json['SLDaBan'] as int,
-    );
-
-Map<String, dynamic> _$DailyDealsWeekModelToJson(
-        DailyDealsWeekModel instance) =>
-    <String, dynamic>{
-      'price': instance.price,
-      'title': instance.title,
-      'price_sale': instance.price_sale,
-      'SLTon': instance.SLTon,
-      'SLDaBan': instance.SLDaBan,
-    };
-
-DailyDealsWeek2Model _$DailyDealsWeek2ModelFromJson(
+ProductCategoryModel _$ProductCategoryModelFromJson(
         Map<String, dynamic> json) =>
-    DailyDealsWeek2Model(
-      price: json['price'] as String,
-      title: json['title'] as String,
-      tag: json['tag'] as String?,
-    );
+    ProductCategoryModel(
+      id: json['id'] as int?,
+      parent_category_id: json['parent_category_id'] as int?,
+      category_name: json['category_name'] as String?,
+      create_at: json['create_at'] as String?,
+      update_at: json['update_at'] as String?,
+    )
+      ..product_item = json['product_item'] == null
+          ? null
+          : ProductItemsModel.fromJson(
+              json['product_item'] as Map<String, dynamic>)
+      ..category = json['category'] == null
+          ? null
+          : ProductCategoryModel.fromJson(
+              json['category'] as Map<String, dynamic>);
 
-Map<String, dynamic> _$DailyDealsWeek2ModelToJson(
-        DailyDealsWeek2Model instance) =>
+Map<String, dynamic> _$ProductCategoryModelToJson(
+        ProductCategoryModel instance) =>
     <String, dynamic>{
-      'price': instance.price,
-      'title': instance.title,
-      'tag': instance.tag,
-    };
-
-RecentBrowsingModel _$RecentBrowsingModelFromJson(Map<String, dynamic> json) =>
-    RecentBrowsingModel(
-      price: json['price'] as String,
-      title: json['title'] as String,
-    );
-
-Map<String, dynamic> _$RecentBrowsingModelToJson(
-        RecentBrowsingModel instance) =>
-    <String, dynamic>{
-      'price': instance.price,
-      'title': instance.title,
-    };
-
-HotNewArrivalModel _$HotNewArrivalModelFromJson(Map<String, dynamic> json) =>
-    HotNewArrivalModel(
-      tab: json['tab'] as String?,
-      pro: (json['pro'] as List<dynamic>?)
-          ?.map(
-              (e) => HotNewArrivalItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-
-Map<String, dynamic> _$HotNewArrivalModelToJson(HotNewArrivalModel instance) =>
-    <String, dynamic>{
-      'tab': instance.tab,
-      'pro': instance.pro,
-    };
-
-HotNewArrivalItemModel _$HotNewArrivalItemModelFromJson(
-        Map<String, dynamic> json) =>
-    HotNewArrivalItemModel(
-      price: json['price'] as String,
-      title: json['title'] as String,
-      tag: json['tag'] as String?,
-    );
-
-Map<String, dynamic> _$HotNewArrivalItemModelToJson(
-        HotNewArrivalItemModel instance) =>
-    <String, dynamic>{
-      'price': instance.price,
-      'title': instance.title,
-      'tag': instance.tag,
-    };
-
-TodaysDealsModel _$TodaysDealsModelFromJson(Map<String, dynamic> json) =>
-    TodaysDealsModel(
-      tab: json['tab'] as String,
-      pro: (json['pro'] as List<dynamic>?)
-          ?.map((e) => TodaysDealsItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-
-Map<String, dynamic> _$TodaysDealsModelToJson(TodaysDealsModel instance) =>
-    <String, dynamic>{
-      'tab': instance.tab,
-      'pro': instance.pro,
-    };
-
-TodaysDealsItemModel _$TodaysDealsItemModelFromJson(
-        Map<String, dynamic> json) =>
-    TodaysDealsItemModel(
-      price: json['price'] as String,
-      title: json['title'] as String,
-      review: json['review'] as int,
-    );
-
-Map<String, dynamic> _$TodaysDealsItemModelToJson(
-        TodaysDealsItemModel instance) =>
-    <String, dynamic>{
-      'price': instance.price,
-      'title': instance.title,
-      'review': instance.review,
+      'product_item': instance.product_item,
+      'category': instance.category,
+      'id': instance.id,
+      'parent_category_id': instance.parent_category_id,
+      'category_name': instance.category_name,
+      'create_at': instance.create_at,
+      'update_at': instance.update_at,
     };

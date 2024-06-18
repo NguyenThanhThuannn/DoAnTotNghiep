@@ -1,13 +1,11 @@
 //DailyDeals
-import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../config/textStyle.dart';
 import '../../domain/entities/product.dart';
-import '../bloc/home_page_dailydeals_bloc.dart';
-import '../bloc/home_page_dailydealsweek2_bloc.dart';
-import '../bloc/home_page_dailydealsweek_bloc.dart';
+import '../bloc/home_page_bloc.dart';
 import 'countDown_widget.dart';
 import 'dailyDealItem2_widget.dart';
 import 'dailyDealItemTab_widget.dart';
@@ -23,40 +21,40 @@ class DailyDeal extends StatefulWidget {
 
 class _DailyDealState extends State<DailyDeal> {
   int selectedIndex = 0;
-  List<String> tab = [];
-  List<DailyDealsEntity> filterPro = [];
+  List<String> tab = ['New Arrivals', "Today's Deals", 'Best Seller'];
+  List<ProductEntity> filterPro = [];
   List<ProductEntity> pro = [];
+  List<ProductEntity> proNew = [];
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
+  int getRandomProductId(final List<ProductEntity> products) {
+    final random = Random();
+    final int randomIndex = random.nextInt(products.length);
+    return products[randomIndex].id!;
+  }
+
   @override
   Widget build(final BuildContext context) {
-    return BlocBuilder<HomePageDailydealsBloc, HomePageDailydealsState>(
+    return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (final context, final state) {
-        if (state is HomePageDailydealsLoading) {
+        if (state is HomePageLoading) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
-        if (state is HomePageDailyDealsError) {
+        if (state is HomePageError) {
           return Center(
             child: Text(state.error.toString()),
           );
         }
-        if (state is HomePageDailyDealsLoaded) {
-          if (tab.isEmpty) {
-            for (final i in state.dailyDeals!) {
-              tab.add(i.tab!);
-            }
-          }
-          if (filterPro.isEmpty) {
-            filterPro = state.dailyDeals!
-                .where((final element) => element.tab! == tab[0])
+        if (state is HomePageLoaded) {
+          if (proNew.isEmpty) {
+            proNew = state.bestSelling!
+                .where(
+                  (final element) => element.type!.contains('New'),
+                )
                 .toList();
-            pro.clear();
-            for (final i in filterPro) {
-              pro.addAll(i.pro!);
-            }
           }
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -76,18 +74,24 @@ class _DailyDealState extends State<DailyDeal> {
                       onTap: () {
                         setState(() {
                           selectedIndex = index;
-                          filterPro = state.dailyDeals!
-                              .where(
-                                (final element) =>
-                                    element.tab! == tab[selectedIndex],
-                              )
-                              .toList();
-                          log('Lọc ra là: $filterPro');
-                          pro.clear();
-                          for (final i in filterPro) {
-                            pro.addAll(i.pro!);
+                          switch (selectedIndex) {
+                            case 0:
+                              proNew = state.bestSelling!
+                                  .where(
+                                    (final element) =>
+                                        element.type!.contains('New'),
+                                  )
+                                  .toList();
+                              break;
+                            case 2:
+                              proNew = state.bestSelling!
+                                  .where(
+                                    (final element) =>
+                                        element.type!.contains('Best selling'),
+                                  )
+                                  .toList();
+                              break;
                           }
-                          log('SP sau khi lọc: $pro');
                         });
                       },
                       child: Padding(
@@ -107,32 +111,24 @@ class _DailyDealState extends State<DailyDeal> {
               Container(
                 padding: const EdgeInsets.all(5),
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 2 - 220,
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: pro.length,
+                height: MediaQuery.of(context).size.height / 2 - 100,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (final context, final index) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height / 2 - 200,
+                      child: const VerticalDivider(),
+                    );
+                  },
+                  itemCount: proNew.length,
                   itemBuilder: (final context, final index) {
                     return GestureDetector(
                       onTap: () {
                         print('CLicked');
                       },
-                      child: index % 2 == 0
-                          ? Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  right: BorderSide(color: Colors.grey),
-                                ),
-                              ),
-                              child: DailyDealItem(
-                                pro: pro[index],
-                              ),
-                            )
-                          : DailyDealItem(
-                              pro: pro[index],
-                            ),
+                      child: DailyDealItem(
+                        pro: proNew[index],
+                      ),
                     );
                   },
                 ),
@@ -141,26 +137,32 @@ class _DailyDealState extends State<DailyDeal> {
                 padding: const EdgeInsets.all(10),
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height-100,
+                  height: MediaQuery.of(context).size.height - 100,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: const Color.fromRGBO(47, 255, 29, 1),
                     ),
                   ),
-                  child: BlocBuilder<HomePageDailydealsweekBloc,
-                      HomePageDailydealsweekState>(
+                  child: BlocBuilder<HomePageBloc, HomePageState>(
                     builder: (final context, final state) {
-                      if (state is HomePageDailydealsweekLoading) {
+                      if (state is HomePageLoading) {
                         return const Center(
                           child: CircularProgressIndicator(),
                         );
                       }
-                      if (state is HomePageDailydealsweekError) {
+                      if (state is HomePageError) {
                         return const Center(
                           child: Icon(Icons.replay),
                         );
                       }
-                      if (state is HomePageDailydealsweekLoaded) {
+                      if (state is HomePageLoaded) {
+                        List<ProductEntity> proWeek = [];
+                        proWeek = state.bestSelling!
+                            .where(
+                              (final element) =>
+                                  element.type!.contains('Deal of the week'),
+                            )
+                            .toList();
                         return Column(
                           children: [
                             Row(
@@ -193,8 +195,7 @@ class _DailyDealState extends State<DailyDeal> {
                                 IconButton(
                                   icon: const Icon(Icons.arrow_forward),
                                   onPressed: () {
-                                    if (_currentPage <
-                                        state.dailydealsweek!.length) {
+                                    if (_currentPage < proWeek.length) {
                                       _pageController.nextPage(
                                         duration:
                                             const Duration(milliseconds: 300),
@@ -221,13 +222,12 @@ class _DailyDealState extends State<DailyDeal> {
                                 onPageChanged: (final index) {
                                   setState(() {
                                     _currentPage = index;
-                                    log(_currentPage.toString());
                                   });
                                 },
-                                itemCount: state.dailydealsweek!.length,
+                                itemCount: proWeek.length,
                                 itemBuilder: (final context, final index) {
                                   return DealOfWeekItem(
-                                    pro: state.dailydealsweek![index],
+                                    pro: proWeek[index],
                                   );
                                 },
                               ),
@@ -236,7 +236,7 @@ class _DailyDealState extends State<DailyDeal> {
                               margin: const EdgeInsets.only(top: 20),
                               width: MediaQuery.of(context).size.width / 2 + 50,
                               height: MediaQuery.of(context).size.width / 2,
-                              child: CountdownTimerPage(),
+                              child: const CountdownTimerPage(),
                             ),
                           ],
                         );
@@ -246,23 +246,35 @@ class _DailyDealState extends State<DailyDeal> {
                   ),
                 ),
               ),
-              BlocBuilder<HomePageDailydealsweek2Bloc,
-                  HomePageDailydealsweek2State>(
+              BlocBuilder<HomePageBloc, HomePageState>(
                 builder: (final context, final state) {
-                  if (state is HomePageDailydealsweek2Loading) {
+                  if (state is HomePageLoading) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
-                  if (state is HomePageDailydealsweek2Error) {
+                  if (state is HomePageError) {
                     return const Center(
                       child: Icon(Icons.replay_rounded),
                     );
                   }
-                  if (state is HomePageDailydealsweek2Loaded) {
+                  if (state is HomePageLoaded) {
+                    final List<ProductEntity> proDaily2 = [];
+                    for (var i = 0; i < 4; i++) {
+                      final int randomProductId =
+                          getRandomProductId(state.bestSelling!);
+                      print('Random Product ID: $randomProductId');
+                      proDaily2.addAll(
+                        state.bestSelling!
+                            .where(
+                              (final element) => element.id == randomProductId,
+                            )
+                            .toList(),
+                      );
+                    }
                     return SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height / 2,
+                      height: MediaQuery.of(context).size.height/1.7,
                       child: GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
@@ -270,7 +282,7 @@ class _DailyDealState extends State<DailyDeal> {
                           crossAxisCount: 2,
                           mainAxisSpacing: 10,
                         ),
-                        itemCount: state.dailydealsweek2!.length,
+                        itemCount: proDaily2.length,
                         itemBuilder: (final context, final index) {
                           return GestureDetector(
                             onTap: () {},
@@ -283,11 +295,11 @@ class _DailyDealState extends State<DailyDeal> {
                                       ),
                                     ),
                                     child: DailyDealItem2(
-                                      pro: state.dailydealsweek2![index],
+                                      pro: proDaily2[index],
                                     ),
                                   )
                                 : DailyDealItem2(
-                                    pro: state.dailydealsweek2![index],
+                                    pro: proDaily2[index],
                                   ),
                           );
                         },

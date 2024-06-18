@@ -1,7 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../config/format_number.dart';
 import '../../../../config/textStyle.dart';
 import '../../domain/entities/product.dart';
+
 // ignore: must_be_immutable
 class DealOfWeekItem extends StatelessWidget {
   DealOfWeekItem({super.key, required this.pro});
@@ -17,40 +21,67 @@ class DealOfWeekItem extends StatelessWidget {
             Container(
               width: MediaQuery.of(context).size.width,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width / 2,
-              height: MediaQuery.of(context).size.width / 2,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(100)),
-                color: Colors.amber,
-              ),
+            CachedNetworkImage(
+              imageUrl: pro.product_image!,
+              imageBuilder: (final context, final imageProvider) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: MediaQuery.of(context).size.width / 2,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(100)),
+                    color: Colors.black.withOpacity(0.04),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
+              progressIndicatorBuilder:
+                  (final context, final url, final progress) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 3,
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                    child: const CupertinoActivityIndicator(),
+                  ),
+                );
+              },
+              errorWidget: (final context, final url, final error) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2,
+                  color: Colors.black.withOpacity(0.04),
+                );
+              },
             ),
-            if (pro.price_sale!.isNotEmpty)
-              Positioned(
-                top: 0,
-                right: 40,
-                child: Container(
-                  alignment: Alignment.center,
-                  width: MediaQuery.of(context).size.width / 5.5,
-                  height: MediaQuery.of(context).size.width / 5.5,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
-                    color: Color.fromRGBO(94, 207, 84, 1),
-                  ),
-                  child: Text(
-                    'Tiết kiệm 2,470,803Đ',
-                    style: textStyleInterSemiBold12W,
-                    maxLines: 2,
-                    softWrap: true,
-                    textAlign: TextAlign.center,
-                  ),
+            Positioned(
+              top: 0,
+              right: 40,
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width / 5.5,
+                height: MediaQuery.of(context).size.width / 5.5,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(100)),
+                  color: Color.fromRGBO(94, 207, 84, 1),
+                ),
+                child: Text(
+                  'Tiết kiệm 2,470,803Đ',
+                  style: textStyleInterSemiBold12W,
+                  maxLines: 2,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
                 ),
               ),
+            ),
           ],
         ),
         Text.rich(
           TextSpan(
-            text: pro.price_sale,
+            text: CurrencyFormatter().formatNumber(pro.product_item!.price!),
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -70,13 +101,15 @@ class DealOfWeekItem extends StatelessWidget {
           ),
         ),
         Text(
-          pro.title!,
+          pro.name!,
           softWrap: true,
           maxLines: 2,
           textAlign: TextAlign.center,
           style: textStyleInterMedium14,
         ),
-        const SizedBox(height: 65,),
+        const SizedBox(
+          height: 65,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -90,7 +123,7 @@ class DealOfWeekItem extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: pro.SLTon.toString(),
+                    text: pro.product_item!.qty_in_stock.toString(),
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -110,7 +143,7 @@ class DealOfWeekItem extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: pro.SLDaBan.toString(),
+                    text: pro.product_item!.SKU.toString(),
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -123,7 +156,7 @@ class DealOfWeekItem extends StatelessWidget {
           ],
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(0,8,0,15),
+          padding: const EdgeInsets.fromLTRB(0, 8, 0, 15),
           child: Stack(
             children: [
               Container(

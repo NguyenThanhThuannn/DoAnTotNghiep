@@ -1,4 +1,4 @@
-import '../../../../core/data_state.dart';
+/* import '../../../../core/data_state.dart';
 import '../../../../core/usecase.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../repository/category_repository.dart';
@@ -12,4 +12,4 @@ class GetSortedUseCase implements UseCase<DataState<List<ProductEntity>>,void>{
     return _categoryRepository.getSortedCategory(false);
   }
   
-}
+} */

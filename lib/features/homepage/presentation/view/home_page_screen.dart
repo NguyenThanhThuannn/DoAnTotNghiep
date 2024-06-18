@@ -1,5 +1,3 @@
-import 'dart:developer';
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
@@ -14,15 +12,8 @@ import '../../../../widgets/drawer.dart';
 import '../../../search/presentation/bloc/local_search_bloc.dart';
 import '../../../shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
-import '../../data/models/product_models_response.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/home_page_bloc.dart';
-import '../bloc/home_page_dailydeals_bloc.dart';
-import '../bloc/home_page_dailydealsweek2_bloc.dart';
-import '../bloc/home_page_dailydealsweek_bloc.dart';
-import '../bloc/home_page_hotnewarrival_bloc.dart';
-import '../bloc/home_page_recentbrowsing_bloc.dart';
-import '../bloc/home_page_todaysdeals_bloc.dart';
 import '../widgets/bestSellingItem_widget.dart';
 import '../widgets/dailyDeal.dart';
 import '../widgets/dailyDealItem_widget.dart';
@@ -40,6 +31,12 @@ class HomePageScreen extends StatefulWidget {
 class _HomePageScreenState extends State<HomePageScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  int getRandomProductId(final List<ProductEntity> products) {
+    final random = Random();
+    final int randomIndex = random.nextInt(products.length);
+    return products[randomIndex].id!;
+  }
+
   @override
   Widget build(final BuildContext context) {
     return BlocBuilder<HomePageBloc, HomePageState>(
@@ -59,6 +56,22 @@ class _HomePageScreenState extends State<HomePageScreen> {
           );
         }
         if (state is HomePageLoaded) {
+          List<ProductEntity> proBestSelling = [];
+          proBestSelling = state.bestSelling!
+              .where((final element) => element.type!.contains('Best selling'))
+              .toList();
+          final List<ProductEntity> proRecentBrowsing = [];
+          for (var i = 0; i < 8; i++) {
+            final int randomProductId = getRandomProductId(state.bestSelling!);
+            print('Random Product ID: $randomProductId');
+            proRecentBrowsing.addAll(
+              state.bestSelling!
+                  .where(
+                    (final element) => element.id == randomProductId,
+                  )
+                  .toList(),
+            );
+          }
           return Scaffold(
             appBar: const AppBarCustom(),
             drawer: const DrawerCustom(),
@@ -129,7 +142,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                               ),
                               onTap: () {
                                 setState(() {
-                                  Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
+                                  //Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
                                 });
                               },
                               title: Text(
@@ -169,28 +182,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         ],
                       ),
                     ),
-                    _buildBestSelling(context, state.bestSelling),
+                    _buildBestSelling(context, proBestSelling),
                     const DailyDeal(),
-                    BlocBuilder<HomePageRecentbrowsingBloc,
-                        HomePageRecentbrowsingState>(
-                      builder: (final context, final state) {
-                        if (state is HomePageRecentbrowsingLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (state is HomePageRecentbrowsingError) {
-                          return const Center(child: Icon(Icons.replay));
-                        }
-                        if (state is HomePageRecentbrowsingLoaded) {
-                          return _buildRecentBrowsing(
-                            context,
-                            state.recentBrowsing!,
-                          );
-                        }
-                        return const SizedBox();
-                      },
-                    ),
+                    _buildRecentBrowsing(context, proRecentBrowsing),
                     const HotNewArrival(),
                     const TodayDeal(),
                     const FooterCustom(),
@@ -431,7 +425,7 @@ Stack _buildBestSelling(
                 itemBuilder: (final context, final index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proBestSelling[index]),));
+                      //Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proBestSelling[index]),));
                     },
                     child: BestSellingItem(
                       pro: proBestSelling[index],
@@ -454,7 +448,7 @@ Container _buildRecentBrowsing(
   return Container(
     color: Colors.grey[200],
     width: MediaQuery.of(context).size.width,
-    height: MediaQuery.of(context).size.height / 3,
+    height: MediaQuery.of(context).size.height / 2-50,
     child: Column(
       children: [
         SizedBox(
@@ -477,7 +471,7 @@ Container _buildRecentBrowsing(
         ),
         SizedBox(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height / 4,
+          height: MediaQuery.of(context).size.height / 3,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: proRecentBrowsing.length,

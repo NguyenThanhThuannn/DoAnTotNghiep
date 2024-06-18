@@ -1,4 +1,4 @@
-import '../../../../core/data_state.dart';
+/* import '../../../../core/data_state.dart';
 import '../../../../core/usecase.dart';
 import '../entities/product.dart';
 import '../repository/product_repository.dart';
@@ -12,4 +12,4 @@ class GetDailyDealsWeek2UseCase implements UseCase<DataState<List<ProductEntity>
     return _productRepository.getDailyDealsWeek2UseCase();
   }
   
-}
+} */
