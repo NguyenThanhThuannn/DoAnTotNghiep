@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../config/textStyle.dart';
+import '../features/changepasswordpage/presentation/view/change_oldpw_screen.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';
 import '../features/loginregisterpage/presentation/view/login_screen.dart';
 import '../features/policypage/presentation/view/policy_screen.dart';
@@ -126,6 +127,26 @@ class _SettingScreenState extends State<SettingScreen> {
                   context.read<ThemeBloc>().add(ChangeTheme(newTheme));
                 },
               );
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.lock,
+              color: Theme.of(context).primaryColor,
+            ),
+            title: Text(
+              'Thay đổi mật khẩu',
+              style: textStyleInterRegular16,
+            ),
+            trailing: const Icon(Icons.navigate_next_outlined),
+            onTap: () {
+              setState(() {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (final context) => const ChangeOldPasswordScreen(),
+                    ),);
+              });
             },
           ),
           const Spacer(),

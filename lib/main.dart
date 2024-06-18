@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/blogpage/presentation/bloc/blog_page_bloc.dart';
 import 'features/blogpage/presentation/view/blog_screen.dart';
+import 'features/changepasswordpage/presentation/view/change_oldpw_screen.dart';
 import 'features/checkoutpage/presentation/view/checkout_screen.dart';
 import 'features/homepage/presentation/bloc/home_page_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_dailydeals_bloc.dart';

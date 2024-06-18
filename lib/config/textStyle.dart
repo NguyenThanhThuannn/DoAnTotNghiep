@@ -140,6 +140,11 @@ TextStyle textStylePlusJakartaSansMedium14Height1point5=GoogleFonts.plusJakartaS
   height: 1.5,
   letterSpacing: 0.5,
 );
+//PlusJakartaSans-SemiBold
+TextStyle textStylePlusJakartaSansSemiBold14=GoogleFonts.plusJakartaSans(
+  fontSize: 14,
+  fontWeight: FontWeight.w600,
+);
 //PlusJakartaSans-Bold
 TextStyle textStylePlusJakartaSansBold24=GoogleFonts.plusJakartaSans(
   fontSize: 24,
