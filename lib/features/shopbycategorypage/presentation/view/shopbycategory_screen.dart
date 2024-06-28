@@ -1,12 +1,16 @@
-/* import 'dart:developer';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../config/textStyle.dart';
 import '../../../../injection_container.dart';
+import '../../../homepage/domain/entities/product.dart';
+import '../../../homepage/presentation/bloc/home_page_bloc.dart';
 import '../../data/models/category_response_model.dart';
+import '../../domain/entities/category.dart';
 import '../bloc/shopbycategory_page_bloc.dart';
+import '../widgets/categoryListItem_widget.dart';
 import '../widgets/categoryProItem.dart';
 import '../widgets/shopbycategoryItem_widget.dart';
 
@@ -49,13 +53,13 @@ class _ShopByCategoryScreenState extends State<ShopByCategoryScreen> {
                   ),
                 ),
                 leading: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        Navigator.pop(context);
-                      });
-                    },
-                    child: const Icon(Icons.keyboard_arrow_left_outlined),
-                  ),
+                  onTap: () {
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                  },
+                  child: const Icon(Icons.keyboard_arrow_left_outlined),
+                ),
                 bottom: const PreferredSize(
                   preferredSize: Size.fromHeight(1.0),
                   child: Padding(
@@ -71,7 +75,8 @@ class _ShopByCategoryScreenState extends State<ShopByCategoryScreen> {
                 child: Container(
                   margin: const EdgeInsets.only(left: 25),
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
+                  height: MediaQuery.of(context).size.height -
+                      (state.category!.length * 10),
                   child: GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -83,20 +88,19 @@ class _ShopByCategoryScreenState extends State<ShopByCategoryScreen> {
                       return GestureDetector(
                         onTap: () {
                           setState(() {
-                            log('Đã click ${state.category![index].name}');
+                            log('Đã click ${state.category![index].category_name} id: ${state.category![index].id}');
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (final context) => CateWithPro(
-                                  name: state.category![index].name!,
-                                  item: state.category![index].item!,
+                                builder: (final context) => CategoryProItem(
+                                  cate: state.category![index],
                                 ),
                               ),
                             );
                           });
                         },
                         child: ShopByCategoryItem(
-                          name: state.category![index].name!,
+                          cate: state.category![index],
                         ),
                       );
                     },
@@ -112,10 +116,10 @@ class _ShopByCategoryScreenState extends State<ShopByCategoryScreen> {
   }
 }
 
-class CateWithPro extends StatefulWidget {
-  CateWithPro({super.key, required this.name, required this.item});
-  String name;
-  List<CategoryItemModel> item;
+/* class CateWithPro extends StatefulWidget {
+  CateWithPro({super.key, required this.cate});
+  CategoryEntity cate;
+  //List<CategoryItemModel> item;
 
   @override
   State<CateWithPro> createState() => _CateWithProState();
@@ -129,18 +133,18 @@ class _CateWithProState extends State<CateWithPro> {
         title: Container(
           margin: const EdgeInsets.only(left: 90),
           child: Text(
-            widget.name,
+            widget.cate.category_name!,
             style: textStyleInterSemiBold16,
           ),
         ),
         leading: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        Navigator.of(context).pop();
-                      });
-                    },
-                    child: const Icon(Icons.navigate_before),
-                  ),
+          onTap: () {
+            setState(() {
+              Navigator.of(context).pop();
+            });
+          },
+          child: const Icon(Icons.navigate_before),
+        ),
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1.0),
           child: Padding(
@@ -152,42 +156,47 @@ class _CateWithProState extends State<CateWithPro> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.only(left: 25),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.95,
-            ),
-            itemCount: widget.item.length,
-            itemBuilder: (final context, final index) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    log('Đã click ${widget.item[index].name}');
-                    Navigator.push(
+      body:
+          SingleChildScrollView(child: BlocBuilder<HomePageBloc, HomePageState>(
+        builder: (context, state) {
+          if (state is HomePageLoaded) {
+            List<ProductEntity> lstPro = [];
+            lstPro = state.bestSelling!
+                .where((element) =>
+                    element.category_id == widget.cate.parent_category_id)
+                .toList();
+            return Container(
+              margin: const EdgeInsets.only(left: 25),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.95,
+                ),
+                itemCount: lstPro.length,
+                itemBuilder: (final context, final index) {
+                  return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          log('Đã click ${lstPro[index].name} id: ${lstPro[index].id}');
+                          /* Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (final context) =>
                             CategoryProItem(cate: widget.item[index].pro!),
                       ),
-                    );
-                  });
+                    ); */
+                        });
+                      },
+                      child: CateListItem(pro: lstPro[index]));
                 },
-                child: ShopByCategoryItem(
-                  name: widget.item[index].name,
-                ),
-              );
-            },
-          ),
-        ),
-      ),
+              ),
+            );
+          }
+          return Container();
+        },
+      )),
     );
   }
-}
-
-
- */
+} */

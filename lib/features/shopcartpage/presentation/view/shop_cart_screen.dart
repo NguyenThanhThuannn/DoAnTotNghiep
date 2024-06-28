@@ -1,10 +1,11 @@
-/* import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
-import '../../../homepage/data/models/product_models_response.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../../../homepage/presentation/widgets/dailyDealItemTab_widget.dart';
 import '../../../homepage/presentation/widgets/footer.dart';
@@ -73,13 +74,13 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildImage(context),
+            _buildImage(context,widget.sCart.product_image!),
             InfoProduct(sCart: widget.sCart),
-            _buildBundle(context, widget.sCart),
+            //_buildBundle(context, widget.sCart),
             ShopCartTab(
               sCart: widget.sCart,
             ),
-            RelateProduct(sCart: widget.sCart),
+            //RelateProduct(sCart: widget.sCart),
             const FooterCustom(),
           ],
         ),
@@ -88,14 +89,43 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
   }
 }
 
-Stack _buildImage(final BuildContext context) {
+Stack _buildImage(final BuildContext context, final String img) {
   return Stack(
     children: [
-      Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.width,
-        color: Colors.amberAccent,
-      ),
+      CachedNetworkImage(
+          imageUrl: img,
+          imageBuilder: (final context, final imageProvider) {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            );
+          },
+          progressIndicatorBuilder: (final context, final url, final progress) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 3,
+                decoration:
+                    BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                child: const CupertinoActivityIndicator(),
+              ),
+            );
+          },
+          errorWidget: (final context, final url, final error) {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.width,
+              color: Colors.black.withOpacity(0.04),
+            );
+          },
+        ),
       Column(
         children: [
           Container(
@@ -153,7 +183,7 @@ Stack _buildImage(final BuildContext context) {
   );
 }
 
-Container _buildBundle(final BuildContext context, final ProductEntity sCart) {
+/* Container _buildBundle(final BuildContext context, final ProductEntity sCart) {
   final ValueNotifier<int> total = ValueNotifier<int>(0);
   String addDiacritics(final String price) {
     // Thêm dấu "." vào vị trí phù hợp
@@ -271,7 +301,7 @@ Container _buildBundle(final BuildContext context, final ProductEntity sCart) {
       ],
     ),
   );
-}
+} */
 
 class ShopCartTab extends StatefulWidget {
   ShopCartTab({super.key, required this.sCart});
@@ -524,7 +554,7 @@ class _ShopCartTabState extends State<ShopCartTab> {
                       ],
                     ),
                   ),
-                  Text(widget.sCart.title!, style: textStyleInterSemiBold18W),
+                  Text(widget.sCart.name!, style: textStyleInterSemiBold18W),
                   Text(
                     widget.sCart.description!,
                     style: GoogleFonts.inter(
@@ -636,4 +666,4 @@ class ReviewPageView extends StatelessWidget {
       ),
     );
   }
-} */
+}

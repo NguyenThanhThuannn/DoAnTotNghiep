@@ -57,15 +57,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
         }
         if (state is HomePageLoaded) {
           List<ProductEntity> proBestSelling = [];
-          proBestSelling = state.bestSelling!
+          proBestSelling = state.products!
               .where((final element) => element.type!.contains('Best selling'))
               .toList();
           final List<ProductEntity> proRecentBrowsing = [];
           for (var i = 0; i < 8; i++) {
-            final int randomProductId = getRandomProductId(state.bestSelling!);
+            final int randomProductId = getRandomProductId(state.products!);
             print('Random Product ID: $randomProductId');
             proRecentBrowsing.addAll(
-              state.bestSelling!
+              state.products!
                   .where(
                     (final element) => element.id == randomProductId,
                   )
@@ -142,7 +142,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                               ),
                               onTap: () {
                                 setState(() {
-                                  //Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
+                                  Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
                                 });
                               },
                               title: Text(
@@ -425,7 +425,7 @@ Stack _buildBestSelling(
                 itemBuilder: (final context, final index) {
                   return GestureDetector(
                     onTap: () {
-                      //Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proBestSelling[index]),));
+                      Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proBestSelling[index]),));
                     },
                     child: BestSellingItem(
                       pro: proBestSelling[index],

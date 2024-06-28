@@ -1,16 +1,17 @@
-/* import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../config/format_number.dart';
 import '../../../../config/textStyle.dart';
 import '../../../homepage/domain/entities/product.dart';
 
 class CateGridItem extends StatelessWidget {
   CateGridItem({super.key, required this.pro});
   ProductEntity pro;
-  String priceWithoutDiacritics(final String price) {
+  /* String priceWithoutDiacritics(final String price) {
     // Loại bỏ dấu "."
     final String priceWithoutDot = price.replaceAll(',', '');
 
@@ -29,19 +30,37 @@ class CateGridItem extends StatelessWidget {
     final double discountPercentage = ((price - priceSale) / price) * 100;
     // Làm tròn số và trả về phần trăm giảm giá
     return discountPercentage.round();
-  }
+  } */
 
   @override
   Widget build(final BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CachedNetworkImage(
-          imageUrl: '',
-          progressIndicatorBuilder: (final context, final url, final progress) {
-            return Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
+    return Container(
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black87),
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          CachedNetworkImage(
+            imageUrl: pro.product_image!,
+            imageBuilder: (final context, final imageProvider) {
+              return Container(
+                width: MediaQuery.of(context).size.width / 2,
+                height: MediaQuery.of(context).size.width / 2,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              );
+            },
+            progressIndicatorBuilder: (final context, final url, final progress) {
+              return ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
@@ -49,62 +68,78 @@ class CateGridItem extends StatelessWidget {
                       BoxDecoration(color: Colors.black.withOpacity(0.08)),
                   child: const CupertinoActivityIndicator(),
                 ),
+              );
+            },
+            errorWidget: (final context, final url, final error) {
+              return Container(
+                width: MediaQuery.of(context).size.width / 2,
+                height: MediaQuery.of(context).size.width / 2,
+                color: Colors.black.withOpacity(0.04),
+              );
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10,0,10,0),
+            child: Text(
+              pro.name!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-            );
-          },
-          errorWidget: (final context, final url, final error) {
-            return Container(
-              width: MediaQuery.of(context).size.width / 2,
-              height: MediaQuery.of(context).size.width / 2,
-              color: Colors.red,
-            );
-          },
-        ),
-        Text(
-          pro.title!,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        Text(
-          pro.price_sale!,
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        Row(
-          children: [
-            Text(
-              pro.price!,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10,0,10,0),
+            child: Text(
+              CurrencyFormatter().formatNumber(pro.product_item!.price!),
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey,
-                decoration: TextDecoration.lineThrough,
+                color: Theme.of(context).primaryColor,
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(left: 5),
-              width: 50,
-              alignment: Alignment.center,
-              color: Theme.of(context).primaryColor,
-              child: Text(
-                '${calculateDiscountPercentage(
-                  int.parse(priceWithoutDiacritics(pro.price!)),
-                  int.parse(priceWithoutDiacritics(pro.price_sale!)),
-                )}%',
-                style: textStyleKeaniaOne14W,
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10,0,10,0),
+            child: Row(
+              children: [
+                Text(
+                  CurrencyFormatter().formatNumber(pro.product_item!.price!),
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+                /* Container(
+                  margin: const EdgeInsets.only(left: 5),
+                  width: 50,
+                  alignment: Alignment.center,
+                  color: Theme.of(context).primaryColor,
+                  child: Text(
+                    '${calculateDiscountPercentage(
+                      int.parse(priceWithoutDiacritics(pro.price!)),
+                      int.parse(priceWithoutDiacritics(pro.price_sale!)),
+                    )}%',
+                    style: textStyleKeaniaOne14W,
+                  ),
+                ), */
+              ],
             ),
-          ],
-        ),
-      ],
+          ),
+          ElevatedButton(
+            style: ButtonStyle(
+              foregroundColor: const MaterialStatePropertyAll(Colors.white),
+              backgroundColor: MaterialStatePropertyAll(Theme.of(context).primaryColor),
+              shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(0))),),
+            onPressed: () {
+            
+          }, child: const Text('Mua ngay'),),
+        ],
+      ),
     );
   }
 }
- */

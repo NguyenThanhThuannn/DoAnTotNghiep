@@ -45,8 +45,8 @@ class ApiProvider {
       cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
     );
-    //return response.data;
-    return jsonDecode(response.data);
+    //return response.data; //Server
+    return jsonDecode(response.data); //Git
   }
 
   Future<Map<String, dynamic>?> postRequest(
@@ -77,6 +77,63 @@ class ApiProvider {
       onReceiveProgress: onReceiveProgress,
     );
 
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>?> putRequest(
+    final String endpoint, {
+    final Map<String, dynamic>? body,
+    final Map<String, dynamic>? queryParameters,
+    final Map<String, dynamic>? headers,
+    Options? options,
+    final CancelToken? cancelToken,
+    final ProgressCallback? onSendProgress,
+    final ProgressCallback? onReceiveProgress,
+  }) async {
+    Response response;
+
+    if (options != null && headers != null) {
+      options.headers?.addAll(headers);
+    } else {
+      options = Options(headers: headers);
+    }
+
+    response = await _dio.put(
+      endpoint,
+      data: body,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    return jsonDecode(response.data);
+  }
+
+  Future<Map<String, dynamic>?> deleteRequest(
+    final String endpoint, {
+    final Map<String, dynamic>? body,
+    final Map<String, dynamic>? queryParameters,
+    final Map<String, dynamic>? headers,
+    Options? options,
+    final CancelToken? cancelToken,
+    final ProgressCallback? onSendProgress,
+    final ProgressCallback? onReceiveProgress,
+  }) async {
+    Response response;
+
+    if (options != null && headers != null) {
+      options.headers?.addAll(headers);
+    } else {
+      options = Options(headers: headers);
+    }
+
+    response = await _dio.delete(
+      endpoint,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+    );
     return response.data;
   }
 }

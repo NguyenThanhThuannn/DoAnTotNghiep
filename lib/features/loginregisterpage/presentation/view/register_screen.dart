@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
+import '../bloc/auth_bloc.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -13,9 +17,10 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  TextEditingController txt1 = TextEditingController();
-  TextEditingController txt2 = TextEditingController();
-  TextEditingController txt3 = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmpasswordController = TextEditingController();
   bool isHiddenPW = false;
   bool isHiddenCPW = false;
   @override
@@ -44,13 +49,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   margin: const EdgeInsets.only(top: 25, bottom: 25),
                   child: TextField(
-                    controller: txt1,
+                    controller: nameController,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       prefixIcon: const Icon(Icons.person),
-                      hintText: 'Username or Email',
+                      hintText: 'Name',
+                      hintStyle: textStyleMontserratMedium14,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 25, bottom: 25),
+                  child: TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      prefixIcon: const Icon(Icons.person),
+                      hintText: 'Email',
                       hintStyle: textStyleMontserratMedium14,
                     ),
                   ),
@@ -58,7 +77,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   margin: const EdgeInsets.only(top: 15, bottom: 25),
                   child: TextField(
-                    controller: txt2,
+                    controller: passwordController,
                     obscureText: isHiddenPW,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
@@ -74,8 +93,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           });
                         },
                         child: isHiddenPW
-                            ? const Icon(Icons.remove_red_eye_outlined)
-                            : const Icon(Icons.abc),
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility),
                       ),
                     ),
                   ),
@@ -83,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   margin: const EdgeInsets.only(top: 15, bottom: 25),
                   child: TextField(
-                    controller: txt3,
+                    controller: confirmpasswordController,
                     obscureText: isHiddenCPW,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
@@ -99,8 +118,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           });
                         },
                         child: isHiddenCPW
-                            ? const Icon(Icons.remove_red_eye_outlined)
-                            : const Icon(Icons.abc),
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility_outlined),
                       ),
                     ),
                   ),
@@ -117,52 +136,81 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: GoogleFonts.montserrat(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Theme.of(context).brightness == Brightness.light? Colors.red:const Color.fromARGB(255, 234, 184, 89),
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.red
+                                    : const Color.fromARGB(255, 234, 184, 89),
                           ),
                         ),
-                        TextSpan(text: ' button, you agree to the public offer',style: textStyleMontserratRegular14),
+                        TextSpan(
+                            text: ' button, you agree to the public offer',
+                            style: textStyleMontserratRegular14,),
                       ],
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 25),
-                  padding: const EdgeInsets.only(top: 15, bottom: 15),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width / 4.5,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),),),
-                      backgroundColor: MaterialStatePropertyAll(
-                          Theme.of(context).primaryColor,),
-                      foregroundColor:
-                          const MaterialStatePropertyAll(Colors.white),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (final context) =>
-                                  const LoginScreen(),
-                            ),);
-                      });
-                    },
-                    child: Text(
-                      'Tạo tài khoản',
-                      style: textStyleMontserratSemiBold20,
-                    ),
-                  ),
+                BlocConsumer<AuthBloc,AuthState>(
+                  builder: (final context, final state) {
+                    if (state is AuthLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return Container(
+                      margin: const EdgeInsets.only(top: 25),
+                      padding: const EdgeInsets.only(top: 15, bottom: 15),
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width / 4.5,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          shape: MaterialStatePropertyAll(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          backgroundColor: MaterialStatePropertyAll(
+                            Theme.of(context).primaryColor,
+                          ),
+                          foregroundColor:
+                              const MaterialStatePropertyAll(Colors.white),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if(validatePassword(passwordController.text, confirmpasswordController.text)){
+                              context.read<AuthBloc>().add(SignupEvent(nameController.text, emailController.text, passwordController.text,confirmpasswordController.text));
+                            }
+                          });
+                        },
+                        child: Text(
+                          'Tạo tài khoản',
+                          style: textStyleMontserratSemiBold20,
+                        ),
+                      ),
+                    );
+                  },
+                  listener: (final context, final state) {
+                    if (state is RegisterFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.error)),
+                      );
+                    }
+                    if (state is RegisterSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Register Success')),
+                      );
+                      log('Email đăng ký:${state.user!}');
+                      Navigator.pop(context);
+                    }
+                  },
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 35.0),
                   alignment: Alignment.center,
-                  height: MediaQuery.of(context).size.width/3.5,
+                  height: MediaQuery.of(context).size.width / 3.5,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      /* Text(
                         '- OR Continue with -',
                         style: textStyleMontserratMedium14,
                       ),
@@ -171,27 +219,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           IconButton(
                             style: ButtonStyle(
-                                side: MaterialStatePropertyAll(BorderSide(
-                                    color: Theme.of(context).primaryColor,),),),
+                              side: MaterialStatePropertyAll(
+                                BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
                             onPressed: () {},
                             icon: const Icon(Icons.abc),
                           ),
                           IconButton(
                             style: ButtonStyle(
-                                side: MaterialStatePropertyAll(BorderSide(
-                                    color: Theme.of(context).primaryColor,),),),
+                              side: MaterialStatePropertyAll(
+                                BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
                             onPressed: () {},
                             icon: const Icon(Icons.abc),
                           ),
                           IconButton(
                             style: ButtonStyle(
-                                side: MaterialStatePropertyAll(BorderSide(
-                                    color: Theme.of(context).primaryColor,),),),
+                              side: MaterialStatePropertyAll(
+                                BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
                             onPressed: () {},
                             icon: const Icon(Icons.abc),
                           ),
                         ],
-                      ),
+                      ), */
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -199,18 +259,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                print('clicked ĐK');
-                                Navigator.push(context, MaterialPageRoute(builder: (final context) => const LoginScreen(),));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (final context) =>
+                                          const LoginScreen(),
+                                    ),);
                               });
                             },
-                            child: Text('Đăng nhập',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 14,
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.w600,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: Theme.of(context).primaryColor,
-                                ),),
+                            child: Text(
+                              'Đăng nhập',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.underline,
+                                decorationColor: Theme.of(context).primaryColor,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -224,4 +290,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+}
+bool validatePassword(final String password, final String confirmPassword) {
+  // Kiểm tra mật khẩu và mật khẩu xác nhận có giống nhau không
+  if (password != confirmPassword) {
+    print('Password và Confirm Password không giống nhau');
+    return false;
+  }
+
+  // Kiểm tra độ dài tối thiểu của mật khẩu
+  if (password.length < 8) {
+    print('Mật khẩu phải có ít nhất 8 ký tự');
+    return false;
+  }
+
+  // Kiểm tra có ít nhất một chữ thường
+  if (!password.contains(RegExp('[a-z]'))) {
+    print('Mật khẩu phải có ít nhất một chữ thường');
+    return false;
+  }
+
+  // Kiểm tra có ít nhất một chữ hoa
+  if (!password.contains(RegExp('[A-Z]'))) {
+    print('Mật khẩu phải có ít nhất một chữ hoa');
+    return false;
+  }
+
+  // Kiểm tra có ít nhất một chữ số
+  if (!password.contains(RegExp('[0-9]'))) {
+    print('Mật khẩu phải có ít nhất một chữ số');
+    return false;
+  }
+
+  // Kiểm tra có ít nhất một ký tự đặc biệt
+  if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+    print('Mật khẩu phải có ít nhất một ký tự đặc biệt');
+    return false;
+  }
+
+  // Nếu tất cả các kiểm tra đều qua
+  print('Mật khẩu hợp lệ');
+  return true;
 }

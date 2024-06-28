@@ -1,6 +1,7 @@
-/* import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../config/format_number.dart';
 import '../../../../config/textStyle.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../../data/models/shop_cart_response_model.dart';
@@ -22,8 +23,9 @@ class _InfoProductState extends State<InfoProduct> {
       padding: const EdgeInsets.all(8),
       width: MediaQuery.of(context).size.width,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          /* Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -48,10 +50,10 @@ class _InfoProductState extends State<InfoProduct> {
                 ),
               ),
             ],
-          ),
+          ), */
           Text(
-            widget.sCart.title!,
-            style: textStyleInterSemiBold16,
+            widget.sCart.name!,
+            style: textStyleInterSemiBold18,
             maxLines: 2,
             softWrap: true,
           ),
@@ -60,8 +62,7 @@ class _InfoProductState extends State<InfoProduct> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (widget.sCart.price_sale!.isNotEmpty)
-                  Text.rich(
+                  /* Text.rich(
                     TextSpan(
                       text: '${widget.sCart.price_sale}   ',
                       style: GoogleFonts.inter(
@@ -81,10 +82,9 @@ class _InfoProductState extends State<InfoProduct> {
                         ),
                       ],
                     ),
-                  )
-                else
+                  ) */
                   Text(
-                    widget.sCart.price!,
+                    CurrencyFormatter().formatNumber(widget.sCart.product_item!.price!),
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -101,11 +101,11 @@ class _InfoProductState extends State<InfoProduct> {
                     ),
                     children: [
                       TextSpan(
-                        text: widget.sCart.status! ? 'CÒN HÀNG' : 'HẾT HÀNG',
+                        text: widget.sCart.product_item!.SKU!<=widget.sCart.product_item!.qty_in_stock! ? 'CÒN HÀNG' : 'HẾT HÀNG',
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: widget.sCart.status!
+                          color: widget.sCart.product_item!.SKU!<=widget.sCart.product_item!.qty_in_stock!
                               ? const Color.fromRGBO(47, 255, 29, 1)
                               : Colors.red,
                         ),
@@ -162,7 +162,7 @@ class _InfoProductState extends State<InfoProduct> {
               color: Colors.grey,
             ),
           ),
-          Container(
+          /* Container(
             margin: const EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.width / 4.5,
@@ -180,7 +180,7 @@ class _InfoProductState extends State<InfoProduct> {
                 );
               },
             ),
-          ),
+          ), */
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -190,7 +190,7 @@ class _InfoProductState extends State<InfoProduct> {
                   style: textStyleInterSemiBold14,
                   children: [
                     TextSpan(
-                      text: widget.sCart.SKU,
+                      text: widget.sCart.id.toString(),
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -369,4 +369,4 @@ Widget _buildSwitchCaseTag(final BuildContext context, final String? tag) {
         ),
       );
   }
-} */
+}

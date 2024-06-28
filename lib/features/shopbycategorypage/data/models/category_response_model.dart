@@ -1,6 +1,4 @@
-/* import 'package:json_annotation/json_annotation.dart';
-import '../../../homepage/data/models/product_response_model.dart';
-import '../../../homepage/domain/entities/product.dart';
+import 'package:json_annotation/json_annotation.dart';
 import '../../domain/entities/category.dart';
 
 part 'category_response_model.g.dart';
@@ -12,85 +10,32 @@ class CategoryResponseModel {
     this.message,
     required this.data,
   });
+  factory CategoryResponseModel.fromJson(final Map<String, dynamic> json) => _$CategoryResponseModelFromJson(json);
   int? code;
   String? message;
-  CategoryModel data;
-  factory CategoryResponseModel.fromJson(Map<String, dynamic> json) => _$CategoryResponseModelFromJson(json);
+  List<CategoryModel> data;
   Map<String, dynamic> toJson() => _$CategoryResponseModelToJson(this);
 }
 
 @JsonSerializable()
-class CategoryModel{
+class CategoryModel extends CategoryEntity{
   CategoryModel({
-    required this.category,
+    this.id,
+    this.parent_category_id,
+    this.category_name,
+    this.created_at,
+    this.updated_at,
   });
-  List<CategoryDataModel> category;
-  factory CategoryModel.fromJson(Map<String, dynamic> json) => _$CategoryModelFromJson(json);
+  factory CategoryModel.fromJson(final Map<String, dynamic> json) => _$CategoryModelFromJson(json);
+  @override
+  int ? id;
+  @override
+  int ? parent_category_id;
+  @override
+  String ? category_name;
+  @override
+  String ? created_at;
+  @override
+  String ? updated_at;
   Map<String, dynamic> toJson() => _$CategoryModelToJson(this);
 }
-
-@JsonSerializable()
-class CategoryDataModel extends CategoryDataEntity{
-  CategoryDataModel({
-    required this.name,
-    this.item,
-  });
-  @override
-  String name;
-  @override
-  List<CategoryItemModel>? item;
-  factory CategoryDataModel.fromJson(Map<String, dynamic> json) => _$CategoryDataModelFromJson(json);
-  Map<String, dynamic> toJson() => _$CategoryDataModelToJson(this);
-}
-
-@JsonSerializable()
-class CategoryItemModel{
-  CategoryItemModel({
-    required this.name,
-    this.pro
-  });
-  String name;
-  List<CategoryProductModel>? pro;
-  factory CategoryItemModel.fromJson(Map<String, dynamic> json) => _$CategoryItemModelFromJson(json);
-  Map<String, dynamic> toJson() => _$CategoryItemModelToJson(this);
-}
-/* @JsonSerializable()
-class CategoryProductModel extends ProductEntity {
-  CategoryProductModel({
-    required this.type,
-    required this.price,
-    required this.title,
-    required this.price_sale,
-    required this.tag,
-    required this.status,
-    required this.description,
-    required this.subDesItem,
-    required this.SKU,
-    required this.pro,
-    required this.relatePro,
-  });
-  @override
-  String? type;
-  @override
-  String price;
-  @override
-  String title;
-  @override
-  String price_sale;
-  @override
-  String? tag;
-  @override
-  bool? status;
-  @override
-  String? description;
-  @override
-  List<SubDescriptionModel>? subDesItem;
-  @override
-  String? SKU;
-  @override
-  List<BundleProModel>? pro;
-  @override
-  List<RelateProModel>? relatePro;
-  factory CategoryProductModel.fromJson(Map<String, dynamic> json) => _$CategoryProductModelFromJson(json);
-  Map<String, dynamic> toJson() => _$CategoryProductModelToJson(this);
-} */ */

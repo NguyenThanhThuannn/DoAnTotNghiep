@@ -50,7 +50,7 @@ class _DailyDealState extends State<DailyDeal> {
         }
         if (state is HomePageLoaded) {
           if (proNew.isEmpty) {
-            proNew = state.bestSelling!
+            proNew = state.products!
                 .where(
                   (final element) => element.type!.contains('New'),
                 )
@@ -76,7 +76,7 @@ class _DailyDealState extends State<DailyDeal> {
                           selectedIndex = index;
                           switch (selectedIndex) {
                             case 0:
-                              proNew = state.bestSelling!
+                              proNew = state.products!
                                   .where(
                                     (final element) =>
                                         element.type!.contains('New'),
@@ -84,7 +84,7 @@ class _DailyDealState extends State<DailyDeal> {
                                   .toList();
                               break;
                             case 2:
-                              proNew = state.bestSelling!
+                              proNew = state.products!
                                   .where(
                                     (final element) =>
                                         element.type!.contains('Best selling'),
@@ -157,7 +157,7 @@ class _DailyDealState extends State<DailyDeal> {
                       }
                       if (state is HomePageLoaded) {
                         List<ProductEntity> proWeek = [];
-                        proWeek = state.bestSelling!
+                        proWeek = state.products!
                             .where(
                               (final element) =>
                                   element.type!.contains('Deal of the week'),
@@ -262,10 +262,10 @@ class _DailyDealState extends State<DailyDeal> {
                     final List<ProductEntity> proDaily2 = [];
                     for (var i = 0; i < 4; i++) {
                       final int randomProductId =
-                          getRandomProductId(state.bestSelling!);
+                          getRandomProductId(state.products!);
                       print('Random Product ID: $randomProductId');
                       proDaily2.addAll(
-                        state.bestSelling!
+                        state.products!
                             .where(
                               (final element) => element.id == randomProductId,
                             )

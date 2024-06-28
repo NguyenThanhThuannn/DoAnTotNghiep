@@ -227,7 +227,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroicons/heroicons.dart';
-
 import '../config/textStyle.dart';
 import '../features/blogpage/presentation/view/blog_screen.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';

@@ -21,6 +21,16 @@ import 'features/homepage/domain/usecases/get_recentbrowsing.dart';
 import 'features/homepage/domain/usecases/get_todaysdeals.dart';
 import 'features/homepage/presentation/bloc/countdown_bloc.dart';
 import 'features/homepage/presentation/bloc/home_page_bloc.dart';
+import 'features/loginregisterpage/data/repository/auth_repository_impl.dart';
+import 'features/loginregisterpage/data/repository/user_repository_impl.dart';
+import 'features/loginregisterpage/data/services/auth_service.dart';
+import 'features/loginregisterpage/domain/repository/auth_repository.dart';
+import 'features/loginregisterpage/domain/repository/user_repository.dart';
+import 'features/loginregisterpage/domain/usecases/getuserbyid_usecase.dart';
+import 'features/loginregisterpage/domain/usecases/login_usecase.dart';
+import 'features/loginregisterpage/domain/usecases/signup_usecase.dart';
+import 'features/loginregisterpage/presentation/bloc/auth_bloc.dart';
+import 'features/loginregisterpage/presentation/bloc/user_bloc.dart';
 import 'features/policypage/data/repository/policy_repository_impl.dart';
 import 'features/policypage/domain/repository/policy_repository.dart';
 import 'features/policypage/domain/usecases/get_policy.dart';
@@ -56,18 +66,20 @@ Future<void> initializeDependencies() async{
   //Dio
   sl.registerSingleton<Dio>(Dio());
   sl.registerSingleton<NewApiS>(NewApiS(sl()));
-
+  sl.registerSingleton<AuthService>(AuthService(sl()));
   //Dependencies
   sl.registerSingleton<ApiProvider>(ApiProvider());
   sl.registerSingleton<Api>(Api());
   sl.registerSingleton<ProductRepository>(ProductRepositoryImpl(sl()));
-  //sl.registerSingleton<CategoryRepository>(CategoryRepositoryImpl(sl()));
+  sl.registerSingleton<CategoryRepository>(CategoryRepositoryImpl(sl()));
   sl.registerSingleton<PolicyRepository>(PolicyRepositoryImpl(sl()));
   sl.registerSingleton<TermRepository>(TermRepositoryImpl(sl()));
   sl.registerSingleton<FAQRepository>(FAQRepositoryImpl(sl()));
   sl.registerSingleton<ThemeRepository>(ThemeRepositoryImpl());
   sl.registerSingleton<SearchRepository>(SearchRepositoryImpl(sl(), sl()));
   sl.registerSingleton<ArticleRepository>(ArticleRepositoryImpl(sl()));
+  sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(sl()));
+  sl.registerSingleton<UserRepository>(UserRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -76,9 +88,9 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<GetDailyDealsWeekUseCase>(GetDailyDealsWeekUseCase(sl()));
   sl.registerSingleton<GetDailyDealsWeek2UseCase>(GetDailyDealsWeek2UseCase(sl()));
   sl.registerSingleton<GetHotNewArrivalUseCase>(GetHotNewArrivalUseCase(sl()));
-  sl.registerSingleton<GetTodaysDealsUseCase>(GetTodaysDealsUseCase(sl()));
+  sl.registerSingleton<GetTodaysDealsUseCase>(GetTodaysDealsUseCase(sl())); */
 
-  sl.registerSingleton<GetCategoryUseCase>(GetCategoryUseCase(sl())); */
+  sl.registerSingleton<GetCategoryUseCase>(GetCategoryUseCase(sl()));
 
   sl.registerSingleton<GetPolicyUseCase>(GetPolicyUseCase(sl()));
 
@@ -95,6 +107,9 @@ Future<void> initializeDependencies() async{
 
   sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
 
+  sl.registerSingleton<GetUserByIdUseCase>(GetUserByIdUseCase(sl()));
+  sl.registerSingleton<LoginUseCase>(LoginUseCase(sl()));
+  sl.registerSingleton<SignupUseCase>(SignupUseCase(sl()));
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
  /*  sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -104,7 +119,7 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => HomePageHotnewarrivalBloc(sl()));
   sl.registerFactory(() => HomePageTodaysdealsBloc(sl())); */
 
-  //sl.registerFactory(() => ShopbycategoryPageBloc(sl()));
+  sl.registerFactory(() => ShopbycategoryPageBloc(sl()));
 
   sl.registerFactory(() => PolicyScreenBloc(sl()));
 
@@ -119,4 +134,8 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => LocalSearchBloc(sl(), sl(), sl()));
 
   sl.registerFactory(() => BlogPageBloc(sl()));
+
+  sl.registerFactory(() => AuthBloc(sl(), sl()));
+
+  sl.registerFactory(() => UserBloc(sl()));
 }

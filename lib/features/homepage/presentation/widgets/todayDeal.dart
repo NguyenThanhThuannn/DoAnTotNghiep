@@ -57,7 +57,7 @@ class _TodayDealState extends State<TodayDeal> {
             }
           } */
           final List<ProductEntity> pro = [];
-          for (final element in state.bestSelling!) {pro.add(element);}
+          for (final element in state.products!) {pro.add(element);}
           return Container(
             color: Colors.grey[200],
             width: MediaQuery.of(context).size.width,

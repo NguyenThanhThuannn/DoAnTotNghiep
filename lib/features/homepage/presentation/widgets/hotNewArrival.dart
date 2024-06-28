@@ -48,7 +48,7 @@ class _HotNewArrivalState extends State<HotNewArrival> {
         }
         if (state is HomePageLoaded) {
           List<ProductEntity> filterPro = [];
-          filterPro = state.bestSelling!
+          filterPro = state.products!
               .where((final element) => element.type!.contains('New'))
               .toList();
           if (proHot.isEmpty) {
@@ -374,17 +374,19 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem>
                   color: Theme.of(context).primaryColor,
                 ),
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 2.5,
-                child: Text(
-                  widget.pro.name!,
-                  softWrap: true,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
+              Expanded(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width / 2.5,
+                  child: Text(
+                    widget.pro.name!,
+                    softWrap: true,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ),

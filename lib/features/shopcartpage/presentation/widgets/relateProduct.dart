@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/textStyle.dart';
-import '../../../homepage/data/models/product_models_response.dart' as sCart;
 import '../../../homepage/domain/entities/product.dart';
 import '../../data/models/shop_cart_response_model.dart';
 
@@ -62,7 +61,7 @@ class _RelateProductState extends State<RelateProduct> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_currentPage < widget.sCart.relatePro!.length) {
+                          if (_currentPage < widget.sCart.length) {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.ease,

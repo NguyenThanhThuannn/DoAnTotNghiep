@@ -3,12 +3,17 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 import '../../../../config/textStyle.dart';
 import '../../../../network/end_points.dart';
 import '../../../../widgets/onboarding_screen.dart';
 import '../../../homepage/presentation/view/home_page_screen.dart';
+import '../../data/services/provider.dart';
+import '../../domain/entities/user.dart';
+import '../bloc/auth_bloc.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -102,43 +107,60 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 25),
-                    padding: const EdgeInsets.only(top: 15, bottom: 15),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.width / 4.5,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        shape: MaterialStatePropertyAll(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
+                  BlocConsumer<AuthBloc,AuthState>(
+                    builder: (final context, final state) {
+                      if (state is AuthLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return Container(
+                        margin: const EdgeInsets.only(top: 25),
+                        padding: const EdgeInsets.only(top: 15, bottom: 15),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width / 4.5,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStatePropertyAll(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            backgroundColor: MaterialStatePropertyAll(
+                              Theme.of(context).primaryColor,
+                            ),
+                            foregroundColor:
+                                const MaterialStatePropertyAll(Colors.white),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              context
+                                  .read<AuthBloc>()
+                                  .add(LoginEvent(txt1.text, txt2.text));
+                              //AuthService().login(txt1.text, txt2.text);
+                            });
+                          },
+                          child: Text(
+                            'Đăng nhập',
+                            style: textStyleMontserratSemiBold20,
                           ),
                         ),
-                        backgroundColor: MaterialStatePropertyAll(
-                          Theme.of(context).primaryColor,
-                        ),
-                        foregroundColor:
-                            const MaterialStatePropertyAll(Colors.white),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          AuthService().login(txt1.text, txt2.text);
-                          /* Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (final context) =>
-                                  const HomePageScreen(),
-                            ),
-                          ); */
-                          
-                        });
-                      },
-                      child: Text(
-                        'Đăng nhập',
-                        style: textStyleMontserratSemiBold20,
-                      ),
-                    ),
+                      );
+                    },
+                    listener: (final context, final state) {
+                      if (state is AuthFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.error)),
+                        );
+                      }
+                      if (state is AuthSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Login Success')),
+                        );
+                        final User? user = state.user;
+                        Provider.of<UserProvider>(context,listen: false).setUser(user);
+                        log('User được set: ${Provider.of<UserProvider>(context, listen: false).getUser}');
+                        Navigator.push(context, MaterialPageRoute(builder: (final context) => const HomePageScreen(),));
+                      }
+                    },
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 35.0),
@@ -195,15 +217,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             const Text('Tạo một tài khoản '),
                             GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  print('clicked ĐK');
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (final context) =>
-                                            const RegisterScreen(),
-                                      ),);
-                                });
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (final context) =>
+                                          const RegisterScreen(),
+                                    ),
+                                  );
                               },
                               child: Text(
                                 'Đăng ký',
@@ -232,17 +252,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-
 class AuthService {
   final Dio _dio = Dio();
 
-  Future<Map<String, dynamic>> login(final String email, final String password) async {
+  Future<Map<String, dynamic>> login(
+      final String email, final String password,) async {
     try {
       final Response response = await _dio.post(
         '${EndPoints.baseUrl}login',
         data: {
-          'email':email,
-          'password':password,
+          'email': email,
+          'password': password,
         },
       );
       log('DN:${response.data}');
@@ -252,7 +272,9 @@ class AuthService {
       rethrow;
     }
   }
-  Future<Map<String, dynamic>> register(final String email, final String password) async {
+
+  Future<Map<String, dynamic>> register(
+      final String email, final String password,) async {
     try {
       final Response response = await _dio.post(
         '${EndPoints.baseUrl}signup',
