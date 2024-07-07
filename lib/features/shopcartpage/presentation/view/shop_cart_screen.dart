@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
@@ -24,47 +25,6 @@ class ShopCartScreen extends StatefulWidget {
 }
 
 class _ShopCartScreenState extends State<ShopCartScreen> {
-  /* ShopCartData sCart = ShopCartData(
-    type: 'AUDIO',
-    title:
-        'Bose SoundLink Revolve+ Portable Bluetooth Speaker, with Bose Charging',
-    price: '5,792,000Đ',
-    price_sale: '4,290,000Đ',
-    tag: '-35%',
-    status: true,
-    description:
-        'Meet SoundLink Revolve+, the best-performing portable Bluetooth speaker from Bose. It’s engineered to spread deep. jaw-dropping sound in every direction.',
-    subDesItem: [
-      SubDescription(item: '-The best-performing portable speaker from Bose'),
-      SubDescription(
-        item: '-Flexible fabric handle makes it easy to grab and go',
-      ),
-      SubDescription(
-        item: '-Pair two speakers together for stereo or party mode playback',
-      ),
-    ],
-    SKU: '93799',
-    pro: [
-      Product(price: '11.449.995Đ', title: 'DJI Goggles Immersive FPV'),
-      Product(price: '2.925.920Đ', title: 'Google Dual-Band Wi-Fi Router'),
-      Product(price: '2.543.227Đ', title: 'Gear Controller   Step Into Rift'),
-    ],
-    relatePro: [
-      Product(price: '7,489,000Đ', title: 'Hover Camera Passport Personal Photographer'),
-      Product(price: '5,550,000Đ',price_sale: '4,499,000Đ ', title: 'Bose SoundLink Revolve+ Bluetooth Speaker',tag: 'SALE'),
-      Product(price: '5,200,000Đ', title: 'GoPro HERO5 Session Camera'),
-      Product(price: '3,994,230Đ', title: 'AirPods White Color', tag: 'NEW'),
-      Product(price: '2,590,000Đ', title: 'Beats Black Earphones'),
-      Product(price: '12,950,000Đ', title: 'August Smart Lock HomeKit Enabled'),
-
-      Product(price: '7,489,000Đ', title: 'Hover Camera Passport Personal Photographer',tag: '-25%'),
-      Product(price: '5,550,000Đ',price_sale: '4,499,000Đ ', title: 'Bose SoundLink Revolve+ Bluetooth Speaker',tag: 'SALE'),
-      Product(price: '5,200,000Đ', title: 'GoPro HERO5 Session Camera'),
-      Product(price: '3,994,230Đ', title: 'AirPods White Color', tag: 'NEW'),
-      Product(price: '2,590,000Đ', title: 'Beats Black Earphones',tag: 'HOT'),
-      Product(price: '12,950,000Đ', title: 'August Smart Lock HomeKit Enabled'),
-    ],
-  ); */
 
   @override
   Widget build(final BuildContext context) {
@@ -74,7 +34,7 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildImage(context,widget.sCart.product_image!),
+            _buildImage(context,widget.sCart),
             InfoProduct(sCart: widget.sCart),
             //_buildBundle(context, widget.sCart),
             ShopCartTab(
@@ -89,43 +49,52 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
   }
 }
 
-Stack _buildImage(final BuildContext context, final String img) {
+Stack _buildImage(final BuildContext context, final ProductEntity pro) {
   return Stack(
     children: [
-      CachedNetworkImage(
-          imageUrl: img,
-          imageBuilder: (final context, final imageProvider) {
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.contain,
+      if (ImageCheck().isBase64Image(pro.product_image!))
+          Image.memory(
+            ImageCheck().base64ToImage(pro.product_image!),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width,
+            fit: BoxFit.contain,
+          )
+        else
+          CachedNetworkImage(
+            imageUrl: pro.product_image ?? '',
+            imageBuilder: (final context, final imageProvider) {
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
-            );
-          },
-          progressIndicatorBuilder: (final context, final url, final progress) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width / 3,
-                decoration:
-                    BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                child: const CupertinoActivityIndicator(),
-              ),
-            );
-          },
-          errorWidget: (final context, final url, final error) {
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width,
-              color: Colors.black.withOpacity(0.04),
-            );
-          },
-        ),
+              );
+            },
+            progressIndicatorBuilder:
+                (final context, final url, final progress) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  decoration:
+                      BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                  child: const CupertinoActivityIndicator(),
+                ),
+              );
+            },
+            errorWidget: (final context, final url, final error) {
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width,
+                color: Colors.black.withOpacity(0.04),
+              );
+            },
+          ),
       Column(
         children: [
           Container(

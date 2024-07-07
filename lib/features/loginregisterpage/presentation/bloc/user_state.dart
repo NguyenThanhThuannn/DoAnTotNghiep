@@ -16,3 +16,12 @@ final class UserLoaded extends UserState{
 final class UserError extends UserState{
   UserError(DioError error):super(error:error);
 }
+
+class CartSuccess extends UserState {
+  final ShoppingCartItems items;
+  CartSuccess(this.items);
+}
+
+class CartError extends UserState {
+  CartError(DioError e):super(error: e);
+}

@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
 import '../../../homepage/domain/entities/product.dart';
 
@@ -44,7 +45,12 @@ class CateGridItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          CachedNetworkImage(
+          if (ImageCheck().isBase64Image(pro.product_image!)) Image.memory(
+            ImageCheck().base64ToImage(pro.product_image!),
+            width: MediaQuery.of(context).size.width / 2,
+            height: MediaQuery.of(context).size.width / 2,
+            fit: BoxFit.contain,
+          ) else CachedNetworkImage(
             imageUrl: pro.product_image!,
             imageBuilder: (final context, final imageProvider) {
               return Container(

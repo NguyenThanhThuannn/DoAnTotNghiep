@@ -1,3 +1,4 @@
+import '../../../homepage/domain/entities/product.dart';
 import '../entities/search.dart';
 
 abstract class SearchRepository{

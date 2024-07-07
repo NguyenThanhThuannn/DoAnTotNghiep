@@ -107,6 +107,11 @@ TextStyle textStyleAnybodyRegular18 = GoogleFonts.anybody(
   fontSize: 18,
   fontWeight: FontWeight.w400,
 );
+TextStyle textStyleAnybodyRegular18W = GoogleFonts.anybody(
+  fontSize: 18,
+  fontWeight: FontWeight.w400,
+  color: Colors.white
+);
 
 //Newsreader-Regular
 TextStyle textStyleNewsReaderRegular18 = GoogleFonts.newsreader(

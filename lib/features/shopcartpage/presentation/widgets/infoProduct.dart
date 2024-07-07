@@ -1,9 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'dart:developer';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 import '../../../../config/format_number.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/api.dart';
+import '../../../../network/api_provider.dart';
+import '../../../../network/end_points.dart';
+import '../../../favoritepage/presentation/view/favourite_screen.dart';
 import '../../../homepage/domain/entities/product.dart';
+import '../../../loginregisterpage/data/model/user_model.dart';
+import '../../../loginregisterpage/data/services/provider.dart';
+import '../../../loginregisterpage/presentation/bloc/user_bloc.dart';
 import '../../data/models/shop_cart_response_model.dart';
 import 'colorDropDown_widget.dart';
 
@@ -17,6 +29,35 @@ class InfoProduct extends StatefulWidget {
 
 class _InfoProductState extends State<InfoProduct> {
   int quanlity = 1;
+  int? isSelectedColor;
+  int? isSelectedStorage;
+  int? isSelectedSize;
+  int? isSelectedMaterial;
+  @override
+  void initState() {
+    super.initState();
+    isSelectedColor = 0;
+    isSelectedStorage = 0;
+    isSelectedSize=0;
+    isSelectedMaterial=0;
+  }
+  Color stringToColor(final String colorString) {
+    final Map<String, Color> colorMap = {
+      'red': Colors.red,
+      'blue': Colors.blue,
+      'green': Colors.green,
+      'yellow': Colors.yellow,
+      'orange': Colors.orange,
+      'purple': Colors.purple,
+      'black': Colors.black,
+      'white': Colors.white,
+      // Thêm các màu khác nếu cần
+    };
+
+    return colorMap[colorString.toLowerCase()] ??
+        Colors.transparent; // Trả về màu trong suốt nếu không tìm thấy màu
+  }
+
   @override
   Widget build(final BuildContext context) {
     return Container(
@@ -25,18 +66,25 @@ class _InfoProductState extends State<InfoProduct> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /* Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.sCart.type!,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: const Color.fromRGBO(8, 211, 255, 1),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(12),topRight: Radius.circular(12)),
+                  color: Theme.of(context).primaryColor,
+                ),
+                child: Text(
+                  widget.sCart.category!.category_name!,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              SizedBox(
+              /* SizedBox(
                 width: MediaQuery.of(context).size.width / 3.5,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -48,9 +96,9 @@ class _InfoProductState extends State<InfoProduct> {
                     _buildSwitchCaseTag(context, 'SALE'),
                   ],
                 ),
-              ),
+              ), */
             ],
-          ), */
+          ),
           Text(
             widget.sCart.name!,
             style: textStyleInterSemiBold18,
@@ -62,7 +110,7 @@ class _InfoProductState extends State<InfoProduct> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                  /* Text.rich(
+                /* Text.rich(
                     TextSpan(
                       text: '${widget.sCart.price_sale}   ',
                       style: GoogleFonts.inter(
@@ -83,14 +131,15 @@ class _InfoProductState extends State<InfoProduct> {
                       ],
                     ),
                   ) */
-                  Text(
-                    CurrencyFormatter().formatNumber(widget.sCart.product_item!.price!),
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).primaryColor,
-                    ),
+                Text(
+                  CurrencyFormatter()
+                      .formatNumber(widget.sCart.product_item!.price!),
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).primaryColor,
                   ),
+                ),
                 Text.rich(
                   TextSpan(
                     text: 'Available: ',
@@ -101,11 +150,15 @@ class _InfoProductState extends State<InfoProduct> {
                     ),
                     children: [
                       TextSpan(
-                        text: widget.sCart.product_item!.SKU!<=widget.sCart.product_item!.qty_in_stock! ? 'CÒN HÀNG' : 'HẾT HÀNG',
+                        text: widget.sCart.product_item!.SKU! <
+                                widget.sCart.product_item!.qty_in_stock!
+                            ? 'CÒN HÀNG'
+                            : 'HẾT HÀNG',
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: widget.sCart.product_item!.SKU!<=widget.sCart.product_item!.qty_in_stock!
+                          color: widget.sCart.product_item!.SKU! <
+                                  widget.sCart.product_item!.qty_in_stock!
                               ? const Color.fromRGBO(47, 255, 29, 1)
                               : Colors.red,
                         ),
@@ -118,7 +171,7 @@ class _InfoProductState extends State<InfoProduct> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
+            child: /* Row(
               children: [
                 const Icon(
                   Icons.star,
@@ -152,7 +205,16 @@ class _InfoProductState extends State<InfoProduct> {
                   ),
                 ),
               ],
-            ),
+            ), */
+            RatingBar.builder(
+              allowHalfRating: true,
+              ignoreGestures: true,
+              itemSize: 30,
+              initialRating: widget.sCart.product_item!.rating!,
+              itemBuilder: (final context, final index) {
+              return Icon(Icons.star, color: Colors.yellow[600],);
+            }, onRatingUpdate: (final value) {
+            },),
           ),
           Text(
             widget.sCart.description!,
@@ -212,7 +274,7 @@ class _InfoProductState extends State<InfoProduct> {
                       Text(
                         'QTY',
                         style: textStyleInterSemiBold14,
-                        ),
+                      ),
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
@@ -221,8 +283,14 @@ class _InfoProductState extends State<InfoProduct> {
                         width: MediaQuery.of(context).size.width / 4,
                         height: MediaQuery.of(context).size.width / 8 + 2,
                         child: quanlity < 10
-                            ? Text('0$quanlity', style: textStyleInterSemiBold14)
-                            : Text('$quanlity', style: textStyleInterSemiBold14),
+                            ? Text(
+                                '0$quanlity',
+                                style: textStyleInterSemiBold14,
+                              )
+                            : Text(
+                                '$quanlity',
+                                style: textStyleInterSemiBold14,
+                              ),
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width / 12,
@@ -236,11 +304,11 @@ class _InfoProductState extends State<InfoProduct> {
                             GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  quanlity++;
+                                  quanlity<widget.sCart.product_item!.qty_in_stock!? quanlity++:null;
                                 });
                               },
                               child:
-                                  const Icon(Icons.keyboard_arrow_up_outlined),
+                                  const Icon(Icons.add),
                             ),
                             GestureDetector(
                               onTap: () {
@@ -249,7 +317,7 @@ class _InfoProductState extends State<InfoProduct> {
                                 });
                               },
                               child: const Icon(
-                                Icons.keyboard_arrow_down_outlined,
+                                Icons.minimize,
                               ),
                             ),
                           ],
@@ -268,7 +336,11 @@ class _InfoProductState extends State<InfoProduct> {
                           backgroundColor:
                               MaterialStatePropertyAll(Colors.grey[300]),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          UpdateFavourite(Provider.of<UserProvider>(context,listen: false).getUser!.id!, widget.sCart.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(duration: Duration(seconds: 1),showCloseIcon: true,content: Text('Sản phẩm đã thêm vào WishList')),);
+                        },
                         icon: const Icon(Icons.favorite_border_outlined),
                       ),
                       IconButton(
@@ -285,44 +357,339 @@ class _InfoProductState extends State<InfoProduct> {
               ),
             ],
           ),
-          const Padding(
+          /* const Padding(
             padding: EdgeInsets.all(8.0),
             child: Row(
               children: [
                 ColorDropdown(),
               ],
             ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 10, left: 15, right: 15, bottom: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ), */
+          if (widget.sCart.colors!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  style: const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(Colors.red),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    'Thêm vào giỏ hàng',
-                    style: textStyleInterMedium14W,
-                  ),
+                Text(
+                  'Màu',
+                  style: textStyleInterSemiBold16,
                 ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
-                      Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    'Mua ngay',
-                    style: textStyleInterMedium14W,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width / 12,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.sCart.colors!.length,
+                    itemBuilder: (final context, final index) {
+                      log(widget.sCart.colors.toString());
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isSelectedColor = index;
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          width: MediaQuery.of(context).size.width / 12,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 2,
+                                color: isSelectedColor == index
+                                    ? Theme.of(context).primaryColor
+                                    : Colors.grey,),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(100)),
+                            color: stringToColor(
+                                widget.sCart.colors![index].name!,),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
-            ),
+            )
+          else
+            const SizedBox(),
+          if (widget.sCart.storage!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Dung lượng',
+                  style: textStyleInterSemiBold16,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width / 12,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.sCart.storage!.length,
+                    itemBuilder: (final context, final index) {
+                      log(widget.sCart.storage.toString());
+                      return widget.sCart.storage![index].inStock!
+                          ? GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isSelectedStorage = index;
+                                });
+                              },
+                              child: Stack(children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 3 -
+                                      (widget.sCart.storage!.length * 5),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: isSelectedStorage == index
+                                            ? Theme.of(context).primaryColor
+                                            : Colors.grey,),
+                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                  ),
+                                  child:
+                                      Text(widget.sCart.storage![index].name!),
+                                ),
+                                if(isSelectedStorage==index)
+                                  Positioned(
+                                    top: -3,
+                                    right: 2,
+                                    child: Icon(Icons.check_box,color: Theme.of(context).primaryColor,),
+                                  ),
+                              
+                              ],),
+                            )
+                          : Container(
+                              width: MediaQuery.of(context).size.width / 3 -
+                                  (widget.sCart.storage!.length * 5),
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isSelectedStorage == index
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.grey,),
+                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                              ),
+                              child: Text(
+                                widget.sCart.storage![index].name!,
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            );
+                    },
+                  ),
+                ),
+              ],
+            )
+          else
+            const SizedBox(),
+          if (widget.sCart.sizes!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kích thước',
+                  style: textStyleInterSemiBold16,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width / 12,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.sCart.sizes!.length,
+                    itemBuilder: (final context, final index) {
+                      log(widget.sCart.sizes.toString());
+                      return widget.sCart.sizes![index].inStock!
+                          ? GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isSelectedSize = index;
+                                });
+                              },
+                              child: Stack(children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 3 -
+                                      (widget.sCart.sizes!.length * 5),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: isSelectedSize == index
+                                            ? Theme.of(context).primaryColor
+                                            : Colors.grey,),
+                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                  ),
+                                  child:
+                                      Text(widget.sCart.sizes![index].name!),
+                                ),
+                                if(isSelectedSize==index)
+                                  Positioned(
+                                    top: -3,
+                                    right: 2,
+                                    child: Icon(Icons.check_box,color: Theme.of(context).primaryColor,),
+                                  ),
+                              
+                              ],),
+                            )
+                          : Container(
+                              width: MediaQuery.of(context).size.width / 3 -
+                                  (widget.sCart.storage!.length * 5),
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isSelectedSize == index
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.grey,),
+                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                              ),
+                              child: Text(
+                                widget.sCart.sizes![index].name!,
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            );
+                    },
+                  ),
+                ),
+              ],
+            )
+          else
+            const SizedBox(),
+          if (widget.sCart.material!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Loại',
+                  style: textStyleInterSemiBold16,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width / 12,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.sCart.material!.length,
+                    itemBuilder: (final context, final index) {
+                      log(widget.sCart.material.toString());
+                      return widget.sCart.material![index].inStock!
+                          ? GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isSelectedMaterial = index;
+                                });
+                              },
+                              child: Stack(children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 3 -
+                                      (widget.sCart.material!.length * 5),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: isSelectedMaterial == index
+                                            ? Theme.of(context).primaryColor
+                                            : Colors.grey,),
+                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                  ),
+                                  child:
+                                      Text(widget.sCart.material![index].name!),
+                                ),
+                                if(isSelectedMaterial==index)
+                                  Positioned(
+                                    top: -3,
+                                    right: 2,
+                                    child: Icon(Icons.check_box,color: Theme.of(context).primaryColor,),
+                                  ),
+                              
+                              ],),
+                            )
+                          : Container(
+                              width: MediaQuery.of(context).size.width / 3 -
+                                  (widget.sCart.material!.length * 5),
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isSelectedMaterial == index
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.grey,),
+                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                              ),
+                              child: Text(
+                                widget.sCart.material![index].name!,
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            );
+                    },
+                  ),
+                ),
+              ],
+            )
+          else
+            const SizedBox(),
+          BlocBuilder<UserBloc, UserState>(
+            builder: (final context, final state) {
+              if (state is UserLoading) {
+                return const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                );
+              }
+
+              return Visibility(
+                visible: widget.sCart.product_item!.SKU!<widget.sCart.product_item!.qty_in_stock!?true:false,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: 10, left: 15, right: 15, bottom: 20,),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        style: const ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(Colors.red),
+                        ),
+                        onPressed: () {
+                          /* context.read<UserBloc>().add(AddProduct(Provider.of<UserProvider>(
+                              context,
+                              listen: false,
+                            ).getUser!.id!,
+                            widget.sCart,
+                            quanlity,),); */
+                          ProductInCart(
+                            Provider.of<UserProvider>(
+                              context,
+                              listen: false,
+                            ).getUser!.id!,
+                            widget.sCart,
+                            quanlity,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(duration: Duration(seconds: 1),showCloseIcon: true,content: Text('Sản phẩm đã thêm vào giỏ hàng')),
+                        );
+                        },
+                        child: Text(
+                          'Thêm vào giỏ hàng',
+                          style: textStyleInterMedium14W,
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                            Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          'Mua ngay',
+                          style: textStyleInterMedium14W,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -368,5 +735,29 @@ Widget _buildSwitchCaseTag(final BuildContext context, final String? tag) {
           style: textStyleKeaniaOne14,
         ),
       );
+  }
+}
+
+Future<ShoppingCartItems?> ProductInCart(
+  final int userId,
+  final ProductEntity pro,
+  final int qty,
+) async {
+  try {
+    final res = await Dio().post(
+      '${EndPoints.baseUrl}shopping_cart/user',
+      data: {
+        'cart_id': userId,
+        'product_item_id': pro.id,
+        'qty': qty,
+        'product_image': pro.product_image,
+      },
+    );
+    log('Thêm thành công');
+    final result = ShoppingCartItems.fromJson(res.data);
+    return result;
+  } catch (e) {
+    log('Lỗi khi thêm sản phẩm vào giỏ: $e');
+    return null;
   }
 }

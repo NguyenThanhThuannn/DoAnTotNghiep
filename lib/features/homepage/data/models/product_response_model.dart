@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-
+import '../../../orderpage/data/model/order_response_model.dart';
 import '../../domain/entities/product.dart';
 
 part 'product_response_model.g.dart';
@@ -46,11 +46,16 @@ class ProductModel extends ProductEntity{
     this.name,
     this.description,
     this.product_image,
-    this.create_at,
-    this.update_at,
+    this.created_at,
+    this.updated_at,
     this.type,
-    required this.product_item,
-    required this.category,
+    this.colors,
+    this.sizes,
+    this.storage,
+    this.ram,
+    this.material,
+    this.product_item,
+    this.category,
   });
   factory ProductModel.fromJson(final Map<String, dynamic> json)=>_$ProductModelFromJson(json);
   @override
@@ -64,17 +69,88 @@ class ProductModel extends ProductEntity{
   @override
   String ? product_image;
   @override
-  String ? create_at;
+  String ? created_at;
   @override
-  String ? update_at;
+  String ? updated_at;
   @override
   String ? type;
+  @override
+  List<ColorsModel> ? colors;
+  @override
+  List<SizesModel> ? sizes;
+  @override
+  List<StorageModel> ? storage;
+  @override
+  List<Map<String, dynamic>> ? ram;
+  @override
+  List<MaterialModel> ? material;
   @override
   ProductItemsModel ? product_item;
   @override
   ProductCategoryModel ? category;
   Map<String, dynamic> toJson() => _$ProductModelToJson(this);
 }
+
+@JsonSerializable()
+class ColorsModel extends ProductEntity{
+  ColorsModel({
+    this.name,
+    this.class_bg,
+    this.selectedClass,
+  });
+  factory ColorsModel.fromJson(final Map<String, dynamic> json)=>_$ColorsModelFromJson(json);
+  Map<String, dynamic> toJson() => _$ColorsModelToJson(this);
+  @override
+  final String ? name;
+  @override
+  @JsonKey(name: 'class')
+  final String ? class_bg;
+  @override
+  final String ? selectedClass;
+}
+
+@JsonSerializable()
+class SizesModel extends ProductEntity{
+  SizesModel({
+    this.name,
+    this.inStock,
+  });
+  factory SizesModel.fromJson(final Map<String, dynamic> json)=>_$SizesModelFromJson(json);
+  Map<String, dynamic> toJson() => _$SizesModelToJson(this);
+  @override
+  final String ? name;
+  @override
+  final bool ? inStock;
+}
+
+@JsonSerializable()
+class StorageModel extends ProductEntity{
+  StorageModel({
+    this.name,
+    this.inStock,
+  });
+  factory StorageModel.fromJson(final Map<String, dynamic> json)=>_$StorageModelFromJson(json);
+  Map<String, dynamic> toJson() => _$StorageModelToJson(this);
+  @override
+  final String ? name;
+  @override
+  final bool ? inStock;
+}
+
+@JsonSerializable()
+class MaterialModel extends ProductEntity{
+  MaterialModel({
+    this.name,
+    this.inStock,
+  });
+  factory MaterialModel.fromJson(final Map<String, dynamic> json)=>_$MaterialModelFromJson(json);
+  Map<String, dynamic> toJson() => _$MaterialModelToJson(this);
+  @override
+  final String ? name;
+  @override
+  final bool ? inStock;
+}
+
 @JsonSerializable()
 class ProductItemsModel extends ProductEntity {
   ProductItemsModel({
@@ -106,7 +182,7 @@ class ProductItemsModel extends ProductEntity {
   @override
   String ? update_at;
   @override
-  int ? rating;
+  double ? rating;
   Map<String, dynamic> toJson() => _$ProductItemsModelToJson(this);
 }
 @JsonSerializable()

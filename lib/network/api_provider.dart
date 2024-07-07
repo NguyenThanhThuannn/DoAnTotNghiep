@@ -45,8 +45,8 @@ class ApiProvider {
       cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
     );
-    //return response.data; //Server
-    return jsonDecode(response.data); //Git
+    return response.data; //Server
+    //return jsonDecode(response.data); //Git
   }
 
   Future<Map<String, dynamic>?> postRequest(

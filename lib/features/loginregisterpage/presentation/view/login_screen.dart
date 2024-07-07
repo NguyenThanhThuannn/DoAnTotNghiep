@@ -14,6 +14,7 @@ import '../../../homepage/presentation/view/home_page_screen.dart';
 import '../../data/services/provider.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
+import '../bloc/user_bloc.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -107,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  BlocConsumer<AuthBloc,AuthState>(
+                  BlocConsumer<AuthBloc, AuthState>(
                     builder: (final context, final state) {
                       if (state is AuthLoading) {
                         return const Center(child: CircularProgressIndicator());
@@ -156,9 +157,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SnackBar(content: Text('Login Success')),
                         );
                         final User? user = state.user;
-                        Provider.of<UserProvider>(context,listen: false).setUser(user);
-                        log('User được set: ${Provider.of<UserProvider>(context, listen: false).getUser}');
-                        Navigator.push(context, MaterialPageRoute(builder: (final context) => const HomePageScreen(),));
+                        Provider.of<UserProvider>(context, listen: false)
+                            .setUser(user);
+                        // Gửi sự kiện GetUserById đến UserBloc
+                        context.read<UserBloc>().add(GetUserById(
+                            Provider.of<UserProvider>(context, listen: false)
+                                .getUser!
+                                .id!,),);
+                        log('User được set với ID là: ${Provider.of<UserProvider>(context, listen: false).getUser!.id!}');
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (final context) => const HomePageScreen(),
+                          ),
+                          (final route) => false,
+                        );
                       }
                     },
                   ),
@@ -217,13 +230,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             const Text('Tạo một tài khoản '),
                             GestureDetector(
                               onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (final context) =>
-                                          const RegisterScreen(),
-                                    ),
-                                  );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (final context) =>
+                                        const RegisterScreen(),
+                                  ),
+                                );
                               },
                               child: Text(
                                 'Đăng ký',
@@ -256,7 +269,9 @@ class AuthService {
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> login(
-      final String email, final String password,) async {
+    final String email,
+    final String password,
+  ) async {
     try {
       final Response response = await _dio.post(
         '${EndPoints.baseUrl}login',
@@ -274,7 +289,9 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> register(
-      final String email, final String password,) async {
+    final String email,
+    final String password,
+  ) async {
     try {
       final Response response = await _dio.post(
         '${EndPoints.baseUrl}signup',

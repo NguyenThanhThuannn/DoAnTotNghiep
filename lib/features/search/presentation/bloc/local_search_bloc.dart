@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../../homepage/domain/entities/product.dart';
 import '../../domain/entities/search.dart';
 import '../../domain/usecases/get_saved_search.dart';
 import '../../domain/usecases/remove_itemsearch.dart';

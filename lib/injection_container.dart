@@ -6,10 +6,18 @@ import 'features/blogpage/data/repository/article_repository_impl.dart';
 import 'features/blogpage/domain/repository/article_repository.dart';
 import 'features/blogpage/domain/usecases/get_article.dart';
 import 'features/blogpage/presentation/bloc/blog_page_bloc.dart';
+import 'features/checkoutpage/data/shipping_method_repository_impl.dart';
+import 'features/checkoutpage/domain/getShippingMethod.dart';
+import 'features/checkoutpage/domain/shipping_method_repository.dart';
+import 'features/checkoutpage/presentation/bloc/shipping_method_bloc.dart';
 import 'features/faqpage/data/repository/faq_repository_impl.dart';
 import 'features/faqpage/domain/repository/faq_repository.dart';
 import 'features/faqpage/domain/usecases/get_faq.dart';
 import 'features/faqpage/presentation/bloc/faq_page_bloc.dart';
+import 'features/favoritepage/data/favourite_repository_impl.dart';
+import 'features/favoritepage/domain/favourtire_repository.dart';
+import 'features/favoritepage/domain/getFavourite.dart';
+import 'features/favoritepage/presentation/bloc/favourite_bloc.dart';
 import 'features/homepage/data/repository/product_repository_impl.dart';
 import 'features/homepage/domain/repository/product_repository.dart';
 import 'features/homepage/domain/usecases/get_bestselling.dart';
@@ -26,11 +34,17 @@ import 'features/loginregisterpage/data/repository/user_repository_impl.dart';
 import 'features/loginregisterpage/data/services/auth_service.dart';
 import 'features/loginregisterpage/domain/repository/auth_repository.dart';
 import 'features/loginregisterpage/domain/repository/user_repository.dart';
+import 'features/loginregisterpage/domain/usecases/addProductInCart.dart';
+import 'features/loginregisterpage/domain/usecases/deleteProduct.dart';
 import 'features/loginregisterpage/domain/usecases/getuserbyid_usecase.dart';
 import 'features/loginregisterpage/domain/usecases/login_usecase.dart';
 import 'features/loginregisterpage/domain/usecases/signup_usecase.dart';
 import 'features/loginregisterpage/presentation/bloc/auth_bloc.dart';
 import 'features/loginregisterpage/presentation/bloc/user_bloc.dart';
+import 'features/orderpage/data/repository/order_repository_impl.dart';
+import 'features/orderpage/domain/repository/order_repository.dart';
+import 'features/orderpage/domain/usecases/getOrder.dart';
+import 'features/orderpage/presentation/bloc/order_bloc.dart';
 import 'features/policypage/data/repository/policy_repository_impl.dart';
 import 'features/policypage/domain/repository/policy_repository.dart';
 import 'features/policypage/domain/usecases/get_policy.dart';
@@ -80,6 +94,9 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<ArticleRepository>(ArticleRepositoryImpl(sl()));
   sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(sl()));
   sl.registerSingleton<UserRepository>(UserRepositoryImpl(sl()));
+  sl.registerSingleton<OrderRepository>(OrderRepositoryImpl(sl()));
+  sl.registerSingleton<ShippingMethodRepository>(ShippingMethodRepositoryImpl(sl()));
+  sl.registerSingleton<FavouriteRepository>(FavouriteRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -108,8 +125,17 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
 
   sl.registerSingleton<GetUserByIdUseCase>(GetUserByIdUseCase(sl()));
+  sl.registerSingleton<AddProductInCartUseCase>(AddProductInCartUseCase(sl()));
+  sl.registerSingleton<DeleteProductInCartUseCase>(DeleteProductInCartUseCase(sl()));
   sl.registerSingleton<LoginUseCase>(LoginUseCase(sl()));
   sl.registerSingleton<SignupUseCase>(SignupUseCase(sl()));
+
+  sl.registerSingleton<GetOrderUseCase>(GetOrderUseCase(sl()));
+
+  sl.registerSingleton<GetShippingMethodUseCase>(GetShippingMethodUseCase(sl()));
+
+  sl.registerSingleton<GetFavouriteUseCase>(GetFavouriteUseCase(sl()));
+  
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
  /*  sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -137,5 +163,11 @@ Future<void> initializeDependencies() async{
 
   sl.registerFactory(() => AuthBloc(sl(), sl()));
 
-  sl.registerFactory(() => UserBloc(sl()));
+  sl.registerFactory(() => UserBloc(sl(),sl(),sl()));
+
+  sl.registerFactory(() => OrderBloc(sl()));
+
+  sl.registerFactory(() => ShippingMethodBloc(sl()));
+
+  sl.registerFactory(() => FavouriteBloc(sl()));
 }

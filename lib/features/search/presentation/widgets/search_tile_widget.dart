@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../homepage/domain/entities/product.dart';
 import '../../domain/entities/search.dart';
 
 class ItemSearchWidget extends StatelessWidget {
@@ -14,8 +15,8 @@ class ItemSearchWidget extends StatelessWidget {
     return GestureDetector(
       onLongPress: () {
         showDialog(context: context, builder: (final context) => AlertDialog.adaptive(
-          content: Text('Xóa ${search!.title!}?'),
-          title: Text('Xóa ${search!.title!}?'),
+          content: Text('Xóa ${search!.name!}?'),
+          title: Text('Xóa ${search!.name!}?'),
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -37,15 +38,33 @@ class ItemSearchWidget extends StatelessWidget {
       },
       child: ListTile(
         leading: const Icon(Icons.search_rounded),
-        title: Text(search!.title??''),
+        title: Text(search!.name??''),
         trailing: GestureDetector(
           onTap: () {
             if(onItemSearchPressed!=null){
-              onItemSearchPressed!(search!.title!);
+              onItemSearchPressed!(search!.name!);
             }
           },
           child: const Icon(Icons.arrow_outward_outlined),),
       ),
+    );
+  }
+}
+
+
+class ItemSearchWidget2 extends StatelessWidget {
+  const ItemSearchWidget2({super.key, this.search});
+  final ProductEntity ? search;
+
+  @override
+  Widget build(final BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.search_rounded),
+      title: Text(search!.name??''),
+      trailing: GestureDetector(
+        onTap: () {
+        },
+        child: const Icon(Icons.arrow_outward_outlined),),
     );
   }
 }

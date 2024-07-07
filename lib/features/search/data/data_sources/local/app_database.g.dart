@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `search_product` (`id` INTEGER, `title` TEXT, `id` INTEGER, `title` TEXT, PRIMARY KEY (`id`, `id`))');
+            'CREATE TABLE IF NOT EXISTS `search_product` (`id` INTEGER, `name` TEXT, `id` INTEGER, `name` TEXT, PRIMARY KEY (`id`, `id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -120,9 +120,9 @@ class _$SearchDao extends SearchDao {
             'search_product',
             (SearchModel item) => <String, Object?>{
                   'id': item.id,
-                  'title': item.title,
+                  'name': item.name,
                   'id': item.id,
-                  'title': item.title
+                  'name': item.name
                 }),
         _searchModelDeletionAdapter = DeletionAdapter(
             database,
@@ -130,9 +130,9 @@ class _$SearchDao extends SearchDao {
             ['id', 'id'],
             (SearchModel item) => <String, Object?>{
                   'id': item.id,
-                  'title': item.title,
+                  'name': item.name,
                   'id': item.id,
-                  'title': item.title
+                  'name': item.name
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -149,7 +149,7 @@ class _$SearchDao extends SearchDao {
   Future<List<SearchModel>> getSearches() async {
     return _queryAdapter.queryList('SELECT * FROM search_product',
         mapper: (Map<String, Object?> row) =>
-            SearchModel(id: row['id'] as int?, title: row['title'] as String?));
+            SearchModel(id: row['id'] as int?, name: row['name'] as String?));
   }
 
   @override

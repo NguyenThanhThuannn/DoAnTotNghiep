@@ -230,12 +230,15 @@ import 'package:heroicons/heroicons.dart';
 import '../config/textStyle.dart';
 import '../features/blogpage/presentation/view/blog_screen.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';
+import '../features/homepage/domain/entities/product.dart';
+import '../features/homepage/presentation/bloc/home_page_bloc.dart';
 import '../features/homepage/presentation/view/home_page_screen.dart';
 import '../features/search/data/models/search_model.dart';
 import '../features/search/domain/entities/search.dart';
 import '../features/search/presentation/bloc/local_search_bloc.dart';
 import '../features/search/presentation/widgets/search_tile_widget.dart';
 import 'settings_screen.dart';
+import 'shopping_cart_screen.dart';
 
 class DrawerCustom extends StatefulWidget {
   const DrawerCustom({super.key});
@@ -307,7 +310,6 @@ class _DrawerCustomState extends State<DrawerCustom> {
                           ),
                           Row(
                             children: [
-                              _buildTranfer(context, isTransfer),
                               _buildFavorite(context, isFavorite),
                               _buildCart(context, isCart),
                             ],
@@ -604,29 +606,14 @@ Stack _buildCart(final BuildContext context, final bool isCart) {
   return Stack(
     children: [
       IconButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShoppingCartScreen(),));
+        },
         icon: HeroIcon(
           HeroIcons.shoppingBag,
           color: Theme.of(context).brightness == Brightness.light
               ? Colors.white
               : Colors.black,
-        ),
-      ),
-      Positioned(
-        top: 25,
-        left: 25,
-        child: Container(
-          width: 24,
-          height: 24,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isCart ? Colors.red : Colors.white,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Text(
-            '2',
-            style: TextStyle(color: isCart ? Colors.white : Colors.black),
-          ),
         ),
       ),
     ],
@@ -640,7 +627,7 @@ class CustomSearch extends SearchDelegate {
       IconButton(
         onPressed: () {
           BlocProvider.of<LocalSearchBloc>(context)
-              .add(SaveItemSearch(SearchEntity(title: query)));
+              .add(SaveItemSearch(SearchEntity(name: query)));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.black,
             content: Text('$query saved successfully.'),
@@ -669,24 +656,51 @@ class CustomSearch extends SearchDelegate {
 
   @override
   Widget buildResults(final BuildContext context) {
-    return _buildSearchResults(context);
+    return _buildSearchLocal(context);
   }
 
   @override
   Widget buildSuggestions(final BuildContext context) {
-    return _buildSearchResults(context);
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      builder: (final context, final state) {
+        if (state is HomePageLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is HomePageLoaded) {
+          final searches = state.products;
+          log('buildSuggestions: $searches');
+          final filteredSearches = searches?.where((final search) {
+            return search.name!.toLowerCase().contains(query.toLowerCase());
+          }).toList();
+
+          if (filteredSearches == null || filteredSearches.isEmpty) {
+            return const Center(child: Text('No results found'));
+          }
+          return ListView.builder(
+            itemCount: filteredSearches.length,
+            itemBuilder: (final context, final index) {
+              final search = filteredSearches[index];
+              return ItemSearchWidget2(
+                search: search,
+              );
+            },
+          );
+        } else {
+          return const Center(child: Text('An error occurred'));
+        }
+      },
+    );
   }
 
-  Widget _buildSearchResults(final BuildContext context) {
+  Widget _buildSearchLocal(final context){
     return BlocBuilder<LocalSearchBloc, LocalSearchState>(
       builder: (final context, final state) {
         if (state is LocalSearchLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is LocalSearchDone) {
           final searches = state.searches;
-          log(searches.toString());
+          log('buildResults $searches');
           final filteredSearches = searches?.where((final search) {
-            return search.title!.contains(query);
+            return search.name!.contains(query);
           }).toList();
 
           if (filteredSearches == null || filteredSearches.isEmpty) {

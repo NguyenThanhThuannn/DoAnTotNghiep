@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/home_page_bloc.dart';
@@ -25,7 +27,7 @@ class _HotNewArrivalState extends State<HotNewArrival> {
   bool isItemSelected = true;
   late int itemClicked = -1;
   List<String> tab = [];
-  final List<ProductEntity> proHot = [];
+  List<ProductEntity> proHot = [];
   int getRandomProductId(final List<ProductEntity> products) {
     final random = Random();
     final int randomIndex = random.nextInt(products.length);
@@ -51,16 +53,16 @@ class _HotNewArrivalState extends State<HotNewArrival> {
           filterPro = state.products!
               .where((final element) => element.type!.contains('New'))
               .toList();
-          if (proHot.isEmpty) {
-            for (var i = 0; i < 4; i++) {
-              final int randomProductId = getRandomProductId(filterPro);
+          for (var i = 0; i < 4; i++) {
+            final int randomProductId = getRandomProductId(filterPro);
+            if(proHot.isEmpty){
               proHot.addAll(
-                filterPro
-                    .where(
-                      (final element) => element.id == randomProductId,
-                    )
-                    .toList(),
-              );
+              filterPro
+                  .where(
+                    (final element) => element.id == randomProductId,
+                  )
+                  .toList(),
+            );
             }
           }
           /* if (tab.isEmpty) {
@@ -205,10 +207,10 @@ class hotNewArrivalItem extends StatefulWidget {
 
 class _hotNewArrivalItemState extends State<hotNewArrivalItem>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController = AnimationController(
+  /* late final AnimationController _animationController = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 300),
-  );
+  ); */
   bool isFav = false;
   @override
   Widget build(final BuildContext context) {
@@ -224,42 +226,50 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem>
                 Center(
                   child: Column(
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: widget.pro.product_image!,
-                        imageBuilder: (final context, final imageProvider) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width / 5,
-                            height: MediaQuery.of(context).size.width / 5,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.04),
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          );
-                        },
-                        progressIndicatorBuilder:
-                            (final context, final url, final progress) {
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width / 3,
+                      if (ImageCheck().isBase64Image(widget.pro.product_image!))
+                        Image.memory(
+                          ImageCheck().base64ToImage(widget.pro.product_image!),
+                          width: MediaQuery.of(context).size.width / 5,
+                          height: MediaQuery.of(context).size.width / 4,
+                          fit: BoxFit.contain,
+                        )
+                      else
+                        CachedNetworkImage(
+                          imageUrl: widget.pro.product_image ?? '',
+                          imageBuilder: (final context, final imageProvider) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width / 5,
+                              height: MediaQuery.of(context).size.width / 4,
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.white,
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
-                              child: const CupertinoActivityIndicator(),
-                            ),
-                          );
-                        },
-                        errorWidget: (final context, final url, final error) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width / 3,
-                            height: MediaQuery.of(context).size.width / 2,
-                            color: Colors.black.withOpacity(0.04),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                          progressIndicatorBuilder:
+                              (final context, final url, final progress) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width / 3,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.08),
+                                ),
+                                child: const CupertinoActivityIndicator(),
+                              ),
+                            );
+                          },
+                          errorWidget: (final context, final url, final error) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width / 3,
+                              height: MediaQuery.of(context).size.width / 2,
+                              color: Colors.black.withOpacity(0.04),
+                            );
+                          },
+                        ),
                       Expanded(
                         child: TextButton(
                           onPressed: () {},
@@ -328,46 +338,56 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem>
             children: [
               Stack(
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: widget.pro.product_image!,
-                    imageBuilder: (final context, final imageProvider) {
-                      return Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        height: MediaQuery.of(context).size.width / 3,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.04),
-                          image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      );
-                    },
-                    progressIndicatorBuilder:
-                        (final context, final url, final progress) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(20.0),
-                        child: Container(
+                  if (ImageCheck().isBase64Image(widget.pro.product_image!))
+                    Image.memory(
+                      ImageCheck().base64ToImage(widget.pro.product_image!),
+                      width: MediaQuery.of(context).size.width / 3,
+                      height: MediaQuery.of(context).size.width / 3,
+                      fit: BoxFit.contain,
+                    )
+                  else
+                    CachedNetworkImage(
+                      imageUrl: widget.pro.product_image ?? '',
+                      imageBuilder: (final context, final imageProvider) {
+                        return Container(
                           width: MediaQuery.of(context).size.width / 3,
+                          height: MediaQuery.of(context).size.width / 3,
                           decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.08),),
-                          child: const CupertinoActivityIndicator(),
-                        ),
-                      );
-                    },
-                    errorWidget: (final context, final url, final error) {
-                      return Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        height: MediaQuery.of(context).size.width / 2,
-                        color: Colors.black.withOpacity(0.04),
-                      );
-                    },
-                  ),
+                            color: Colors.white,
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        );
+                      },
+                      progressIndicatorBuilder:
+                          (final context, final url, final progress) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(20.0),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width / 3,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.08),
+                            ),
+                            child: const CupertinoActivityIndicator(),
+                          ),
+                        );
+                      },
+                      errorWidget: (final context, final url, final error) {
+                        return Container(
+                          width: MediaQuery.of(context).size.width / 3,
+                          height: MediaQuery.of(context).size.width / 2,
+                          color: Colors.black,
+                        );
+                      },
+                    ),
                   //_buildSwitchCaseTag(context, widget.pro.tag, 0),
                 ],
               ),
               Text(
-                CurrencyFormatter().formatNumber(widget.pro.product_item!.price!),
+                CurrencyFormatter()
+                    .formatNumber(widget.pro.product_item!.price!),
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

@@ -5,6 +5,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/constaint.dart';
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
 import '../../../../network/api_provider.dart';
 import '../../../homepage/domain/entities/product.dart';
@@ -36,7 +37,12 @@ class CateListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CachedNetworkImage(
+            if (ImageCheck().isBase64Image(pro.product_image!)) Image.memory(
+            ImageCheck().base64ToImage(pro.product_image!),
+            width: MediaQuery.of(context).size.width / 2.5,
+            height: MediaQuery.of(context).size.width / 2.5+10,
+            fit: BoxFit.contain,
+          ) else CachedNetworkImage(
               imageUrl: pro.product_image!,
               imageBuilder: (final context, final imageProvider) {
                 return Container(
@@ -107,7 +113,7 @@ class CateListItem extends StatelessWidget {
                       RatingBar.builder(
                         ignoreGestures: true,
                         minRating: 1,
-                        initialRating: 4.5,
+                        initialRating: pro.product_item!.rating!,
                         allowHalfRating: true,
                         itemSize: 24,
                         itemPadding:
@@ -119,7 +125,7 @@ class CateListItem extends StatelessWidget {
                         onRatingUpdate: (final rating) {},
                       ),
                       Text(
-                        '4.9/5',
+                        '${pro.product_item!.rating}/5',
                         style: textStyleInterMedium14,
                       ),
                     ],

@@ -1,23 +1,44 @@
+import 'dart:developer';
+import 'package:dio/dio.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
+import '../../../../widgets/payment.dart';
+import '../../../homepage/domain/entities/product.dart';
+import '../../../homepage/presentation/bloc/home_page_bloc.dart';
+import '../../../homepage/presentation/view/home_page_screen.dart';
+import '../../../loginregisterpage/data/model/user_model.dart';
+import '../../../loginregisterpage/data/services/provider.dart';
+import '../../../loginregisterpage/domain/entities/user.dart';
+import '../../../loginregisterpage/presentation/bloc/user_bloc.dart';
+import '../../../orderpage/data/model/order_response_model.dart';
+import '../../../orderpage/domain/entities/order.dart';
+import '../bloc/shipping_method_bloc.dart';
 import 'editaddress_screen.dart';
 
 class CheckOutScreen extends StatefulWidget {
-  const CheckOutScreen({super.key});
+  CheckOutScreen({super.key, required this.lstProInCO});
+  List<ProductEntity> lstProInCO = [];
 
   @override
   State<CheckOutScreen> createState() => _CheckOutScreenState();
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
-  String address='';
+  Addresses? address;
   String txtCCNH = 'Giao tận nơi';
   String txtPPTT = 'Thanh toán trực tiếp';
   TextEditingController txtNote = TextEditingController();
+
   void _showNoteDialog(final TextEditingController txtNote) {
     showDialog(
       context: context,
@@ -98,11 +119,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       position: RelativeRect.fromRect(
         Rect.fromPoints(
           button.localToGlobal(
-            button.size.topRight(txtCCNH.contains('Giao tận nơi')?const Offset(-20, 260):const Offset(-20, 190)),
+            button.size.topRight(
+              txtCCNH.contains('Giao tận nơi')
+                  ? const Offset(-20, 260)
+                  : const Offset(-20, 190),
+            ),
             ancestor: overlay,
           ),
           button.localToGlobal(
-            button.size.topRight(txtCCNH.contains('Giao tận nơi')?const Offset(-20, 260):const Offset(-20, 190)),
+            button.size.topRight(
+              txtCCNH.contains('Giao tận nơi')
+                  ? const Offset(-20, 260)
+                  : const Offset(-20, 190),
+            ),
             ancestor: overlay,
           ),
         ),
@@ -129,6 +158,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     });
   }
 
+  String? selectedValueShipping = 1.toString();
+  late double total;
+  @override
+  void initState() {
+    super.initState();
+    /* context.read<UserBloc>().add(
+          GetUserById(
+            Provider.of<UserProvider>(context, listen: false).getUser!.id!,
+          ),
+        ); */
+    total = 0.0;
+  }
+
   @override
   Widget build(final BuildContext context) {
     return Scaffold(
@@ -141,21 +183,65 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildCachThucNhanHang(context),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(17, 0, 17, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Phương thức vận chuyển ',
+                    style: textStyleInterSemiBold16,
+                  ),
+                  BlocBuilder<ShippingMethodBloc, ShippingMethodState>(
+                    builder: (final context, final state) {
+                      if (state is ShippingMethodLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        );
+                      }
+                      if (state is ShippingMethodError) {
+                        return Text(state.error!.toString());
+                      }
+                      log(state.shipping_method!.toString());
+                      final List<DropdownMenuItem<String>> dropdownItems = state
+                          .shipping_method!
+                          .map((final ShippingMethodEntity item) {
+                        return DropdownMenuItem<String>(
+                          value: item.id.toString(),
+                          child: Text(item.name!),
+                        );
+                      }).toList();
+                      return DropdownButton<String>(
+                        value: selectedValueShipping,
+                        onChanged: (final String? newValue) {
+                          setState(() {
+                            selectedValueShipping = newValue;
+                          });
+                        },
+                        items: dropdownItems,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            //_buildCachThucNhanHang(context),
             if (txtCCNH.contains('Giao tận nơi'))
               _buildDiaChiNhanHang(context)
             else
               const SizedBox(),
-            _buildNote(),
+            //_buildNote(),
             _buildPhuongThucThanhToan(context),
             const Divider(),
-            const ProductCard(),
+            ProductCard(
+              lstPro: widget.lstProInCO,
+            ),
             const Divider(),
             _buildVoucher(context),
           ],
         ),
       ),
-      bottomSheet: _buildBottomSheet(context),
+      bottomSheet: _buildBottomSheet(context, widget.lstProInCO, total),
     );
   }
 
@@ -164,16 +250,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width / 2,
-            height: MediaQuery.of(context).size.width / 10,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey),
-            ),
-            child: const Text('1 Voucher đã được dùng'),
-          ),
           const SizedBox(
             height: 8,
           ),
@@ -188,13 +264,27 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   color: Colors.grey,
                 ),
               ),
-              Text(
-                '200.000Đ',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).primaryColor,
-                ),
+              BlocBuilder<UserBloc, UserState>(
+                builder: (final context, final state) {
+                  if (state is UserLoading) {
+                    return const CircularProgressIndicator.adaptive();
+                  }
+                  if (state is UserLoaded) {
+                    double priceTamTinh = 0.0;
+                    for (final i in state.user!.shopping_cart!.items!) {
+                      priceTamTinh += double.parse(i.product!.price!)*i.qty!;
+                    }
+                    return Text(
+                      CurrencyFormatter().formatNumber(priceTamTinh.toString()),
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    );
+                  }
+                  return Container();
+                },
               ),
             ],
           ),
@@ -212,20 +302,42 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   color: Colors.grey,
                 ),
               ),
-              Text(
-                '60.000Đ',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).primaryColor,
-                ),
+              BlocBuilder<ShippingMethodBloc, ShippingMethodState>(
+                builder: (final context, final state) {
+                  if (state is ShippingMethodLoading) {
+                    return Text(
+                      '...',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    );
+                  }
+                  if (state is ShippingMethodLoaded) {
+                    ShippingMethodEntity shipping;
+                    shipping = state.shipping_method!.firstWhere(
+                      (final element) =>
+                          element.id == int.parse(selectedValueShipping!),
+                    );
+                    return Text(
+                      CurrencyFormatter().formatNumber(shipping.price!),
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    );
+                  }
+                  return Container();
+                },
               ),
             ],
           ),
           const SizedBox(
             height: 8,
           ),
-          Row(
+          /* Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -246,13 +358,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 ),
               ),
             ],
-          ),
+          ), */
         ],
       ),
     );
   }
 
-  SizedBox _buildBottomSheet(final BuildContext context) {
+  SizedBox _buildBottomSheet(
+    final BuildContext context,
+    final List<ProductEntity> lstPro,
+    double total,
+  ) {
+    int shippingMethod_id = 1;
     return SizedBox(
       height: 120,
       width: MediaQuery.of(context).size.width,
@@ -274,36 +391,82 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     color: Colors.grey,
                   ),
                 ),
-                Text(
-                  '230.000Đ',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                BlocBuilder<ShippingMethodBloc, ShippingMethodState>(
+                  builder: (final context, final state) {
+                    if (state is ShippingMethodLoading) {
+                      total += 0.0;
+                      return Container();
+                    }
+                    shippingMethod_id = state.shipping_method!
+                        .firstWhere((final element) =>
+                            element.id == int.parse(selectedValueShipping!),)
+                        .id!;
+                    total += double.parse(
+                      state.shipping_method!
+                          .firstWhere(
+                            (final element) =>
+                                element.id == int.parse(selectedValueShipping!),
+                          )
+                          .price!,
+                    );
+                    log('total phí $total');
+                    return Container();
+                  },
+                ),
+                BlocBuilder<UserBloc, UserState>(
+                  builder: (final context, final state) {
+                    if (state is UserLoaded) {
+                      for (final i in state.user!.shopping_cart!.items!) {
+                        total += double.parse(i.product!.price!)*i.qty!;
+                      }
+                      return Text(
+                        CurrencyFormatter().formatNumber(total.toString()),
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      );
+                    }
+                    return Container();
+                  },
                 ),
               ],
             ),
           ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 50,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+          GestureDetector(
+            onTap: () async {
+              address!=null?await Payment().makePayment(
+                context,
+                total.toInt().toString(),
+                lstPro,
+                address!.id!,
+                shippingMethod_id,
+                Provider.of<UserProvider>(context, listen: false).getUser!.id!,
+              ):ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(duration: Duration(seconds: 1),showCloseIcon: true,content: Text('Vui lòng chọn địa chỉ nhận hàng')),
+                        );
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 13, 144, 250),
+                    Color.fromARGB(255, 201, 224, 244),
+                  ],
+                ),
               ),
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 13, 144, 250),
-                  Color.fromARGB(255, 201, 224, 244),
-                ],
+              child: Text(
+                'Thanh toán',
+                style: textStyleInterSemiBold18W,
               ),
-            ),
-            child: Text(
-              'Thanh toán',
-              style: textStyleInterSemiBold18W,
             ),
           ),
         ],
@@ -317,8 +480,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       children: [
         if (txtNote.text.isNotEmpty)
           Container(
-              margin: const EdgeInsets.only(left: 15),
-              child: Text('Note: ${txtNote.text}'),)
+            margin: const EdgeInsets.only(left: 15),
+            child: Text('Note: ${txtNote.text}'),
+          )
         else
           const SizedBox(),
         ElevatedButton.icon(
@@ -361,7 +525,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (address.isNotEmpty) AddressCard(address: address,) else const SizedBox(),
+              if (address != null)
+                AddressCard(
+                  address: address!,
+                )
+              else
+                const SizedBox(),
               const SizedBox(
                 width: 8,
               ),
@@ -377,19 +546,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       const MaterialStatePropertyAll(Colors.transparent),
                 ),
                 onPressed: () async {
-                  final result = await Navigator.push(
+                  final Addresses result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (final context) => const EditAddressScreen(),
                     ),
                   );
-                  if (result != null) {
-                    setState(() {
-                       address= result;
-                    });
-                  }
+                  setState(() {
+                    address = result;
+                  });
                 },
-                child: Text(address.isNotEmpty?'Đổi':'Chọn'),
+                child: Text(address != null ? 'Đổi' : 'Chọn'),
               ),
             ],
           ),
@@ -442,25 +609,29 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Text(
-          'Cách thức nhận hàng',
+          'Phương thức vận chuyển',
           style: textStyleInterSemiBold16,
         ),
-        Container(
-          width: 170,
-          height: 30,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-          ),
-          child: GestureDetector(
-            onTap: () => showOption1(context),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(txtCCNH),
-                const Icon(Icons.navigate_next_outlined),
-              ],
-            ),
-          ),
+        BlocBuilder<ShippingMethodBloc, ShippingMethodState>(
+          builder: (final context, final state) {
+            return Container(
+              width: 170,
+              height: 30,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: GestureDetector(
+                onTap: () => showOption1(context),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(txtCCNH),
+                    const Icon(Icons.navigate_next_outlined),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -468,9 +639,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 }
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({
+  ProductCard({
     super.key,
+    required this.lstPro,
   });
+  List<ProductEntity> lstPro;
 
   @override
   Widget build(final BuildContext context) {
@@ -483,57 +656,17 @@ class ProductCard extends StatelessWidget {
             'Thông tin sản phẩm',
             style: textStyleInterSemiBold16,
           ),
-          Row(
-            children: [
-              Container(
-                width: 150,
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.black.withOpacity(0.04),
-                ),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 2 - 30,
-                    child: Text(
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      maxLines: 2,
-                      'Google Chromecast Audio Black',
-                      style: textStyleInterSemiBold14,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    '200.000Đ',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(
-                'x1',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width/2+(lstPro.length*20),
+            child: ListView.builder(
+              itemBuilder: (final context, final index) {
+                return CheckOutProItem(
+                  proItem: lstPro[index],
+                );
+              },
+              itemCount: lstPro.length,
+            ),
           ),
         ],
       ),
@@ -541,9 +674,115 @@ class ProductCard extends StatelessWidget {
   }
 }
 
+class CheckOutProItem extends StatelessWidget {
+  CheckOutProItem({
+    super.key,
+    required this.proItem,
+  });
+  ProductEntity proItem;
+
+  @override
+  Widget build(final BuildContext context) {
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      builder: (final context, final state) {
+        final ProductEntity pro = state.products!.firstWhere(
+          (final element) => element.id == proItem.product_item_id,
+        );
+        return Row(
+          children: [
+            if (ImageCheck().isBase64Image(pro.product_image!))
+              Image.memory(
+                ImageCheck().base64ToImage(pro.product_image!),
+                width: MediaQuery.of(context).size.width / 3,
+                height: MediaQuery.of(context).size.width / 2.8,
+                fit: BoxFit.contain,
+              )
+            else
+              CachedNetworkImage(
+                imageUrl: pro.product_image!,
+                imageBuilder: (final context, final imageProvider) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width / 3,
+                    height: MediaQuery.of(context).size.width / 2.8,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  );
+                },
+                progressIndicatorBuilder:
+                    (final context, final url, final progress) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width / 3,
+                      decoration:
+                          BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                      child: const CupertinoActivityIndicator(),
+                    ),
+                  );
+                },
+                errorWidget: (final context, final url, final error) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width / 3,
+                    height: MediaQuery.of(context).size.width / 2.8,
+                    color: Colors.black.withOpacity(0.04),
+                  );
+                },
+              ),
+            const SizedBox(
+              width: 8,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 2 - 30,
+                  child: Text(
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                    maxLines: 2,
+                    pro.name!,
+                    style: textStyleInterSemiBold14,
+                  ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  CurrencyFormatter().formatNumber(proItem.product!.price!),
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              'x ${proItem.qty}',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class AddressCard extends StatelessWidget {
   const AddressCard({super.key, required this.address});
-  final String address;
+  final Addresses address;
 
   @override
   Widget build(final BuildContext context) {
@@ -558,7 +797,7 @@ class AddressCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Nhà riêng',
+                  address.id!.toString(),
                   style: textStyleInterSemiBold14,
                 ),
                 SizedBox(
@@ -566,7 +805,7 @@ class AddressCard extends StatelessWidget {
                   child: Text(
                     softWrap: true,
                     maxLines: 2,
-                    address,
+                    address.address_line!,
                     style: textStyleInterRegular14,
                   ),
                 ),
@@ -576,5 +815,43 @@ class AddressCard extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+Future<OrderResponseModel?> AddOrder(
+  final int userId,
+  final List<ProductEntity> lstOrderLines,
+  final int shipping_address,
+  final int shipping_method_id,
+  final int total,
+) async {
+  try {
+    // Chuyển đổi lstOrderLines thành List<Map<String, dynamic>> nếu cần
+    final List<Map<String, dynamic>> orderLines = lstOrderLines.map((final e) {
+      return {
+        'id': e.id,
+        'product_item_id': e.product_item_id,
+        'qty': e.qty,
+        'price': e.product!.price,
+      };
+    }).toList();
+    final res = await Dio().post(
+      '${EndPoints.baseUrl}order',
+      data: {
+        'user_id': userId,
+        'payment_method_id': 2,
+        'shipping_address': shipping_address,
+        'shipping_method': shipping_method_id,
+        'order_status': 1,
+        'order_total': total,
+        'order_lines': orderLines,
+      },
+    );
+    log('mua thành công');
+    final result = OrderResponseModel.fromJson(res.data);
+    return result;
+  } catch (e) {
+    log('Lỗi khi mua sản phẩm: $e');
+    return null;
   }
 }

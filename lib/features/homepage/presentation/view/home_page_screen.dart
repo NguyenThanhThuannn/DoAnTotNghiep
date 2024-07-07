@@ -9,6 +9,7 @@ import '../../../../config/textStyle.dart';
 import '../../../../injection_container.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
+import '../../../loginregisterpage/presentation/bloc/user_bloc.dart';
 import '../../../search/presentation/bloc/local_search_bloc.dart';
 import '../../../shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
@@ -36,7 +37,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
     final int randomIndex = random.nextInt(products.length);
     return products[randomIndex].id!;
   }
-
+  /* @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<HomePageBloc>().add(GetBestSellings());
+  } */
   @override
   Widget build(final BuildContext context) {
     return BlocBuilder<HomePageBloc, HomePageState>(

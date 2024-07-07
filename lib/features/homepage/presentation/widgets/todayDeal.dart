@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,7 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/home_page_bloc.dart';
 import 'dailyDealItemTab_widget.dart';
@@ -129,9 +132,17 @@ class _TodayDealState extends State<TodayDeal> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            todayDealItem(pro: pro[firstIndex]),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: pro[firstIndex]),));
+                              },
+                              child: todayDealItem(pro: pro[firstIndex]),),
                             if (secondIndex < pro.length)
-                              todayDealItem(pro: pro[secondIndex]),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: pro[secondIndex]),));
+                                },
+                                child: todayDealItem(pro: pro[secondIndex]),),
                           ],
                         ),
                       );
@@ -187,7 +198,12 @@ class todayDealItem extends StatelessWidget {
       color: Colors.white,
       child: Row(
         children: [
-          CachedNetworkImage(
+          if (ImageCheck().isBase64Image(pro.product_image!)) Image.memory(
+            ImageCheck().base64ToImage(pro.product_image!),
+            width: MediaQuery.of(context).size.width / 3,
+            height: MediaQuery.of(context).size.width / 3,
+            fit: BoxFit.contain,
+          ) else CachedNetworkImage(
             imageUrl: pro.product_image!,
             imageBuilder: (final context, final imageProvider) {
               return Container(

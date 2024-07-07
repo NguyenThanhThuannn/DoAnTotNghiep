@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:floor/floor.dart';
 
 import '../../data/model/user_model.dart';
 
@@ -17,6 +18,7 @@ class User extends Equatable {
     this.role,
     this.user_addresses,
     this.addresses,
+    this.shopping_cart
   });
   final int? id;
   final String? name;
@@ -31,6 +33,7 @@ class User extends Equatable {
   final String ? role;
   final UserAddresses? user_addresses;
   final List<Addresses>? addresses;
+  final ShoppingCart? shopping_cart;
 
   @override
   List<Object?> get props => [
@@ -83,4 +86,29 @@ class Address extends Equatable {
         city,
         country_id,
       ];
+}
+
+class Shoppingcart extends Equatable{
+  Shoppingcart({
+    this.id,
+    this.user_id,
+    this.created_at,
+    this.updated_at,
+    this.items
+  });
+  int ? id;
+  int ? user_id;
+  String ? created_at;
+  String ? updated_at;
+  List<ShoppingCartItems>? items;
+  
+  @override
+  List<Object?> get props => [
+    id,
+    user_id,
+    created_at,
+    updated_at,
+    items
+  ];
+  
 }

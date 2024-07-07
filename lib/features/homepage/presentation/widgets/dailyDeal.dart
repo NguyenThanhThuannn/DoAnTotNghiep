@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../config/textStyle.dart';
+import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/home_page_bloc.dart';
 import 'countDown_widget.dart';
@@ -124,7 +125,7 @@ class _DailyDealState extends State<DailyDeal> {
                   itemBuilder: (final context, final index) {
                     return GestureDetector(
                       onTap: () {
-                        print('CLicked');
+                        Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proNew[index]),));
                       },
                       child: DailyDealItem(
                         pro: proNew[index],
@@ -226,8 +227,13 @@ class _DailyDealState extends State<DailyDeal> {
                                 },
                                 itemCount: proWeek.length,
                                 itemBuilder: (final context, final index) {
-                                  return DealOfWeekItem(
-                                    pro: proWeek[index],
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proWeek[index]),));
+                                    },
+                                    child: DealOfWeekItem(
+                                      pro: proWeek[index],
+                                    ),
                                   );
                                 },
                               ),
@@ -285,7 +291,9 @@ class _DailyDealState extends State<DailyDeal> {
                         itemCount: proDaily2.length,
                         itemBuilder: (final context, final index) {
                           return GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proDaily2[index]),));
+                            },
                             child: index.isEven
                                 ? Container(
                                     alignment: Alignment.center,
