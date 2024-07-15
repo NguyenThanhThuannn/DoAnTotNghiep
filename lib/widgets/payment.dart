@@ -18,13 +18,14 @@ class Payment {
     final context,
     final String total,
     final List<ProductEntity> lst,
-    int shipping_address,
+    final int shipping_address,
     final int shipping_method_id,
     final int userID,
+    final int payment_id
   ) async {
     try {
       log('Payment button clicked');
-      paymentIntent = await createPaymentIntent(total, 'vnd');
+      paymentIntent = await createPaymentIntent(total, 'VND');
       log('Payment Intent: $paymentIntent');
 
       const gpay = PaymentSheetGooglePay(
@@ -45,7 +46,7 @@ class Payment {
           )
           .then((final value) {});
 
-      displayPaymentSheet(context, lst,shipping_address,shipping_method_id, total, userID);
+      displayPaymentSheet(context, lst,shipping_address,shipping_method_id, total, userID,payment_id);
     } catch (e) {
       print('Error in makePayment: $e');
     }
@@ -54,10 +55,11 @@ class Payment {
   Future<void> displayPaymentSheet(
     final context,
     final List<ProductEntity> lst,
-    int shipping_address,
+    final int shipping_address,
     final int shipping_method_id,
     final String total,
     final int userID,
+    final int payment_id
   ) async {
     try {
       await Stripe.instance.presentPaymentSheet().then((final value) async {
@@ -68,6 +70,7 @@ class Payment {
           shipping_address,
           shipping_method_id,
           int.parse(total),
+          payment_id
         );
         await Navigator.pushAndRemoveUntil(
           context,

@@ -18,6 +18,8 @@ import 'features/loginregisterpage/presentation/bloc/user_bloc.dart';
 import 'features/loginregisterpage/presentation/view/login_screen.dart';
 import 'features/orderpage/presentation/bloc/order_bloc.dart';
 import 'features/orderpage/presentation/view/order_screen.dart';
+import 'features/paymenttype/presentation/bloc/payment_type_bloc.dart';
+import 'features/reviewpage/presentation/bloc/review_bloc.dart';
 import 'features/search/presentation/bloc/local_search_bloc.dart';
 import 'features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'features/themechange/bloc/theme_bloc.dart';
@@ -26,7 +28,8 @@ import 'injection_container.dart';
 import 'widgets/onboarding_screen.dart';
 import 'widgets/payment.dart';
 import 'widgets/settings_screen.dart';
-import 'widgets/testCurrentLocation.dart';
+import 'widgets/VietNamPhoneTEST.dart';
+import 'widgets/test/ValidDiaChi.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,21 +73,30 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<UserBloc>(
           create: (final context) => sl()
-            ..add(GetUserById(Provider.of<UserProvider>(context, listen: false)
-                .getUser!
-                .id!,),),
+            ..add(
+              GetUserById(
+                Provider.of<UserProvider>(context, listen: false).getUser!.id!,
+              ),
+            ),
         ),
         BlocProvider<OrderBloc>(
-            create: (final context) => sl()
-              ..add(GetOrders(Provider.of<UserProvider>(context, listen: false)
-                  .getUser!
-                  .id!,),),),
+          create: (final context) => sl()
+            ..add(
+              GetOrders(
+                Provider.of<UserProvider>(context, listen: false).getUser!.id!,
+              ),
+            ),
+        ),
         BlocProvider<FavouriteBloc>(
           create: (final context) => sl()
-            ..add(GetFavourites(
-                Provider.of<UserProvider>(context, listen: false)
-                    .getUser!
-                    .id!,),),
+            ..add(
+              GetFavourites(
+                Provider.of<UserProvider>(context, listen: false).getUser!.id!,
+              ),
+            ),  
+        ),
+        BlocProvider<PaymentTypeBloc>(
+          create: (final context) => sl()..add(GetPaymentTypes()),
         ),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
@@ -94,7 +106,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: state.theme.themeData,
             darkTheme: darkTheme,
-            home: const LocationScreen(),
+            home: OnboardingScreen(),
           );
         },
       ),

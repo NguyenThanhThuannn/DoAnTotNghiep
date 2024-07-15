@@ -230,13 +230,17 @@ import 'package:heroicons/heroicons.dart';
 import '../config/textStyle.dart';
 import '../features/blogpage/presentation/view/blog_screen.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';
+import '../features/favoritepage/presentation/bloc/favourite_bloc.dart';
+import '../features/favoritepage/presentation/view/favourite_screen.dart';
 import '../features/homepage/domain/entities/product.dart';
 import '../features/homepage/presentation/bloc/home_page_bloc.dart';
 import '../features/homepage/presentation/view/home_page_screen.dart';
+import '../features/loginregisterpage/presentation/bloc/user_bloc.dart';
 import '../features/search/data/models/search_model.dart';
 import '../features/search/domain/entities/search.dart';
 import '../features/search/presentation/bloc/local_search_bloc.dart';
 import '../features/search/presentation/widgets/search_tile_widget.dart';
+import '../features/shopbycategorypage/presentation/view/shopbycategory_screen.dart';
 import 'settings_screen.dart';
 import 'shopping_cart_screen.dart';
 
@@ -273,11 +277,13 @@ class _DrawerCustomState extends State<DrawerCustom> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            if (Theme.of(context).brightness == Brightness.light)
+                            if (Theme.of(context).brightness ==
+                                Brightness.light)
                               const Color.fromRGBO(0, 138, 238, 0.85)
                             else
                               const Color.fromARGB(255, 255, 120, 17),
-                            if (Theme.of(context).brightness == Brightness.light)
+                            if (Theme.of(context).brightness ==
+                                Brightness.light)
                               const Color.fromRGBO(124, 200, 255, 1)
                             else
                               const Color.fromARGB(255, 245, 203, 171),
@@ -312,6 +318,7 @@ class _DrawerCustomState extends State<DrawerCustom> {
                             children: [
                               _buildFavorite(context, isFavorite),
                               _buildCart(context, isCart),
+                              const SizedBox(width: 15,),
                             ],
                           ),
                         ],
@@ -326,26 +333,7 @@ class _DrawerCustomState extends State<DrawerCustom> {
                   indent: 15,
                   endIndent: 15,
                 ),
-                _buildExpandableDrawerItem(context, 'SHOP'),
-                const Divider(
-                  height: 1,
-                  color: Colors.grey,
-                  indent: 15,
-                  endIndent: 15,
-                ),
                 _buildDrawerItem(context, 'BLOG'),
-                const Divider(
-                  height: 1,
-                  color: Colors.grey,
-                  indent: 15,
-                  endIndent: 15,
-                ),
-                _buildExpandableDrawerItem(context, 'PAGES', [
-                  'Contact',
-                  'FAQ',
-                  '404 Page',
-                  'Coming Soon',
-                ]),
                 const Divider(
                   height: 1,
                   color: Colors.grey,
@@ -359,28 +347,40 @@ class _DrawerCustomState extends State<DrawerCustom> {
                   indent: 15,
                   endIndent: 15,
                 ),
-                _buildDrawerItem(context, 'BRANDS'),
+                /* _buildExpandableDrawerItem(context, 'PAGES', [
+                  'Contact',
+                  'FAQ',
+                  '404 Page',
+                  'Coming Soon',
+                ]), */
+                /* const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                  indent: 15,
+                  endIndent: 15,
+                ), */
+                /* _buildDrawerItem(context, 'BRANDS'),
+                const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                  indent: 15,
+                  endIndent: 15,
+                ), */
+                //_buildDrawerItem(context, "TODAY'S DEALS"),
+                /* const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                  indent: 15,
+                  endIndent: 15,
+                ), */
+                //_buildDrawerItem(context, 'NEW ARRIVALS'),
                 const Divider(
                   height: 1,
                   color: Colors.grey,
                   indent: 15,
                   endIndent: 15,
                 ),
-                _buildDrawerItem(context, "TODAY'S DEALS"),
-                const Divider(
-                  height: 1,
-                  color: Colors.grey,
-                  indent: 15,
-                  endIndent: 15,
-                ),
-                _buildDrawerItem(context, 'NEW ARRIVALS'),
-                const Divider(
-                  height: 1,
-                  color: Colors.grey,
-                  indent: 15,
-                  endIndent: 15,
-                ),
-                _buildDrawerItem(context, 'GIFT CARDS'),
+                /* _buildDrawerItem(context, 'GIFT CARDS'), */
                 _buildDrawerItem(context, 'SETTINGS'),
                 Padding(
                   padding: const EdgeInsets.all(8),
@@ -391,7 +391,7 @@ class _DrawerCustomState extends State<DrawerCustom> {
                     readOnly: true,
                     decoration: InputDecoration(
                       border: const UnderlineInputBorder(),
-                      hintText: 'Search for products...',
+                      hintText: 'Search ...',
                       hintStyle: textStyleNewsReaderRegular18,
                       suffixIcon: const Icon(Icons.search),
                       suffixIconColor: Colors.grey,
@@ -443,7 +443,7 @@ class _DrawerCustomState extends State<DrawerCustom> {
     return ListTile(
       title: Text(
         title,
-        style: title.contains("TODAY'S DEAL")
+        style: title.contains("TODAY'S DEALS")
             ? GoogleFonts.anybody(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
@@ -471,25 +471,30 @@ class _DrawerCustomState extends State<DrawerCustom> {
               );
               break;
             case 'PRODUCTS':
-              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (final context) => const ShopByCategoryScreen(),
+                ),
+              );
               break;
-            case 'BRANDS':
+            /* case 'BRANDS':
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (final context) => const FAQScreen(),
                 ),
               );
-              break;
+              break; */
             case "TODAY'S DEALS":
               Navigator.of(context).pop();
               break;
             case 'NEW ARRIVALS':
               Navigator.of(context).pop();
               break;
-            case 'GIFT CARDS':
+            /* case 'GIFT CARDS':
               Navigator.of(context).pop();
-              break;
+              break; */
             case 'SETTINGS':
               Navigator.push(
                 context,
@@ -536,66 +541,22 @@ class _DrawerCustomState extends State<DrawerCustom> {
   }
 }
 
-Stack _buildTranfer(final BuildContext context, final bool isTransfer) {
-  return Stack(
-    children: [
-      IconButton(
-        onPressed: () {},
-        icon: Icon(
-          Icons.compare_arrows_outlined,
-          color: Theme.of(context).brightness == Brightness.light
-              ? Colors.white
-              : Colors.black,
-        ),
-      ),
-      Positioned(
-        top: 25,
-        left: 25,
-        child: Container(
-          width: 24,
-          height: 24,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isTransfer ? Colors.red : Colors.white,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Text(
-            '0',
-            style: TextStyle(color: isTransfer ? Colors.white : Colors.black),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 Stack _buildFavorite(final BuildContext context, final bool isFavorite) {
   return Stack(
     children: [
       IconButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (final context) => const FavouriteScreen(),
+              ),);
+        },
         icon: Icon(
           Icons.favorite_border,
           color: Theme.of(context).brightness == Brightness.light
               ? Colors.white
               : Colors.black,
-        ),
-      ),
-      Positioned(
-        top: 25,
-        left: 25,
-        child: Container(
-          width: 24,
-          height: 24,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isFavorite ? Colors.red : Colors.white,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Text(
-            '0',
-            style: TextStyle(color: isFavorite ? Colors.white : Colors.black),
-          ),
         ),
       ),
     ],
@@ -607,7 +568,11 @@ Stack _buildCart(final BuildContext context, final bool isCart) {
     children: [
       IconButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShoppingCartScreen(),));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (final context) => const ShoppingCartScreen(),
+              ),);
         },
         icon: HeroIcon(
           HeroIcons.shoppingBag,
@@ -616,6 +581,50 @@ Stack _buildCart(final BuildContext context, final bool isCart) {
               : Colors.black,
         ),
       ),
+      BlocBuilder<UserBloc,UserState>(builder: (final context, final state) {
+        if(state is UserLoading){
+          return Positioned(
+              top: 25,
+              left: 25,
+              child: Container(
+                width: 24,
+                height: 24,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: const Text(
+                  '0',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            );
+        }
+        if(state is UserLoaded){
+          return Visibility(
+              visible: state.user!.shopping_cart!.items!.isEmpty?false:true,
+              child: Positioned(
+                top: 25,
+                left: 25,
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Text(
+                    '${state.user!.shopping_cart!.items!.length}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            );
+        }
+        return Container();
+      },),
     ],
   );
 }
@@ -628,10 +637,12 @@ class CustomSearch extends SearchDelegate {
         onPressed: () {
           BlocProvider.of<LocalSearchBloc>(context)
               .add(SaveItemSearch(SearchEntity(name: query)));
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.black,
-            content: Text('$query saved successfully.'),
-          ),);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.black,
+              content: Text('$query saved successfully.'),
+            ),
+          );
         },
         icon: const Icon(Icons.save_alt_outlined),
       ),
@@ -681,6 +692,7 @@ class CustomSearch extends SearchDelegate {
               final search = filteredSearches[index];
               return ItemSearchWidget2(
                 search: search,
+                onItemSearchPressed: (final title) => query = title,
               );
             },
           );
@@ -691,7 +703,7 @@ class CustomSearch extends SearchDelegate {
     );
   }
 
-  Widget _buildSearchLocal(final context){
+  Widget _buildSearchLocal(final context) {
     return BlocBuilder<LocalSearchBloc, LocalSearchState>(
       builder: (final context, final state) {
         if (state is LocalSearchLoading) {

@@ -5,11 +5,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import '../config/constaint.dart';
+import '../config/image.dart';
 import '../config/textStyle.dart';
 import '../features/changepasswordpage/presentation/view/change_oldpw_screen.dart';
 import '../features/faqpage/presentation/view/faq_screen.dart';
@@ -25,6 +27,7 @@ import '../features/themechange/bloc/theme_bloc.dart';
 import '../features/themechange/data/theme.dart';
 import '../features/themechange/domain/themeEntity.dart';
 import '../network/end_points.dart';
+import 'VietNamPhoneTEST.dart';
 import 'addressUser_screen.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -44,6 +47,11 @@ class _SettingScreenState extends State<SettingScreen> {
             Provider.of<UserProvider>(context, listen: false).getUser!.id!,
           ),
         );
+    context.read<UserBloc>().add(
+          GetUserById2(
+            Provider.of<UserProvider>(context, listen: false).getUser!.id!,
+          ),
+        );
   }
 
   @override
@@ -52,8 +60,10 @@ class _SettingScreenState extends State<SettingScreen> {
     return BlocBuilder<UserBloc, UserState>(
       builder: (final context, final state) {
         if (state is UserLoading) {
-          return const Center(
-            child: CircularProgressIndicator.adaptive(),
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator.adaptive(),
+            ),
           );
         }
         if (state is UserError) {
@@ -107,20 +117,24 @@ class _SettingScreenState extends State<SettingScreen> {
                         top: 50,
                         left: 130,
                         child: CircleAvatar(
-                          maxRadius: 70,
-                          minRadius: 70,
+                          maxRadius: 65,
+                          minRadius: 65,
                           child: CachedNetworkImage(
-                            imageUrl: state.user!.user_image ?? '',
+                            imageUrl: state.user!.user_image?[0] == 'i'
+                                ? '${EndPoints.urlImage}${state.user!.user_image!}'
+                                : state.user!.user_image ?? '',
                             imageBuilder: (final context, final imageProvider) {
                               return Container(
+                                width: MediaQuery.of(context).size.width / 3,
+                                height: MediaQuery.of(context).size.width / 2,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: const BorderRadius.all(
-                                    Radius.circular(100),
+                                    Radius.circular(99),
                                   ),
                                   image: DecorationImage(
                                     image: imageProvider,
-                                    fit: BoxFit.cover,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                               );
@@ -130,11 +144,10 @@ class _SettingScreenState extends State<SettingScreen> {
                               return ClipRRect(
                                 borderRadius: BorderRadius.circular(20.0),
                                 child: Container(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  height: MediaQuery.of(context).size.width / 2,
                                   decoration: BoxDecoration(
                                     color: Colors.black.withOpacity(0.08),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(100),
-                                    ),
                                   ),
                                   child: const CupertinoActivityIndicator(),
                                 ),
@@ -143,11 +156,14 @@ class _SettingScreenState extends State<SettingScreen> {
                             errorWidget:
                                 (final context, final url, final error) {
                               return Container(
+                                width: MediaQuery.of(context).size.width / 3,
+                                height: MediaQuery.of(context).size.width / 2,
+                                
                                 decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(100),
-                                  ),
                                   color: Colors.black.withOpacity(0.04),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(99),
+                                  ),
                                 ),
                               );
                             },
@@ -188,7 +204,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           width: MediaQuery.of(context).size.width,
                           alignment: Alignment.center,
                           child: Text(
-                            state.user!.name!.toUpperCase(),
+                            state.user!.name!,
+                            textAlign: TextAlign.center,
                             style: textStyleInterExtraBold24W,
                           ),
                         ),
@@ -249,9 +266,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     },
                   ),
                   const SizedBox(
-                    height: 50,
+                    height: 100,
                   ),
-                  ListTile(
+                  /* ListTile(
                     leading: Icon(
                       Icons.lock,
                       color: Theme.of(context).primaryColor,
@@ -272,7 +289,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         );
                       });
                     },
-                  ),
+                  ), */
                   ListTile(
                     leading: Icon(
                       Icons.question_mark_outlined,
@@ -419,7 +436,9 @@ class EditInformationUserScreen extends StatefulWidget {
 }
 
 class _EditInformationUserScreenState extends State<EditInformationUserScreen> {
-  File? image;
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  String? _base64Image;
 
   TextEditingController usernameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -427,28 +446,36 @@ class _EditInformationUserScreenState extends State<EditInformationUserScreen> {
 
   Future _pickImage(final ImageSource source) async {
     try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
-      final imageTemp = File(image.path);
-      setState(() {
-        this.image = imageTemp;
-      });
+      final picker = await ImagePicker().pickImage(source: source);
+      if (picker != null) {
+        final imageFile = File(picker.path);
+        final bytes = await imageFile.readAsBytes();
+        final base64Image = base64Encode(bytes);
+
+        setState(() {
+          _image = imageFile;
+          _base64Image = 'data:image/png;base64,$base64Image';
+        });
+      }
     } on PlatformException catch (e) {
-      print('Failed to pick image $e');
+      print('Failed to pick image: $e');
     }
   }
 
   Future<ImageSource?> showImageSource(final BuildContext context) async {
-    showBottomSheet(
+    return await showModalBottomSheet<ImageSource>(
       context: context,
       builder: (final context) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.camera_alt),
               title: const Text('Camera'),
               onTap: () => Navigator.of(context).pop(ImageSource.camera),
             ),
             ListTile(
+              leading: const Icon(Icons.image),
               title: const Text('Gallery'),
               onTap: () => Navigator.of(context).pop(ImageSource.gallery),
             ),
@@ -456,12 +483,13 @@ class _EditInformationUserScreenState extends State<EditInformationUserScreen> {
         );
       },
     );
-    return null;
   }
 
   @override
   void initState() {
     super.initState();
+    context.read<UserBloc>().add(GetUserById2(
+        Provider.of<UserProvider>(context, listen: false).getUser!.id!,),);
     usernameController = TextEditingController(text: widget.user.name);
     phoneController = TextEditingController(text: widget.user.phone_number);
     emailController = TextEditingController(text: widget.user.email);
@@ -481,73 +509,143 @@ class _EditInformationUserScreenState extends State<EditInformationUserScreen> {
           'Thông tin tài khoản người dùng',
           style: textStylePlusJakartaSansMedium14Height1point5,
         ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (final BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Lưu ý'),
+                    content: const Text(
+                      'Bạn có chắc muốn lưu thay đổi?',
+                    ),
+                    actions: [
+                      TextButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(
+                            Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        onPressed: () {
+                          UpdateUserInfo(
+                            Provider.of<UserProvider>(context, listen: false)
+                                .getUser!
+                                .id!,
+                            usernameController.text,
+                            phoneController.text,
+                            _base64Image??'',
+                          ).then((final value) => context.read<UserBloc>().add(
+                              GetUserById2(Provider.of<UserProvider>(context)
+                                  .getUser!
+                                  .id!,),),);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('OK'),
+                      ),
+                      TextButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(
+                            Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('CANCEL'),
+                      ),
+                    ],
+                  );
+                },
+              ).then((final value) => context.read<UserBloc>().add(GetUserById2(Provider.of<UserProvider>(context,listen: false).getUser!.id!)));
+            },
+            child: const Text('Lưu'),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                maxRadius: 70,
-                minRadius: 70,
-                child: image == null
-                    ? CachedNetworkImage(
-                        imageUrl: widget.user.user_image!??'',
-                        imageBuilder: (final context, final imageProvider) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(100),
-                              ),
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          );
-                        },
-                        progressIndicatorBuilder:
-                            (final context, final url, final progress) {
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.08),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(100),
-                                ),
-                              ),
-                              child: const CupertinoActivityIndicator(),
-                            ),
-                          );
-                        },
-                        errorWidget: (final context, final url, final error) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(100),
-                              ),
-                              color: Colors.black.withOpacity(0.04),
-                            ),
-                          );
-                        },
-                      )
-                    : ClipOval(
-                        child: Image.file(
-                        image!,
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        fit: BoxFit.cover,
-                      ),),
+              Container(
+                alignment: Alignment.center,
+                child: CircleAvatar(
+                  maxRadius: 65,
+                  minRadius: 65,
+                  child: _image == null
+                      ? widget.user.user_image != null
+                          ? CachedNetworkImage(
+                              imageUrl: widget.user.user_image?[0] == 'i'
+                                  ? '${EndPoints.urlImage}${widget.user.user_image!}'
+                                  : widget.user.user_image!,
+                              imageBuilder: (final context, final imageProvider) {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  height: MediaQuery.of(context).size.width / 2,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(99),
+                                    ),
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                );
+                              },
+                              progressIndicatorBuilder:
+                                  (final context, final url, final progress) {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width / 3,
+                                    height: MediaQuery.of(context).size.width / 2,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.08),
+                                    ),
+                                    child: const CupertinoActivityIndicator(),
+                                  ),
+                                );
+                              },
+                              errorWidget:
+                                  (final context, final url, final error) {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  height: MediaQuery.of(context).size.width / 2,
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.04),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(99),
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Container()
+                      : ClipOval(
+                          child: Image.file(
+                            _image!,
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                ),
               ),
-              TextButton(
-                onPressed: () async {
-                  /* final source= await showImageSource(context);
-                  if(source==null) return; */
-                  _pickImage(ImageSource.gallery);
-                },
-                child: const Text('Chọn ảnh'),
+              Container(
+                alignment: Alignment.center,
+                child: TextButton(
+                  onPressed: () async {
+                    final source = await showImageSource(context);
+                    if (source == null) return;
+                    _pickImage(source);
+                  },
+                  child: const Text('Chọn ảnh'),
+                ),
               ),
               Text(
                 'Username:',
@@ -570,7 +668,13 @@ class _EditInformationUserScreenState extends State<EditInformationUserScreen> {
                 controller: phoneController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
+                  hintText: 'Enter Vietnamese phone number',
                 ),
+                keyboardType: TextInputType.phone,
+                maxLength: 10,
+                inputFormatters: [
+                  VietnamesePhoneNumberFormatter(),
+                ],
               ),
               Text(
                 'Email:',
@@ -592,14 +696,20 @@ class _EditInformationUserScreenState extends State<EditInformationUserScreen> {
 }
 
 Future<UserResponseModel?> UpdateUserInfo(
-    final int userId, final String name, final String phone, final String img,) async {
+  final int userId,
+  final String name,
+  final String phone,
+  final String? img,
+) async {
   try {
-    final res =
-        await Dio().put('${EndPoints.baseUrl}${EndPoints.user}/$userId', data: {
-      'name': name,
-      'phone_number': phone,
-      'user_image': img,
-    },);
+    final res = await Dio().put(
+      '${EndPoints.baseUrl}${EndPoints.user}/$userId',
+      data: {
+        'name': name,
+        'phone_number': phone,
+        'user_image': img,
+      },
+    );
     log('Cập nhật User thành công');
     final result = UserResponseModel.fromJson(res.data);
     return result;

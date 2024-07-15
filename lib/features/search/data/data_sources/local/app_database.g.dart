@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `search_product` (`id` INTEGER, `name` TEXT, `id` INTEGER, `name` TEXT, PRIMARY KEY (`id`, `id`))');
+            'CREATE TABLE IF NOT EXISTS `search_product` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -120,17 +120,13 @@ class _$SearchDao extends SearchDao {
             'search_product',
             (SearchModel item) => <String, Object?>{
                   'id': item.id,
-                  'name': item.name,
-                  'id': item.id,
                   'name': item.name
                 }),
         _searchModelDeletionAdapter = DeletionAdapter(
             database,
             'search_product',
-            ['id', 'id'],
+            ['id'],
             (SearchModel item) => <String, Object?>{
-                  'id': item.id,
-                  'name': item.name,
                   'id': item.id,
                   'name': item.name
                 });

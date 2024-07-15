@@ -13,7 +13,9 @@ import '../features/loginregisterpage/data/model/user_model.dart';
 import '../features/loginregisterpage/data/services/provider.dart';
 import '../features/loginregisterpage/domain/entities/user.dart';
 import '../features/orderpage/data/model/order_response_model.dart';
+import '../features/paymenttype/data/payment_response_model.dart';
 import '../features/policypage/data/models/policy_response_model.dart';
+import '../features/reviewpage/data/review_response_model.dart';
 import '../features/shopbycategorypage/data/models/category_response_model.dart';
 import '../features/termpage/data/models/term_response_model.dart';
 import 'api_provider.dart';
@@ -106,6 +108,29 @@ class Api {
       return result;
     } catch(e){
       log('OrderResponseModel lỗi $e');
+      return null;
+    }
+  }
+
+  Future<ReviewResponseModel?> getReview(final int productId) async{
+    try{
+      final res = await http.getRequest('${EndPoints.review}/$productId');
+      final result = ReviewResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('ReviewResponseModel lỗi $e');
+      return null;
+    }
+  }
+  Future<PaymentResponseModel?> getPaymentType() async{
+    try{
+      final res = await http.getRequest('payment_type');
+      final result = PaymentResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('PaymentResponseModel lỗi $e');
       return null;
     }
   }

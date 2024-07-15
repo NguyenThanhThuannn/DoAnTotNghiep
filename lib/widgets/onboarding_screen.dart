@@ -35,14 +35,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Text(
-                      'Khám phá nhiều loại sản phẩm khác nhau',
+                      'Explore a wide variety of products',
                       style: textStylePlusJakartaSansBold24,
                       textAlign: TextAlign.center,
                     ),
                   ),
                   SizedBox(
                     child: Text(
-                      'Khám phá một loạt các sản phẩm trong tầm tay của bạn. Chúng tôi cung cấp một bộ sưu tập phong phú phù hợp với nhu cầu của bạn.',
+                      'Explore a wide range of products at your fingertips. We offer an extensive collection to "fit" your budget.',
                       softWrap: true,
                       maxLines: 3,
                       textAlign: TextAlign.center,
@@ -80,7 +80,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
                       child: Text(
-                        'Bắt đầu',
+                        'Start',
                         style: Theme.of(context).brightness == Brightness.light
                             ? textStyleInterMedium20W
                             : textStyleInterMedium20,

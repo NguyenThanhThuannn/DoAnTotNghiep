@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:provider/provider.dart';
 
+import '../features/favoritepage/presentation/bloc/favourite_bloc.dart';
 import '../features/favoritepage/presentation/view/favourite_screen.dart';
 import '../features/homepage/presentation/bloc/home_page_bloc.dart';
 import '../features/loginregisterpage/data/model/user_model.dart';
+import '../features/loginregisterpage/data/services/provider.dart';
 import '../features/loginregisterpage/presentation/bloc/user_bloc.dart';
 import '../features/search/domain/entities/search.dart';
 import '../features/search/presentation/bloc/local_search_bloc.dart';
@@ -73,30 +76,18 @@ Stack _buildFavorite(final BuildContext context, final bool isFavorite) {
     children: [
       IconButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => FavouriteScreen(),));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (final context) => const FavouriteScreen(),
+            ),
+          );
         },
         icon: Icon(
           Icons.favorite_border,
           color: Theme.of(context).brightness == Brightness.light
               ? Colors.white
               : Colors.black,
-        ),
-      ),
-      Positioned(
-        top: 25,
-        left: 25,
-        child: Container(
-          width: 24,
-          height: 24,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isFavorite ? Colors.red : Colors.white,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Text(
-            '0',
-            style: TextStyle(color: isFavorite ? Colors.white : Colors.black),
-          ),
         ),
       ),
     ],
@@ -109,10 +100,11 @@ Stack _buildCart(final BuildContext context, final bool isCart) {
       IconButton(
         onPressed: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (final context) => const ShoppingCartScreen(),
-              ),);
+            context,
+            MaterialPageRoute(
+              builder: (final context) => const ShoppingCartScreen(),
+            ),
+          );
         },
         icon: HeroIcon(
           HeroIcons.shoppingBag,
@@ -121,27 +113,52 @@ Stack _buildCart(final BuildContext context, final bool isCart) {
               : Colors.black,
         ),
       ),
-      /* Positioned(
-        top: 25,
-        left: 25,
-        child: BlocBuilder<UserBloc, UserState>(
-          builder: (final context, final state) {
-            return Container(
-              width: 24,
-              height: 24,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isCart ? Colors.red : Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                '${state.user!.shopping_cart!.items!.length}',
-                style: TextStyle(color: isCart ? Colors.white : Colors.black),
+      BlocBuilder<UserBloc, UserState>(
+        builder: (final context, final state) {
+          if (state is UserLoading) {
+            return Positioned(
+              top: 25,
+              left: 25,
+              child: Container(
+                width: 24,
+                height: 24,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: const Text(
+                  '0',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             );
-          },
-        ),
-      ), */
+          }
+          if (state is UserLoaded) {
+            return Visibility(
+              visible: state.user!.shopping_cart!.items!.isEmpty?false:true,
+              child: Positioned(
+                top: 25,
+                left: 25,
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Text(
+                    '${state.user!.shopping_cart!.items!.length}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            );
+          }
+          return Container();
+        },
+      ),
     ],
   );
 }

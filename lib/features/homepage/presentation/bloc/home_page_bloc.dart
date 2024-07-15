@@ -15,6 +15,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   }
   final GetBestSellingUseCase _getBestSellingUseCase;
   Future<void> onGetBestSellings (final GetBestSellings event, final Emitter<HomePageState> emit) async{
+    emit(const HomePageLoading());
     final dataState = await _getBestSellingUseCase();
     if(dataState is DataSucces && dataState.data!.isNotEmpty){
       emit(HomePageLoaded(dataState.data!));

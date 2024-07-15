@@ -84,6 +84,14 @@ class _DailyDealState extends State<DailyDeal> {
                                   )
                                   .toList();
                               break;
+                            case 1:
+                              proNew = state.products!
+                                  .where(
+                                    (final element) =>
+                                        element.type!.contains('Featured'),
+                                  )
+                                  .toList();
+                              break;
                             case 2:
                               proNew = state.products!
                                   .where(

@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../../../config/textStyle.dart';
 import '../../../../injection_container.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
+import '../../../loginregisterpage/data/services/provider.dart';
 import '../../../loginregisterpage/presentation/bloc/user_bloc.dart';
 import '../../../search/presentation/bloc/local_search_bloc.dart';
 import '../../../shopbycategorypage/presentation/view/shopbycategory_screen.dart';
@@ -37,12 +39,18 @@ class _HomePageScreenState extends State<HomePageScreen> {
     final int randomIndex = random.nextInt(products.length);
     return products[randomIndex].id!;
   }
-  /* @override
+
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    
     context.read<HomePageBloc>().add(GetBestSellings());
-  } */
+    context.read<UserBloc>().add(GetUserById(
+        Provider.of<UserProvider>(context, listen: false).getUser!.id!,),);
+    context.read<UserBloc>().add(GetUserById2(
+        Provider.of<UserProvider>(context, listen: false).getUser!.id!,),);
+  }
+
   @override
   Widget build(final BuildContext context) {
     return BlocBuilder<HomePageBloc, HomePageState>(
@@ -148,7 +156,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
                               ),
                               onTap: () {
                                 setState(() {
-                                  Navigator.push(context, MaterialPageRoute(builder: (final context) => const ShopByCategoryScreen(),));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (final context) =>
+                                            const ShopByCategoryScreen(),
+                                      ),);
                                 });
                               },
                               title: Text(
@@ -161,7 +174,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(
+                          /* const SizedBox(
                             height: 16,
                           ),
                           _buildContainerLiner(
@@ -175,8 +188,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           ),
                           const SizedBox(
                             height: 8,
-                          ),
-                          _buildContainerLiner(
+                          ), */
+                          /* _buildContainerLiner(
                             context,
                             'OSMO ',
                             'MOBILE',
@@ -184,7 +197,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             const Color.fromRGBO(60, 187, 49, 1),
                             const Color.fromRGBO(137, 233, 129, 1),
                             'assets/img/osmo.png',
-                          ),
+                          ), */
                         ],
                       ),
                     ),
@@ -246,7 +259,7 @@ Container _buildPageOne(final BuildContext context) {
         const SizedBox(
           height: 8,
         ),
-        ElevatedButton(
+        /* ElevatedButton(
           style: const ButtonStyle(
             shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
             backgroundColor:
@@ -254,14 +267,14 @@ Container _buildPageOne(final BuildContext context) {
           ),
           onPressed: () {},
           child: Text(
-            'Explore now',
+            'EXPLORE NOW',
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w400,
               color: Colors.white,
             ),
           ),
-        ),
+        ), */
       ],
     ),
   );
@@ -378,7 +391,7 @@ Stack _buildBestSelling(
                       style: textStyleInterBold18,
                     ),
                     Text(
-                      'Products this week',
+                      'Product in the week',
                       style: textStyleInterMedium18,
                     ),
                   ],
@@ -431,7 +444,12 @@ Stack _buildBestSelling(
                 itemBuilder: (final context, final index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: proBestSelling[index]),));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (final context) =>
+                                ShopCartScreen(sCart: proBestSelling[index]),
+                          ),);
                     },
                     child: BestSellingItem(
                       pro: proBestSelling[index],
@@ -454,7 +472,7 @@ Container _buildRecentBrowsing(
   return Container(
     color: Colors.grey[200],
     width: MediaQuery.of(context).size.width,
-    height: MediaQuery.of(context).size.height / 2-50,
+    height: MediaQuery.of(context).size.height / 2 - 50,
     child: Column(
       children: [
         SizedBox(
@@ -485,7 +503,15 @@ Container _buildRecentBrowsing(
               return Container(
                 margin: const EdgeInsets.only(top: 8, left: 15),
                 color: Colors.white,
-                child: DailyDealItem(pro: proRecentBrowsing[index]),
+                child: GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (final context) =>
+                            ShopCartScreen(sCart: proRecentBrowsing[index]),
+                      ),),
+                  child: DailyDealItem(pro: proRecentBrowsing[index]),
+                ),
               );
             },
           ),

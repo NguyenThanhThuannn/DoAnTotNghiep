@@ -6,62 +6,57 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/format_number.dart';
 import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
 import '../../domain/entities/product.dart';
 
 // ignore: must_be_immutable
 class DailyDealItem extends StatelessWidget {
   DailyDealItem({super.key, required this.pro});
   ProductEntity pro;
-
   @override
   Widget build(final BuildContext context) {
     return Column(
       children: [
         Stack(
           children: [
-            if (ImageCheck().isBase64Image(pro.product_image!))
-              Image.memory(
-                ImageCheck().base64ToImage(pro.product_image!),
-                width: MediaQuery.of(context).size.width / 3,
-                height: MediaQuery.of(context).size.width / 2,
-                fit: BoxFit.contain,
-              )
-            else
-              CachedNetworkImage(
-                imageUrl: pro.product_image!,
-                imageBuilder: (final context, final imageProvider) {
-                  return Container(
+            CachedNetworkImage(
+              imageUrl: pro.product_image![0] == 'i'
+                  ? '${EndPoints.urlImage}${pro.product_image}'
+                  : pro.product_image!,
+              imageBuilder: (final context, final imageProvider) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
+              progressIndicatorBuilder:
+                  (final context, final url, final progress) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Container(
                     width: MediaQuery.of(context).size.width / 3,
                     height: MediaQuery.of(context).size.width / 2,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  );
-                },
-                progressIndicatorBuilder:
-                    (final context, final url, final progress) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width / 3,
-                      decoration:
-                          BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                      child: const CupertinoActivityIndicator(),
-                    ),
-                  );
-                },
-                errorWidget: (final context, final url, final error) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width / 3,
-                    height: MediaQuery.of(context).size.width / 2,
-                    color: Colors.black.withOpacity(0.04),
-                  );
-                },
-              ),
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                    child: const CupertinoActivityIndicator(),
+                  ),
+                );
+              },
+              errorWidget: (final context, final url, final error) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2,
+                  color: Colors.black.withOpacity(0.04),
+                );
+              },
+            ),
             //_buildSwitchCaseTag(context, pro.tag),
           ],
         ),

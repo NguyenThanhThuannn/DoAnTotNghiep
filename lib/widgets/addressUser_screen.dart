@@ -85,13 +85,12 @@ class _EditAddressScreenState extends State<AddressesUserScreen> {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height /
                         10 *
-                        lstAddresses.length,
+                        lstAddresses.length*1.5,
                     child: ListView.builder(
                       itemCount: lstAddresses.length,
                       itemBuilder: (final context, final index) {
                         return ListTile(
-                          title: Text(lstAddresses[index].id.toString()),
-                          subtitle: Text(lstAddresses[index].address_line!),
+                          title: Text(lstAddresses[index].address_line.toString()),
                           trailing: GestureDetector(
                             onTap: () {
                               setState(() {

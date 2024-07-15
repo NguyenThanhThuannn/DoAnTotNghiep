@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -48,12 +49,13 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
             appBar: AppBar(
               leading: GestureDetector(
                 onTap: () {
+                  //context.read<UserBloc>().add(GetUserById2(Provider.of<UserProvider>(context,listen: false).getUser!.id!));
                   Navigator.pop(context);
                 },
                 child: const Icon(Icons.keyboard_arrow_left_outlined),
               ),
               title: Text(
-                'Giỏ hàng',
+                'Cart',
                 style: textStylePlusJakartaSansMedium14Height1point5,
               ),
             ),
@@ -74,13 +76,14 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                 child: const Icon(Icons.keyboard_arrow_left_outlined),
               ),
               title: Text(
-                'Giỏ hàng',
+                'Cart',
                 style: textStylePlusJakartaSansMedium14Height1point5,
               ),
             ),
             body: shoppingCartItems.isNotEmpty
                 ? ListView.builder(
                     itemCount: shoppingCartItems.length,
+                    itemExtent: 200,
                     padding: const EdgeInsets.only(bottom: 50),
                     itemBuilder: (final context, final index) {
                       return Dismissible(
@@ -93,45 +96,36 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                               context: context,
                               builder: (final BuildContext context) {
                                 return AlertDialog(
-                                  content: SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 4,
-                                    height:
-                                        MediaQuery.of(context).size.width / 4,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Xóa sản phẩm này?',
+                                  title: const Text('Lưu ý'),
+                                  content: const Text('Xóa sản phẩm này?'),
+                                  actions: [
+                                    TextButton(
+                                      style: ButtonStyle(
+                                        foregroundColor:
+                                            MaterialStatePropertyAll(
+                                          Theme.of(context).primaryColor,
                                         ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop(
-                                                  true,
-                                                ); // Return true if OK is pressed
-                                              },
-                                              child: const Text('OK'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop(
-                                                  false,
-                                                ); // Return false if Cancel is pressed
-                                              },
-                                              child: const Text('Cancel'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          Navigator.of(context).pop(true);
+                                        });
+                                      },
+                                      child: const Text('OK'),
                                     ),
-                                  ),
+                                    TextButton(
+                                      style: ButtonStyle(
+                                        foregroundColor:
+                                            MaterialStatePropertyAll(
+                                          Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(false);
+                                      },
+                                      child: const Text('CANCEL'),
+                                    ),
+                                  ],
                                 );
                               },
                             );
@@ -153,12 +147,32 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                                     ),
                                   ),
                             );
-                            /* shoppingCartItems.removeAt(index); */
+                            setState(() {
+                              shoppingCartItems.removeAt(index);
+                            });
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Xóa sản phẩm thành công}'),
-                              ),
+                            showDialog(
+                              context: context,
+                              builder: (final BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content:
+                                      const Text('Xóa sản phẩm thành công'),
+                                  actions: [
+                                    TextButton(
+                                      style: ButtonStyle(
+                                        foregroundColor:
+                                            MaterialStatePropertyAll(
+                                          Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           } catch (e) {
                             log(e.toString());
@@ -185,20 +199,36 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                   ),
             bottomSheet: Visibility(
               visible: state.user!.shopping_cart!.items!.isEmpty ? false : true,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (final context) => CheckOutScreen(
-                          lstProInCO: shoppingCartItems,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Mua hàng'),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (final context) =>
+                          CheckOutScreen(lstProInCO: shoppingCartItems),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 13, 144, 250),
+                        Color.fromARGB(255, 201, 224, 244),
+                      ],
+                    ),
+                  ),
+                  child: Text(
+                    'CHECK OUT',
+                    style: textStyleInterSemiBold18W,
+                  ),
                 ),
               ),
             ),
@@ -223,27 +253,23 @@ class CartItem extends StatefulWidget {
 
 class _CartItemState extends State<CartItem> {
   int quanlity = 0;
+  late TextEditingController quanlityController = TextEditingController();
+
   @override
   Widget build(final BuildContext context) {
     return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (final context, final state) {
-        ProductEntity? pro;
-        pro = state.products!.firstWhere(
-          (final element) => element.id == widget.product.product_item_id,
-        );
-        quanlity = widget.product.qty!;
-        return Row(
-          children: [
-            if (ImageCheck().isBase64Image(pro.product_image!))
-              Image.memory(
-                ImageCheck().base64ToImage(pro.product_image!),
-                width: MediaQuery.of(context).size.width / 3,
-                height: MediaQuery.of(context).size.width / 2,
-                fit: BoxFit.contain,
-              )
-            else
+        if (state is HomePageLoaded) {
+          ProductEntity? pro;
+          pro = state.products!.firstWhere(
+            (final element) => element.id == widget.product.product_item_id,
+          );
+          return Row(
+            children: [
               CachedNetworkImage(
-                imageUrl: pro.product_image!,
+                imageUrl: widget.product.product_image![0] == 'i'
+                    ? '${EndPoints.urlImage}${widget.product.product_image}'
+                    : widget.product.product_image!,
                 imageBuilder: (final context, final imageProvider) {
                   return Container(
                     width: MediaQuery.of(context).size.width / 3,
@@ -263,6 +289,7 @@ class _CartItemState extends State<CartItem> {
                     borderRadius: BorderRadius.circular(20.0),
                     child: Container(
                       width: MediaQuery.of(context).size.width / 3,
+                      height: MediaQuery.of(context).size.width / 2,
                       decoration:
                           BoxDecoration(color: Colors.black.withOpacity(0.08)),
                       child: const CupertinoActivityIndicator(),
@@ -277,160 +304,322 @@ class _CartItemState extends State<CartItem> {
                   );
                 },
               ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 1.8,
-              height: MediaQuery.of(context).size.width / 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width / 3,
-                      child: Text(
-                        pro.name!,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        style: textStyleInterMedium18,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Text(
-                      CurrencyFormatter().formatNumber(pro.product_item!.price!),
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (quanlity > 1) {
-                            quanlity--;
-                            UpdateProductInCart(
-                              Provider.of<UserProvider>(
-                                context,
-                                listen: false,
-                              ).getUser!.id!,
-                              pro!,
-                              -1,
-                            ).then(
-                              (final value) => context.read<UserBloc>().add(
-                                    GetUserById2(
-                                      Provider.of<UserProvider>(
-                                        context,
-                                        listen: false,
-                                      ).getUser!.id!,
-                                    ),
-                                  ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                showCloseIcon: true,
-                                duration: const Duration(seconds: 1),
-                                content:
-                                    Text('Đã cập nhật số lượng ${pro.name}'),
-                              ),
-                            );
-                          } else {
-                            /* deleteProductInCart(widget.product.id!).then(
-                              (final value) => context.read<UserBloc>().add(
-                                    GetUserById2(
-                                      Provider.of<UserProvider>(
-                                        context,
-                                        listen: false,
-                                      ).getUser!.id!,
-                                    ),
-                                  ),
-                            ); */
-                            deleteProductInCart(widget.product.id!);
-                            context.read<UserBloc>().add(
-                                    GetUserById2(
-                                      Provider.of<UserProvider>(
-                                        context,
-                                        listen: false,
-                                      ).getUser!.id!,
-                                    ),
-                                  );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                showCloseIcon: true,
-                                duration: const Duration(seconds: 1),
-                                content: Text('Đã xóa ${pro!.name}'),
-                              ),
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const FaIcon(FontAwesomeIcons.minus),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 8, right: 8),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 1.8,
+                height: MediaQuery.of(context).size.width / 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width / 3,
                         child: Text(
-                          '$quanlity',
+                          pro.name!,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
                           style: textStyleInterMedium18,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          if (quanlity < pro!.product_item!.qty_in_stock!) {
-                            quanlity++;
-                            UpdateProductInCart(
-                              Provider.of<UserProvider>(
-                                context,
-                                listen: false,
-                              ).getUser!.id!,
-                              pro,
-                              1,
-                            ).then(
-                              (final value) => context.read<UserBloc>().add(
-                                    GetUserById2(
-                                      Provider.of<UserProvider>(
-                                        context,
-                                        listen: false,
-                                      ).getUser!.id!,
-                                    ),
-                                  ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                showCloseIcon: true,
-                                duration: const Duration(seconds: 1),
-                                content:
-                                    Text('Đã cập nhật số lượng ${pro.name}'),
-                              ),
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const FaIcon(FontAwesomeIcons.plus),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Text(
+                        CurrencyFormatter()
+                            .formatNumber(pro.product_item!.price!),
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (final context, final state) {
+                        if(state is UserLoaded){
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                if (widget.product.qty! > 1) {
+                                  // quanlity--;
+                                  UpdateProductInCart(
+                                    Provider.of<UserProvider>(
+                                      context,
+                                      listen: false,
+                                    ).getUser!.id!,
+                                    pro!,
+                                    -1,
+                                  ).then(
+                                    (final value) =>
+                                        context.read<UserBloc>().add(
+                                              GetUserById2(
+                                                Provider.of<UserProvider>(
+                                                  context,
+                                                  listen: false,
+                                                ).getUser!.id!,
+                                              ),
+                                            ),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      showCloseIcon: true,
+                                      duration: const Duration(seconds: 1),
+                                      content: Text(
+                                          'Đã cập nhật số lượng ${pro.name}',),
+                                    ),
+                                  );
+                                } else {
+                                  /* deleteProductInCart(widget.product.id!).then(
+                                                  (final value) => context.read<UserBloc>().add(
+                                                        GetUserById2(
+                                                          Provider.of<UserProvider>(
+                                                            context,
+                                                            listen: false,
+                                                          ).getUser!.id!,
+                                                        ),
+                                                      ),
+                                                ); */
+                                  showDialog(
+                                    context: context,
+                                    builder: (final BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Cảnh báo'),
+                                        content: const Text(
+                                          'Bạn có chắc muốn xóa sản phẩm này!',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStatePropertyAll(
+                                                Theme.of(context).primaryColor,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              deleteProductInCart(
+                                                widget.product.id!,
+                                              );
+                                              context.read<UserBloc>().add(
+                                                    GetUserById2(
+                                                      Provider.of<UserProvider>(
+                                                        context,
+                                                        listen: false,
+                                                      ).getUser!.id!,
+                                                    ),
+                                                  );
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('OK'),
+                                          ),
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStatePropertyAll(
+                                                Theme.of(context).primaryColor,
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('CANCEL'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const FaIcon(FontAwesomeIcons.minus),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                quanlityController.clear();
+                                //quanlityController.text = quanlity.toString();
+                                showDialog(
+                                  context: context,
+                                  builder: (final BuildContext context) {
+                                    return AlertDialog(
+                                      title: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Chỉnh số lượng sản phẩm:',
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                          Text.rich(
+                                            TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: 'Số lượng tối đa: ',
+                                                  style: const TextStyle(
+                                                      fontSize: 15,),
+                                                  children: [
+                                                    TextSpan(
+                                                      text:
+                                                          '${pro!.product_item!.qty_in_stock!}',
+                                                      style: const TextStyle(
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      content: TextField(
+                                        controller: quanlityController,
+                                        onChanged: (final value) {
+                                          setState(() {
+                                                          
+                                          quanlityController
+                                              .text = (int.parse(value) <= 0 ||
+                                                      (int.parse(value) >
+                                                          pro!.product_item!
+                                                              .qty_in_stock!)
+                                                  ? 1
+                                                  : value)
+                                              .toString();
+                                          });
+                                        },
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStatePropertyAll(
+                                              Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              int temp = 1;
+                                              temp = int.parse(
+                                                quanlityController.text,
+                                              );
+                                              temp = temp -
+                                                  widget.product.qty!;
+                                              UpdateProductInCart(
+                                                Provider.of<UserProvider>(
+                                                  context,
+                                                  listen: false,
+                                                ).getUser!.id!,
+                                                pro!,
+                                                temp,
+                                              ).then((final value) {
+                                                context.read<UserBloc>().add(
+                                                      GetUserById2(
+                                                        Provider.of<
+                                                            UserProvider>(
+                                                          context,
+                                                          listen: false,
+                                                        ).getUser!.id!,
+                                                      ),
+                                                    );
+                                              });
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('SAVE'),
+                                        ),
+                                        TextButton(
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStatePropertyAll(
+                                              Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('CANCEL'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ).then((final value) => context.read<UserBloc>().add(
+                                              GetUserById2(
+                                                Provider.of<UserProvider>(
+                                                  context,
+                                                  listen: false,
+                                                ).getUser!.id!,
+                                              ),
+                                            ),);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                                decoration: BoxDecoration(border: Border.all()),
+                                child: Text(
+                                  '${widget.product.qty}',
+                                  style: textStyleAnybodyRegular18,
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                if (widget.product.qty! <
+                                    pro!.product_item!.qty_in_stock!) {
+                                  UpdateProductInCart(
+                                    Provider.of<UserProvider>(
+                                      context,
+                                      listen: false,
+                                    ).getUser!.id!,
+                                    pro,
+                                    1,
+                                  ).then(
+                                    (final value) =>
+                                        context.read<UserBloc>().add(
+                                              GetUserById2(
+                                                Provider.of<UserProvider>(
+                                                  context,
+                                                  listen: false,
+                                                ).getUser!.id!,
+                                              ),
+                                            ),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      showCloseIcon: true,
+                                      duration: const Duration(seconds: 1),
+                                      content: Text(
+                                          'Đã cập nhật số lượng ${pro.name}',),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const FaIcon(FontAwesomeIcons.plus),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return Container();
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        );
+            ],
+          );
+        }
+        return Container();
       },
     );
   }

@@ -22,6 +22,8 @@ import '../../../loginregisterpage/domain/entities/user.dart';
 import '../../../loginregisterpage/presentation/bloc/user_bloc.dart';
 import '../../../orderpage/data/model/order_response_model.dart';
 import '../../../orderpage/domain/entities/order.dart';
+import '../../../paymenttype/domain/payment_entity.dart';
+import '../../../paymenttype/presentation/bloc/payment_type_bloc.dart';
 import '../bloc/shipping_method_bloc.dart';
 import 'editaddress_screen.dart';
 
@@ -159,6 +161,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   String? selectedValueShipping = 1.toString();
+  String? selectedValuePaymentType = 1.toString();
   late double total;
   @override
   void initState() {
@@ -189,7 +192,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Phương thức vận chuyển ',
+                    'Shipping Method ',
                     style: textStyleInterSemiBold16,
                   ),
                   BlocBuilder<ShippingMethodBloc, ShippingMethodState>(
@@ -231,7 +234,55 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             else
               const SizedBox(),
             //_buildNote(),
-            _buildPhuongThucThanhToan(context),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(17, 0, 17, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 3,
+                    child: Text(
+                      'Payment Method',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style: textStyleInterSemiBold16,
+                    ),
+                  ),
+                  BlocBuilder<PaymentTypeBloc, PaymentTypeState>(
+                    builder: (final context, final state) {
+                      if (state is PaymentTypeLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        );
+                      }
+                      if (state is PaymentTypeError) {
+                        return Text(state.error!.toString());
+                      }
+                      log(state.paymentType!.toString());
+                      final List<DropdownMenuItem<String>> dropdownItems =
+                          state.paymentType!.map((final PaymentEntity item) {
+                        return DropdownMenuItem<String>(
+                          value: item.id.toString(),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width/2,
+                            child: Text(item.value!,overflow: TextOverflow.ellipsis,maxLines: 2,),),
+                        );
+                      }).toList();
+                      return DropdownButton<String>(
+                        value: selectedValuePaymentType,
+                        onChanged: (final String? newValue) {
+                          setState(() {
+                            selectedValuePaymentType = newValue;
+                          });
+                        },
+                        items: dropdownItems,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            //_buildPhuongThucThanhToan(context),
             const Divider(),
             ProductCard(
               lstPro: widget.lstProInCO,
@@ -245,8 +296,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     );
   }
 
-  Padding _buildVoucher(final BuildContext context) {
-    return Padding(
+  Container _buildVoucher(final BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.width / 2,
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
@@ -257,7 +309,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tạm tính:',
+                'SubTotal:',
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -272,7 +324,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   if (state is UserLoaded) {
                     double priceTamTinh = 0.0;
                     for (final i in state.user!.shopping_cart!.items!) {
-                      priceTamTinh += double.parse(i.product!.price!)*i.qty!;
+                      priceTamTinh += double.parse(i.product!.price!) * i.qty!;
                     }
                     return Text(
                       CurrencyFormatter().formatNumber(priceTamTinh.toString()),
@@ -295,7 +347,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Phí vận chuyển:',
+                'Shipping price:',
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -384,7 +436,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Tổng tiền:',
+                  'TotalPrice:',
                   style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
@@ -398,8 +450,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       return Container();
                     }
                     shippingMethod_id = state.shipping_method!
-                        .firstWhere((final element) =>
-                            element.id == int.parse(selectedValueShipping!),)
+                        .firstWhere(
+                          (final element) =>
+                              element.id == int.parse(selectedValueShipping!),
+                        )
                         .id!;
                     total += double.parse(
                       state.shipping_method!
@@ -417,7 +471,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   builder: (final context, final state) {
                     if (state is UserLoaded) {
                       for (final i in state.user!.shopping_cart!.items!) {
-                        total += double.parse(i.product!.price!)*i.qty!;
+                        total += double.parse(i.product!.price!) * i.qty!;
                       }
                       return Text(
                         CurrencyFormatter().formatNumber(total.toString()),
@@ -436,16 +490,93 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           ),
           GestureDetector(
             onTap: () async {
-              address!=null?await Payment().makePayment(
-                context,
-                total.toInt().toString(),
-                lstPro,
-                address!.id!,
-                shippingMethod_id,
-                Provider.of<UserProvider>(context, listen: false).getUser!.id!,
-              ):ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(duration: Duration(seconds: 1),showCloseIcon: true,content: Text('Vui lòng chọn địa chỉ nhận hàng')),
+              if (address != null) {
+                if (selectedValuePaymentType == 1.toString()) {
+                  if (total.toInt() <= 99999999) {
+                    await Payment().makePayment(
+                      context,
+                      total.toInt().toString(),
+                      lstPro,
+                      address!.id!,
+                      shippingMethod_id,
+                      Provider.of<UserProvider>(context, listen: false)
+                          .getUser!
+                          .id!,
+                          int.parse(selectedValuePaymentType!),
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (final BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Lưu ý'),
+                          content: const Text(
+                            'Tổng tiền thanh toán phải nhỏ hơn 99,999,999',
+                          ),
+                          actions: [
+                            TextButton(
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStatePropertyAll(
+                                  Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('OK'),
+                            ),
+                          ],
                         );
+                      },
+                    );
+                  }
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (final BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Thông báo'),
+                        content: const Text(
+                          'Mua hàng thành công',
+                        ),
+                        actions: [
+                          TextButton(
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStatePropertyAll(
+                                Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  AddOrder(
+                    Provider.of<UserProvider>(context, listen: false)
+                        .getUser!
+                        .id!,
+                    lstPro,
+                    address!.id!,
+                    shippingMethod_id,
+                    total.toInt(),
+                    int.parse(selectedValuePaymentType!),
+                  ).then((final value) => Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (final context) => const HomePageScreen(),
+                        ),
+                        (final route) => false,
+                      ),);
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    duration: Duration(seconds: 1),
+                    showCloseIcon: true,
+                    content: Text('Vui lòng chọn địa chỉ nhận hàng'),
+                  ),
+                );
+              }
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
@@ -464,7 +595,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 ),
               ),
               child: Text(
-                'Thanh toán',
+                'PAYMENT',
                 style: textStyleInterSemiBold18W,
               ),
             ),
@@ -653,12 +784,13 @@ class ProductCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thông tin sản phẩm',
+            'Product/Products',
             style: textStyleInterSemiBold16,
           ),
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.width/2+(lstPro.length*20),
+            height:
+                MediaQuery.of(context).size.width / 2 + (lstPro.length * 20),
             child: ListView.builder(
               itemBuilder: (final context, final index) {
                 return CheckOutProItem(
@@ -690,49 +822,44 @@ class CheckOutProItem extends StatelessWidget {
         );
         return Row(
           children: [
-            if (ImageCheck().isBase64Image(pro.product_image!))
-              Image.memory(
-                ImageCheck().base64ToImage(pro.product_image!),
-                width: MediaQuery.of(context).size.width / 3,
-                height: MediaQuery.of(context).size.width / 2.8,
-                fit: BoxFit.contain,
-              )
-            else
-              CachedNetworkImage(
-                imageUrl: pro.product_image!,
-                imageBuilder: (final context, final imageProvider) {
-                  return Container(
+            CachedNetworkImage(
+              imageUrl: pro.product_image![0] == 'i'
+                  ? '${EndPoints.urlImage}${pro.product_image}'
+                  : pro.product_image!,
+              imageBuilder: (final context, final imageProvider) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2.8,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
+              progressIndicatorBuilder:
+                  (final context, final url, final progress) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Container(
                     width: MediaQuery.of(context).size.width / 3,
                     height: MediaQuery.of(context).size.width / 2.8,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  );
-                },
-                progressIndicatorBuilder:
-                    (final context, final url, final progress) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width / 3,
-                      decoration:
-                          BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                      child: const CupertinoActivityIndicator(),
-                    ),
-                  );
-                },
-                errorWidget: (final context, final url, final error) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width / 3,
-                    height: MediaQuery.of(context).size.width / 2.8,
-                    color: Colors.black.withOpacity(0.04),
-                  );
-                },
-              ),
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                    child: const CupertinoActivityIndicator(),
+                  ),
+                );
+              },
+              errorWidget: (final context, final url, final error) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width / 2.8,
+                  color: Colors.black.withOpacity(0.04),
+                );
+              },
+            ),
             const SizedBox(
               width: 8,
             ),
@@ -796,17 +923,13 @@ class AddressCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  address.id!.toString(),
-                  style: textStyleInterSemiBold14,
-                ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.8,
                   child: Text(
                     softWrap: true,
                     maxLines: 2,
                     address.address_line!,
-                    style: textStyleInterRegular14,
+                    style: textStyleInterRegular16,
                   ),
                 ),
               ],
@@ -824,6 +947,7 @@ Future<OrderResponseModel?> AddOrder(
   final int shipping_address,
   final int shipping_method_id,
   final int total,
+  final int payment_id,
 ) async {
   try {
     // Chuyển đổi lstOrderLines thành List<Map<String, dynamic>> nếu cần
@@ -839,7 +963,7 @@ Future<OrderResponseModel?> AddOrder(
       '${EndPoints.baseUrl}order',
       data: {
         'user_id': userId,
-        'payment_method_id': 2,
+        'payment_method_id': payment_id,
         'shipping_address': shipping_address,
         'shipping_method': shipping_method_id,
         'order_status': 1,

@@ -45,10 +45,18 @@ import 'features/orderpage/data/repository/order_repository_impl.dart';
 import 'features/orderpage/domain/repository/order_repository.dart';
 import 'features/orderpage/domain/usecases/getOrder.dart';
 import 'features/orderpage/presentation/bloc/order_bloc.dart';
+import 'features/paymenttype/data/payment_repository_impl.dart';
+import 'features/paymenttype/domain/getPaymentType.dart';
+import 'features/paymenttype/domain/payment_repository.dart';
+import 'features/paymenttype/presentation/bloc/payment_type_bloc.dart';
 import 'features/policypage/data/repository/policy_repository_impl.dart';
 import 'features/policypage/domain/repository/policy_repository.dart';
 import 'features/policypage/domain/usecases/get_policy.dart';
 import 'features/policypage/presentation/bloc/policy_screen_bloc.dart';
+import 'features/reviewpage/data/review_repository_impl.dart';
+import 'features/reviewpage/domain/getReview.dart';
+import 'features/reviewpage/domain/review_repository.dart';
+import 'features/reviewpage/presentation/bloc/review_bloc.dart';
 import 'features/search/data/data_sources/local/app_database.dart';
 import 'features/search/data/repository/search_repository_impl.dart';
 import 'features/search/domain/repository/search_repository.dart';
@@ -97,6 +105,8 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<OrderRepository>(OrderRepositoryImpl(sl()));
   sl.registerSingleton<ShippingMethodRepository>(ShippingMethodRepositoryImpl(sl()));
   sl.registerSingleton<FavouriteRepository>(FavouriteRepositoryImpl(sl()));
+  sl.registerSingleton<ReviewRepository>(ReviewRepositoryImpl(sl()));
+  sl.registerSingleton<PaymentRepository>(PaymentRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<GetBestSellingUseCase>(GetBestSellingUseCase(sl()));
@@ -135,7 +145,10 @@ Future<void> initializeDependencies() async{
   sl.registerSingleton<GetShippingMethodUseCase>(GetShippingMethodUseCase(sl()));
 
   sl.registerSingleton<GetFavouriteUseCase>(GetFavouriteUseCase(sl()));
+
+  sl.registerSingleton<GetReviewUseCase>(GetReviewUseCase(sl()));
   
+  sl.registerSingleton<GetPaymentUseCase>(GetPaymentUseCase(sl()));
   //Blocs
   sl.registerFactory(() => HomePageBloc(sl()));
  /*  sl.registerFactory(() => HomePageDailydealsBloc(sl()));
@@ -170,4 +183,8 @@ Future<void> initializeDependencies() async{
   sl.registerFactory(() => ShippingMethodBloc(sl()));
 
   sl.registerFactory(() => FavouriteBloc(sl()));
+
+  sl.registerFactory(() => ReviewBloc(sl()));
+
+  sl.registerFactory(() => PaymentTypeBloc(sl()));
 }

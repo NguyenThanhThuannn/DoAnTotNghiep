@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/format_number.dart';
 import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
 import '../../domain/entities/product.dart';
 
 // ignore: must_be_immutable
@@ -22,49 +23,44 @@ class DealOfWeekItem extends StatelessWidget {
             Container(
               width: MediaQuery.of(context).size.width,
             ),
-            if (ImageCheck().isBase64Image(pro.product_image!))
-              Image.memory(
-                ImageCheck().base64ToImage(pro.product_image!),
-                width: MediaQuery.of(context).size.width / 2,
-                height: MediaQuery.of(context).size.width / 2,
-                fit: BoxFit.contain,
-              )
-            else
-              CachedNetworkImage(
-                imageUrl: pro.product_image ?? '',
-                imageBuilder: (final context, final imageProvider) {
-                  return Container(
+            CachedNetworkImage(
+              imageUrl: pro.product_image![0] == 'i'
+                  ? '${EndPoints.urlImage}${pro.product_image}'
+                  : pro.product_image!,
+              imageBuilder: (final context, final imageProvider) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: MediaQuery.of(context).size.width / 2,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
+              progressIndicatorBuilder:
+                  (final context, final url, final progress) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Container(
                     width: MediaQuery.of(context).size.width / 2,
                     height: MediaQuery.of(context).size.width / 2,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  );
-                },
-                progressIndicatorBuilder:
-                    (final context, final url, final progress) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width / 3,
-                      decoration:
-                          BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                      child: const CupertinoActivityIndicator(),
-                    ),
-                  );
-                },
-                errorWidget: (final context, final url, final error) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width / 3,
-                    height: MediaQuery.of(context).size.width / 2,
-                    color: Colors.black,
-                  );
-                },
-              ),
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                    child: const CupertinoActivityIndicator(),
+                  ),
+                );
+              },
+              errorWidget: (final context, final url, final error) {
+                return Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: MediaQuery.of(context).size.width / 2,
+                  color: Colors.black.withOpacity(0.04),
+                );
+              },
+            ),
             Positioned(
               top: 0,
               right: 40,
@@ -163,7 +159,7 @@ class DealOfWeekItem extends StatelessWidget {
             ),
           ],
         ),
-        Padding(
+        /* Padding(
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 15),
           child: Stack(
             children: [
@@ -186,6 +182,16 @@ class DealOfWeekItem extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ), */
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: LinearProgressIndicator(
+            value: (pro.product_item!.qty_in_stock!-pro.product_item!.SKU!)/10.toDouble(),
+            minHeight: 5,
+            color: Colors.greenAccent[400],
+            backgroundColor: Colors.grey[200],
+            borderRadius: BorderRadius.circular(7),
           ),
         ),
         const Divider(thickness: 1),

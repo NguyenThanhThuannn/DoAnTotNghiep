@@ -8,6 +8,7 @@ import '../../../../config/format_number.dart';
 import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
 import '../../../../network/api_provider.dart';
+import '../../../../network/end_points.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../../../loginregisterpage/data/services/provider.dart';
 import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
@@ -37,47 +38,43 @@ class CateListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            if (ImageCheck().isBase64Image(pro.product_image!)) Image.memory(
-            ImageCheck().base64ToImage(pro.product_image!),
-            width: MediaQuery.of(context).size.width / 2.5,
-            height: MediaQuery.of(context).size.width / 2.5+10,
-            fit: BoxFit.contain,
-          ) else CachedNetworkImage(
-              imageUrl: pro.product_image!,
-              imageBuilder: (final context, final imageProvider) {
-                return Container(
-                  width: MediaQuery.of(context).size.width / 2.5,
-                  height: MediaQuery.of(context).size.width / 2.5 + 10,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomLeft: Radius.circular(8)),
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                );
-              },
-              progressIndicatorBuilder:
-                  (final context, final url, final progress) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width / 3,
-                    decoration:
-                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                    child: const CupertinoActivityIndicator(),
-                  ),
-                );
-              },
-              errorWidget: (final context, final url, final error) {
-                return Container(
-                  width: MediaQuery.of(context).size.width / 2.5,
-                  height: MediaQuery.of(context).size.width / 2.5 + 10,
-                  color: Colors.black.withOpacity(0.04),
-                );
-              },
-            ),
+           CachedNetworkImage(
+          imageUrl: pro.product_image![0] == 'i'
+              ? '${EndPoints.urlImage}${pro.product_image}'
+              : pro.product_image!,
+          imageBuilder: (final context, final imageProvider) {
+            return Container(
+              width: MediaQuery.of(context).size.width / 2.5,
+              height: MediaQuery.of(context).size.width / 2.5+10,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            );
+          },
+          progressIndicatorBuilder: (final context, final url, final progress) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 2.5,
+              height: MediaQuery.of(context).size.width / 2.5+10,
+                decoration:
+                    BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                child: const CupertinoActivityIndicator(),
+              ),
+            );
+          },
+          errorWidget: (final context, final url, final error) {
+            return Container(
+              width: MediaQuery.of(context).size.width / 2.5,
+              height: MediaQuery.of(context).size.width / 2.5+10,
+              color: Colors.black.withOpacity(0.04),
+            );
+          },
+        ),
             Container(
               padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
               width: MediaQuery.of(context).size.width / 2 + 10,
@@ -130,7 +127,7 @@ class CateListItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                  ElevatedButton(
+                  /* ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor:
                           const MaterialStatePropertyAll(Colors.white),
@@ -150,7 +147,7 @@ class CateListItem extends StatelessWidget {
                       }); */
                     },
                     child: const Text('Mua ngay'),
-                  ),
+                  ), */
                 ],
               ),
             ),

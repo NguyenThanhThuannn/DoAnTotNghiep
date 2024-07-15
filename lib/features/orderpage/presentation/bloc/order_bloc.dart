@@ -25,8 +25,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
   Future<void> onGetOrder2(final GetOrders2 event, final Emitter<OrderState> emit) async{
-    final dataState = await _getOrderUseCase(params: event.userId);
     emit(OrderLoading());
+    final dataState = await _getOrderUseCase(params: event.userId);
+    
     if(dataState is DataSucces && dataState.data!=null){
       
       emit(OrderLoaded(dataState.data!));

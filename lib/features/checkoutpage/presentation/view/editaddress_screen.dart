@@ -10,6 +10,8 @@ import '../../../../network/end_points.dart';
 import '../../../loginregisterpage/data/model/user_model.dart';
 import '../../../loginregisterpage/data/services/provider.dart';
 import '../../../loginregisterpage/presentation/bloc/user_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class EditAddressScreen extends StatefulWidget {
   const EditAddressScreen({super.key});
@@ -25,13 +27,16 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       _selectedAddress = newAddress;
     });
   }
+
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(GetUserById(Provider.of<UserProvider>(context,listen: false).getUser!.id!));
+    context.read<UserBloc>().add(GetUserById(
+        Provider.of<UserProvider>(context, listen: false).getUser!.id!,),);
   }
 
   TextEditingController addressController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
   /* List<Address> address = [
     Address(
       location: 'Nhà riêng',
@@ -49,6 +54,64 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
           'Số 11 – 12 Đường số 3, KDC Đại Phúc Green Villas, Bình Hưng, Bình Chánh, TP HCM',
     ),
   ]; */
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Kiểm tra dịch vụ vị trí đã được bật chưa
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Vị trí không bật. Không thể tiếp tục.
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Quyền bị từ chối. Không thể tiếp tục.
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Quyền bị từ chối vĩnh viễn. Không thể tiếp tục.
+      return;
+    }
+
+    // Lấy vị trí hiện tại
+    final Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    // Chuyển đổi tọa độ thành địa chỉ
+    final List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+
+    if (placemarks.isNotEmpty) {
+      final Placemark placemark = placemarks.first;
+      log(placemark.toString());
+      setState(() {
+        _locationController.text = [
+          placemark.street,
+          placemark.locality,
+          placemark.subAdministrativeArea,
+          placemark.administrativeArea,
+          placemark.country,
+        ]
+            .where((final element) => element != null && element.isNotEmpty)
+            .join(', ');
+      });
+    } else {
+      setState(() {
+        _locationController.text = 'Không tìm thấy địa chỉ';
+      });
+    }
+  }
+
+  List<Placemark>? placeMark;
 
   @override
   Widget build(final BuildContext context) {
@@ -82,181 +145,182 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             final lstAddresses = state.user!.addresses!;
             log(lstAddresses.toString());
             return lstAddresses.isNotEmpty
-            ?Column(
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height /
-                      10 *
-                      lstAddresses.length,
-                  child: ListView.builder(
-                    itemCount: lstAddresses.length,
-                    itemBuilder: (final context, final index) {
-                      return ListTile(
-                        title: Text(lstAddresses[index].id.toString()),
-                        subtitle: Text(lstAddresses[index].address_line!),
-                        leading: Radio<Addresses>(
-                          value: lstAddresses[index],
-                          groupValue: _selectedAddress,
-                          onChanged: (final value) {
-                            _updateSelectedAddress(value!);
-                            log(_selectedAddress.toString());
-                          },
-                        ),
-                        trailing: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              DeleteAddressById(
-                                Provider.of<UserProvider>(
-                                  context,
-                                  listen: false,
-                                ).getUser!.id,
-                                state.user!.addresses![index].id,
-                              ).then(
-                                (final value) => context.read<UserBloc>().add(
-                                      GetUserById2(
-                                        Provider.of<UserProvider>(context,
-                                                listen: false,)
-                                            .getUser!
-                                            .id!,
-                                      ),
-                                    ),
-                              );
-                              /* log('Đã clicked $index để xóa!');
+                ? Column(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height /
+                            10 *
+                            lstAddresses.length*1.5,
+                        child: ListView.builder(
+                          itemCount: lstAddresses.length,
+                          itemBuilder: (final context, final index) {
+                            return ListTile(
+                              title: Text(lstAddresses[index].address_line!),
+                              leading: Radio<Addresses>(
+                                value: lstAddresses[index],
+                                groupValue: _selectedAddress,
+                                onChanged: (final value) {
+                                  _updateSelectedAddress(value!);
+                                  log(_selectedAddress.toString());
+                                },
+                              ),
+                              trailing: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    DeleteAddressById(
+                                      Provider.of<UserProvider>(
+                                        context,
+                                        listen: false,
+                                      ).getUser!.id,
+                                      state.user!.addresses![index].id,
+                                    ).then(
+                                      (final value) =>
+                                          context.read<UserBloc>().add(
+                                                GetUserById2(
+                                                  Provider.of<UserProvider>(
+                                                    context,
+                                                    listen: false,
+                                                  ).getUser!.id!,
+                                                ),
+                                              ),
+                                    );
+                                    /* log('Đã clicked $index để xóa!');
                               lstAddresses.removeAt(index);
                               log(lstAddresses.toString()); */
-                            });
+                                  });
+                                },
+                                child: const Icon(Icons.delete),
+                              ),
+                            );
                           },
-                          child: const Icon(Icons.delete),
                         ),
-                      );
-                    },
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (final context) {
-                        return AlertDialog.adaptive(
-                          content: SizedBox(
-                            height: MediaQuery.of(context).size.width / 3,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Thêm địa chỉ mới:'),
-                                TextField(
-                                  controller: addressController,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {
-                                        if (addressController.text.isNotEmpty) {
-                                          AddAddress(
-                                            Provider.of<UserProvider>(
-                                              context,
-                                              listen: false,
-                                            ).getUser!.id!,
-                                            addressController.text,
-                                          )!
-                                              .then((final value) {
-                                            context.read<UserBloc>().add(
-                                                  GetUserById2(
-                                                    Provider.of<UserProvider>(
-                                                            context,
-                                                            listen: false,)
-                                                        .getUser!
-                                                        .id!,
-                                                  ),
-                                                );
-                                            Navigator.of(context).pop();
-                                          });
-                                        }
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                      child: const Text('Cancel'),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: const Text('Thêm địa chỉ mới'),
-                ),
-              ],
-            ): Center(
-              child: TextButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (final context) {
-                          return AlertDialog.adaptive(
-                            content: SizedBox(
-                              height: MediaQuery.of(context).size.width / 3,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Thêm địa chỉ mới:'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (final context) {
+                              return AlertDialog.adaptive(
+                                content: const Text('Thêm địa chỉ'),
+                                actions: [
                                   TextField(
                                     controller: addressController,
+                                    onChanged: (final value) {
+                                      setState(() {
+                                        addressController=_locationController;
+                                      });
+                                    },
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          if (addressController.text.isNotEmpty) {
-                                            AddAddress(
-                                              Provider.of<UserProvider>(
-                                                context,
-                                                listen: false,
-                                              ).getUser!.id!,
-                                              addressController.text,
-                                            )!
-                                                .then((final value) {
-                                              context.read<UserBloc>().add(
-                                                    GetUserById2(
-                                                      Provider.of<UserProvider>(
-                                                              context,
-                                                              listen: false,)
-                                                          .getUser!
-                                                          .id!,
-                                                    ),
-                                                  );
-                                              Navigator.of(context).pop();
-                                            });
-                                          }
-                                        },
-                                        child: const Text('OK'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(),
-                                        child: const Text('Cancel'),
-                                      ),
-                                    ],
+                                  TextButton(
+                                    onPressed: () {
+                                      _getCurrentLocation();
+                                    },
+                                    child:
+                                        const Text('Sử dụng vị trí hiện tại'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      if (addressController.text.isNotEmpty) {
+                                        log(addressController.text);
+                                        AddAddress(
+                                          Provider.of<UserProvider>(
+                                            context,
+                                            listen: false,
+                                          ).getUser!.id!,
+                                          addressController.text,
+                                        )!
+                                            .then((final value) {
+                                          context.read<UserBloc>().add(
+                                                GetUserById2(
+                                                  Provider.of<UserProvider>(
+                                                    context,
+                                                    listen: false,
+                                                  ).getUser!.id!,
+                                                ),
+                                              );
+                                          Navigator.of(context).pop();
+                                        });
+                                      }
+                                    },
+                                    child: const Text('ADD'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text('CANCEL'),
                                   ),
                                 ],
-                              ),
-                            ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                    child: const Text('Thêm địa chỉ mới'),),
-            );
+                        child: const Text('Thêm địa chỉ mới'),
+                      ),
+                    ],
+                  )
+                : Center(
+                    child: TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (final context) {
+                              return AlertDialog.adaptive(
+                                content: const Text('Thêm địa chỉ'),
+                                actions: [
+                                  TextField(
+                                    controller: addressController,
+                                    onChanged: (final value) {
+                                      setState(() {
+                                        addressController=_locationController;
+                                      });
+                                    },
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      _getCurrentLocation();
+                                    },
+                                    child:
+                                        const Text('Sử dụng vị trí hiện tại'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      if (addressController.text.isNotEmpty) {
+                                        AddAddress(
+                                          Provider.of<UserProvider>(
+                                            context,
+                                            listen: false,
+                                          ).getUser!.id!,
+                                          addressController.text,
+                                        )!
+                                            .then((final value) {
+                                          context.read<UserBloc>().add(
+                                                GetUserById2(
+                                                  Provider.of<UserProvider>(
+                                                    context,
+                                                    listen: false,
+                                                  ).getUser!.id!,
+                                                ),
+                                              );
+                                          Navigator.of(context).pop();
+                                        });
+                                      }
+                                    },
+                                    child: const Text('ADD'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text('CANCEL'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: const Text('Thêm địa chỉ mới'),
+                      ),
+                  );
           }
           return Container();
         },

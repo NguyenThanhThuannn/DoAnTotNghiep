@@ -34,10 +34,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
   Future<void> onGetUserById2 (final GetUserById2 event, final Emitter<UserState> emit) async{
-    
+    emit(UserLoading());
     final dataState = await _getUserByIdUseCase(params: event.userId);
+    //emit(UserLoading());
     if(dataState is DataSucces && dataState.data!=null){
-      emit(UserLoading());
+      //emit(UserLoading());
       emit(UserLoaded(dataState.data!));
     }
     if(dataState is DataFailed){

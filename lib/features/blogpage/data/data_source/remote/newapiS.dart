@@ -8,11 +8,11 @@ part 'newapiS.g.dart';
 
 @RestApi(baseUrl: newsAPIBaseURL)
 abstract class NewApiS {
-  factory NewApiS(Dio dio) = _NewApiS;
+  factory NewApiS(final Dio dio) = _NewApiS;
 
   @GET('/top-headlines')
   Future<HttpResponse<List<ArticleModel>>> getArticles({
-    @Query('apiKey') String ? apiKey,
-    @Query('sources') String ? sources,
+    @Query('apiKey') final String ? apiKey,
+    @Query('sources') final String ? sources,
   });
 }

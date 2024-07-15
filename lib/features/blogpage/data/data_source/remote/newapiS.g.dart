@@ -33,7 +33,7 @@ class _NewApiS implements NewApiS {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _result = await _dio.fetch<List<dynamic>>(
+    final _result = await _dio.fetch<String>(
         _setStreamType<HttpResponse<List<ArticleModel>>>(Options(
       method: 'GET',
       headers: _headers,
@@ -50,7 +50,8 @@ class _NewApiS implements NewApiS {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    var value = _result.data!
+    final Map<String, dynamic> responseData = json.decode(_result.data!);
+    var value = (responseData['articles'] as List)
         .map((dynamic i) => ArticleModel.fromJson(i as Map<String, dynamic>))
         .toList();
     final httpResponse = HttpResponse(value, _result);

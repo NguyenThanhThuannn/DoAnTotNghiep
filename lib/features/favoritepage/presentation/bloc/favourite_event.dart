@@ -10,3 +10,10 @@ class GetFavourites extends FavouriteEvent{
    @override
   List<Object?> get props => [userId];
 }
+class GetFavourites2 extends FavouriteEvent{
+  GetFavourites2(this.userId);
+  int userId;
+  
+   @override
+  List<Object?> get props => [userId];
+}

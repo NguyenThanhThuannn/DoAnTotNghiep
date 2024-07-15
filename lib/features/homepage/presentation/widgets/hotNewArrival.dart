@@ -8,9 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../../../config/format_number.dart';
 import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
+import '../../../loginregisterpage/data/services/provider.dart';
+import '../../../loginregisterpage/presentation/bloc/user_bloc.dart';
+import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
+import '../../../shopcartpage/presentation/widgets/infoProduct.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/home_page_bloc.dart';
 import 'dailyDealItemTab_widget.dart';
@@ -55,30 +61,17 @@ class _HotNewArrivalState extends State<HotNewArrival> {
               .toList();
           for (var i = 0; i < 4; i++) {
             final int randomProductId = getRandomProductId(filterPro);
-            if(proHot.isEmpty){
-              proHot.addAll(
-              filterPro
-                  .where(
-                    (final element) => element.id == randomProductId,
+            print('Random Product ID HOT: $randomProductId');
+            proHot.isEmpty || proHot.length < 4
+                ? proHot.addAll(
+                    filterPro
+                        .where(
+                          (final element) => element.id == randomProductId,
+                        )
+                        .toList(),
                   )
-                  .toList(),
-            );
-            }
+                : null;
           }
-          /* if (tab.isEmpty) {
-            for (final i in state.hotnewarrival!) {
-              tab.add(i.tab!);
-            }
-          } */
-          /* if (filterPro.isEmpty) {
-            filterPro = state.hotnewarrival!
-                .where((final element) => element.tab! == tab[0])
-                .toList();
-            pro.clear();
-            for (final i in filterPro) {
-              pro.addAll(i.pro!);
-            }
-          } */
           return Column(
             children: [
               Padding(
@@ -96,42 +89,6 @@ class _HotNewArrivalState extends State<HotNewArrival> {
                   ),
                 ),
               ),
-              /* SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: tab.length,
-                  itemBuilder: (final context, final index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                          filterPro = state.hotnewarrival!
-                              .where(
-                                (final element) =>
-                                    element.tab! == tab[selectedIndex],
-                              )
-                              .toList();
-                          log('Lọc ra là: $filterPro');
-                          pro.clear();
-                          for (final i in filterPro) {
-                            pro.addAll(i.pro!);
-                          }
-                          log('SP sau khi lọc: $pro');
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 10, 30, 10),
-                        child: ItemTab(
-                          name: tab[index],
-                          isSelected: selectedIndex == index,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ), */
               const Divider(
                 thickness: 1,
               ),
@@ -163,7 +120,7 @@ class _HotNewArrivalState extends State<HotNewArrival> {
                                   : itemClicked = -1;
                         });
                       },
-                      child: index % 2 == 0
+                      child: index.isEven
                           ? Container(
                               decoration: BoxDecoration(
                                 border: Border(
@@ -226,62 +183,211 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem>
                 Center(
                   child: Column(
                     children: [
-                      if (ImageCheck().isBase64Image(widget.pro.product_image!))
-                        Image.memory(
-                          ImageCheck().base64ToImage(widget.pro.product_image!),
-                          width: MediaQuery.of(context).size.width / 5,
-                          height: MediaQuery.of(context).size.width / 4,
-                          fit: BoxFit.contain,
-                        )
-                      else
-                        CachedNetworkImage(
-                          imageUrl: widget.pro.product_image ?? '',
-                          imageBuilder: (final context, final imageProvider) {
-                            return Container(
+                      CachedNetworkImage(
+                        imageUrl: widget.pro.product_image![0] == 'i'
+                            ? '${EndPoints.urlImage}${widget.pro.product_image}'
+                            : widget.pro.product_image!,
+                        imageBuilder: (final context, final imageProvider) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width / 5,
+                            height: MediaQuery.of(context).size.width / 4,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          );
+                        },
+                        progressIndicatorBuilder:
+                            (final context, final url, final progress) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(20.0),
+                            child: Container(
                               width: MediaQuery.of(context).size.width / 5,
                               height: MediaQuery.of(context).size.width / 4,
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.contain,
-                                ),
+                                color: Colors.black.withOpacity(0.08),
                               ),
-                            );
-                          },
-                          progressIndicatorBuilder:
-                              (final context, final url, final progress) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 3,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.08),
-                                ),
-                                child: const CupertinoActivityIndicator(),
-                              ),
-                            );
-                          },
-                          errorWidget: (final context, final url, final error) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width / 3,
-                              height: MediaQuery.of(context).size.width / 2,
-                              color: Colors.black.withOpacity(0.04),
-                            );
-                          },
-                        ),
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'ADD TO CART',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).primaryColor,
+                              child: const CupertinoActivityIndicator(),
                             ),
-                          ),
-                        ),
+                          );
+                        },
+                        errorWidget: (final context, final url, final error) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width / 5,
+                            height: MediaQuery.of(context).size.width / 4,
+                            color: Colors.black.withOpacity(0.04),
+                          );
+                        },
+                      ),
+                      BlocBuilder<UserBloc, UserState>(
+                        builder: (final context, final state) {
+                          if(state is UserLoading){
+                            return const Center(child: CircularProgressIndicator.adaptive(),);
+                          }
+                          if(state.user!.shopping_cart!.items!.any((final element) => element.product_item_id==widget.pro.id)){
+                            final int maxQLCart=state.user!.shopping_cart!.items!.firstWhere((final element) => element.product_item_id==widget.pro.id).qty!;
+                            return Expanded(
+                            child: TextButton(
+                              onPressed: () {
+                                if (widget.pro.product_item!.qty_in_stock! >=
+                                    1 && maxQLCart<widget.pro.product_item!.qty_in_stock!) {
+                                  ProductInCart(
+                                    Provider.of<UserProvider>(
+                                      context,
+                                      listen: false,
+                                    ).getUser!.id!,
+                                    widget.pro,
+                                    1,
+                                  ).then((final value) => context
+                                      .read<UserBloc>()
+                                      .add(GetUserById2(
+                                          Provider.of<UserProvider>(context,
+                                                  listen: false,)
+                                              .getUser!
+                                              .id!,),),);
+                                  showDialog(
+                                    context: context,
+                                    builder: (final BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Thông báo'),
+                                        content: const Text(
+                                            'Sản phẩm đã thêm vào giỏ!',),
+                                        actions: [
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStatePropertyAll(
+                                                Theme.of(context).primaryColor,
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (final BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Thông báo'),
+                                        content: const Text(
+                                            'Sản phẩm này đã hết hàng!',),
+                                        actions: [
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStatePropertyAll(
+                                                Theme.of(context).primaryColor,
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                              child: Text(
+                                'ADD TO CART',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                          );
+                          }else{
+                            return Expanded(
+                            child: TextButton(
+                              onPressed: () {
+                                if (widget.pro.product_item!.qty_in_stock! >=
+                                    1) {
+                                  ProductInCart(
+                                    Provider.of<UserProvider>(
+                                      context,
+                                      listen: false,
+                                    ).getUser!.id!,
+                                    widget.pro,
+                                    1,
+                                  ).then((final value) => context
+                                      .read<UserBloc>()
+                                      .add(GetUserById2(
+                                          Provider.of<UserProvider>(context,
+                                                  listen: false,)
+                                              .getUser!
+                                              .id!,),),);
+                                  showDialog(
+                                    context: context,
+                                    builder: (final BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Thông báo'),
+                                        content: const Text(
+                                            'Sản phẩm đã thêm vào giỏ!',),
+                                        actions: [
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStatePropertyAll(
+                                                Theme.of(context).primaryColor,
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (final BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Thông báo'),
+                                        content: const Text(
+                                            'Sản phẩm này đã hết hàng!',),
+                                        actions: [
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStatePropertyAll(
+                                                Theme.of(context).primaryColor,
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                              child: Text(
+                                'ADD TO CART',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                          );
+                          }
+                        },
                       ),
                       Expanded(
                         child: SizedBox(
@@ -298,7 +404,7 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem>
                     ],
                   ),
                 ),
-                Positioned(
+                /* Positioned(
                   top: 10,
                   left: 5,
                   child: IconButton(
@@ -318,16 +424,26 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem>
                               )
                             : const Icon(Icons.favorite_border_outlined),
                   ),
-                ),
+                ), */
                 Positioned(
-                  top: 55,
+                  top: 10,
                   left: 5,
                   child: IconButton(
                     style: const ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(Colors.white),
                     ),
-                    onPressed: () {},
-                    icon: const Icon(Icons.compare_arrows_outlined),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (final context) =>
+                              ShopCartScreen(sCart: widget.pro),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.visibility_outlined,
+                    ),
                   ),
                 ),
                 //_buildSwitchCaseTag(context, widget.pro.tag, 15),
@@ -338,50 +454,45 @@ class _hotNewArrivalItemState extends State<hotNewArrivalItem>
             children: [
               Stack(
                 children: [
-                  if (ImageCheck().isBase64Image(widget.pro.product_image!))
-                    Image.memory(
-                      ImageCheck().base64ToImage(widget.pro.product_image!),
-                      width: MediaQuery.of(context).size.width / 3,
-                      height: MediaQuery.of(context).size.width / 3,
-                      fit: BoxFit.contain,
-                    )
-                  else
-                    CachedNetworkImage(
-                      imageUrl: widget.pro.product_image ?? '',
-                      imageBuilder: (final context, final imageProvider) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width / 3,
-                          height: MediaQuery.of(context).size.width / 3,
+                  CachedNetworkImage(
+                    imageUrl: widget.pro.product_image![0] == 'i'
+                        ? '${EndPoints.urlImage}${widget.pro.product_image}'
+                        : widget.pro.product_image!,
+                    imageBuilder: (final context, final imageProvider) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width / 5,
+                        height: MediaQuery.of(context).size.width / 4,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      );
+                    },
+                    progressIndicatorBuilder:
+                        (final context, final url, final progress) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(20.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width / 5,
+                          height: MediaQuery.of(context).size.width / 4,
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.contain,
-                            ),
+                            color: Colors.black.withOpacity(0.08),
                           ),
-                        );
-                      },
-                      progressIndicatorBuilder:
-                          (final context, final url, final progress) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(20.0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width / 3,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.08),
-                            ),
-                            child: const CupertinoActivityIndicator(),
-                          ),
-                        );
-                      },
-                      errorWidget: (final context, final url, final error) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width / 3,
-                          height: MediaQuery.of(context).size.width / 2,
-                          color: Colors.black,
-                        );
-                      },
-                    ),
+                          child: const CupertinoActivityIndicator(),
+                        ),
+                      );
+                    },
+                    errorWidget: (final context, final url, final error) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width / 5,
+                        height: MediaQuery.of(context).size.width / 4,
+                        color: Colors.black.withOpacity(0.04),
+                      );
+                    },
+                  ),
                   //_buildSwitchCaseTag(context, widget.pro.tag, 0),
                 ],
               ),

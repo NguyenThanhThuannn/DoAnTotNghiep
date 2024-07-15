@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'package:flutter_expandable_text/flutter_expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -11,6 +11,8 @@ import '../../../../config/textStyle.dart';
 import '../../../../network/api.dart';
 import '../../../../network/api_provider.dart';
 import '../../../../network/end_points.dart';
+import '../../../favoritepage/domain/favourite.dart';
+import '../../../favoritepage/presentation/bloc/favourite_bloc.dart';
 import '../../../favoritepage/presentation/view/favourite_screen.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../../../loginregisterpage/data/model/user_model.dart';
@@ -29,6 +31,7 @@ class InfoProduct extends StatefulWidget {
 
 class _InfoProductState extends State<InfoProduct> {
   int quanlity = 1;
+  int maxQuanlityCart = 1;
   int? isSelectedColor;
   int? isSelectedStorage;
   int? isSelectedSize;
@@ -38,9 +41,10 @@ class _InfoProductState extends State<InfoProduct> {
     super.initState();
     isSelectedColor = 0;
     isSelectedStorage = 0;
-    isSelectedSize=0;
-    isSelectedMaterial=0;
+    isSelectedSize = 0;
+    isSelectedMaterial = 0;
   }
+
   Color stringToColor(final String colorString) {
     final Map<String, Color> colorMap = {
       'red': Colors.red,
@@ -72,7 +76,10 @@ class _InfoProductState extends State<InfoProduct> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(12),topRight: Radius.circular(12)),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
                   color: Theme.of(context).primaryColor,
                 ),
                 child: Text(
@@ -142,7 +149,7 @@ class _InfoProductState extends State<InfoProduct> {
                 ),
                 Text.rich(
                   TextSpan(
-                    text: 'Available: ',
+                    text: 'AVAILABLE: ',
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -152,8 +159,8 @@ class _InfoProductState extends State<InfoProduct> {
                       TextSpan(
                         text: widget.sCart.product_item!.SKU! <
                                 widget.sCart.product_item!.qty_in_stock!
-                            ? 'CÒN HÀNG'
-                            : 'HẾT HÀNG',
+                            ? 'YES'
+                            : 'NO',
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -206,22 +213,32 @@ class _InfoProductState extends State<InfoProduct> {
                 ),
               ],
             ), */
-            RatingBar.builder(
+                RatingBar.builder(
               allowHalfRating: true,
               ignoreGestures: true,
               itemSize: 30,
               initialRating: widget.sCart.product_item!.rating!,
               itemBuilder: (final context, final index) {
-              return Icon(Icons.star, color: Colors.yellow[600],);
-            }, onRatingUpdate: (final value) {
-            },),
+                return Icon(
+                  Icons.star,
+                  color: Colors.yellow[600],
+                );
+              },
+              onRatingUpdate: (final value) {},
+            ),
           ),
-          Text(
-            widget.sCart.description!,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ExpandableText(
+              widget.sCart.description!,
+              readMoreText: 'Read more',
+              readLessText: 'Read less',
+              trim: 5,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
             ),
           ),
           /* Container(
@@ -248,7 +265,7 @@ class _InfoProductState extends State<InfoProduct> {
             children: [
               Text.rich(
                 TextSpan(
-                  text: 'SKU: ',
+                  text: 'ID: ',
                   style: textStyleInterSemiBold14,
                   children: [
                     TextSpan(
@@ -292,7 +309,7 @@ class _InfoProductState extends State<InfoProduct> {
                                 style: textStyleInterSemiBold14,
                               ),
                       ),
-                      Container(
+                      /* Container(
                         width: MediaQuery.of(context).size.width / 12,
                         height: MediaQuery.of(context).size.width / 8 + 2,
                         decoration: BoxDecoration(
@@ -304,11 +321,14 @@ class _InfoProductState extends State<InfoProduct> {
                             GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  quanlity<widget.sCart.product_item!.qty_in_stock!? quanlity++:null;
+                                  quanlity <
+                                          widget
+                                              .sCart.product_item!.qty_in_stock!
+                                      ? quanlity++
+                                      : null;
                                 });
                               },
-                              child:
-                                  const Icon(Icons.add),
+                              child: const Icon(Icons.add),
                             ),
                             GestureDetector(
                               onTap: () {
@@ -322,7 +342,7 @@ class _InfoProductState extends State<InfoProduct> {
                             ),
                           ],
                         ),
-                      ),
+                      ), */
                     ],
                   ),
                 ],
@@ -331,25 +351,73 @@ class _InfoProductState extends State<InfoProduct> {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.grey[300]),
-                        ),
-                        onPressed: () {
-                          UpdateFavourite(Provider.of<UserProvider>(context,listen: false).getUser!.id!, widget.sCart.id);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(duration: Duration(seconds: 1),showCloseIcon: true,content: Text('Sản phẩm đã thêm vào WishList')),);
+                      BlocBuilder<FavouriteBloc, FavouriteState>(
+                        builder: (final context, final state) {
+                          if (state is FavouriteLoading) {
+                            return const CircularProgressIndicator.adaptive();
+                          }
+                          if (state is FavouriteError) {
+                            return Text(state.error.toString());
+                          }
+                          if (state is FavouriteLoaded) {
+                            bool? isFav;
+                            final matchingItems = state.favourite!.where(
+                              (final element) =>
+                                  element.product_id!.id == widget.sCart.id,
+                            );
+
+                            if (matchingItems.isNotEmpty &&
+                                matchingItems.first.is_default == 1) {
+                              isFav = true;
+                            } else {
+                              isFav = false;
+                            }
+                            return IconButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll(Colors.grey[300]),
+                              ),
+                              onPressed: () {
+                                UpdateFavourite(
+                                  Provider.of<UserProvider>(
+                                    context,
+                                    listen: false,
+                                  ).getUser!.id!,
+                                  widget.sCart.id,
+                                ).then(
+                                  (final value) =>
+                                      context.read<FavouriteBloc>().add(
+                                            GetFavourites2(
+                                              Provider.of<UserProvider>(
+                                                context,
+                                                listen: false,
+                                              ).getUser!.id!,
+                                            ),
+                                          ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    showCloseIcon: true,
+                                    content: Text(
+                                      'Sản phẩm đã thêm vào yêu thích',
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: isFav
+                                  ? const Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    )
+                                  : const Icon(Icons.favorite_outline),
+                            );
+                          }
+                          return const SizedBox(
+                            width: 1,
+                            height: 1,
+                          );
                         },
-                        icon: const Icon(Icons.favorite_border_outlined),
-                      ),
-                      IconButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.grey[300]),
-                        ),
-                        onPressed: () {},
-                        icon: const Icon(Icons.compare_arrows_outlined),
                       ),
                     ],
                   ),
@@ -365,7 +433,7 @@ class _InfoProductState extends State<InfoProduct> {
               ],
             ),
           ), */
-          if (widget.sCart.colors!.isNotEmpty)
+          /* if (widget.sCart.colors!.isNotEmpty)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -392,14 +460,16 @@ class _InfoProductState extends State<InfoProduct> {
                           width: MediaQuery.of(context).size.width / 12,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                width: 2,
-                                color: isSelectedColor == index
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.grey,),
+                              width: 2,
+                              color: isSelectedColor == index
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey,
+                            ),
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(100)),
                             color: stringToColor(
-                                widget.sCart.colors![index].name!,),
+                              widget.sCart.colors![index].name!,
+                            ),
                           ),
                         ),
                       );
@@ -433,31 +503,42 @@ class _InfoProductState extends State<InfoProduct> {
                                   isSelectedStorage = index;
                                 });
                               },
-                              child: Stack(children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width / 3 -
-                                      (widget.sCart.storage!.length * 5),
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width / 3 -
+                                            (widget.sCart.storage!.length * 5),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                    ),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
                                         color: isSelectedStorage == index
                                             ? Theme.of(context).primaryColor
-                                            : Colors.grey,),
-                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                            : Colors.grey,
+                                      ),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(8),
+                                        bottomRight: Radius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      widget.sCart.storage![index].name!,
+                                    ),
                                   ),
-                                  child:
-                                      Text(widget.sCart.storage![index].name!),
-                                ),
-                                if(isSelectedStorage==index)
-                                  Positioned(
-                                    top: -3,
-                                    right: 2,
-                                    child: Icon(Icons.check_box,color: Theme.of(context).primaryColor,),
-                                  ),
-                              
-                              ],),
+                                  if (isSelectedStorage == index)
+                                    Positioned(
+                                      top: -3,
+                                      right: 2,
+                                      child: Icon(
+                                        Icons.check_box,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             )
                           : Container(
                               width: MediaQuery.of(context).size.width / 3 -
@@ -466,10 +547,14 @@ class _InfoProductState extends State<InfoProduct> {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: isSelectedStorage == index
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey,),
-                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                  color: isSelectedStorage == index
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.grey,
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                ),
                               ),
                               child: Text(
                                 widget.sCart.storage![index].name!,
@@ -506,31 +591,41 @@ class _InfoProductState extends State<InfoProduct> {
                                   isSelectedSize = index;
                                 });
                               },
-                              child: Stack(children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width / 3 -
-                                      (widget.sCart.sizes!.length * 5),
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width / 3 -
+                                            (widget.sCart.sizes!.length * 5),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                    ),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
                                         color: isSelectedSize == index
                                             ? Theme.of(context).primaryColor
-                                            : Colors.grey,),
-                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                            : Colors.grey,
+                                      ),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(8),
+                                        bottomRight: Radius.circular(8),
+                                      ),
+                                    ),
+                                    child:
+                                        Text(widget.sCart.sizes![index].name!),
                                   ),
-                                  child:
-                                      Text(widget.sCart.sizes![index].name!),
-                                ),
-                                if(isSelectedSize==index)
-                                  Positioned(
-                                    top: -3,
-                                    right: 2,
-                                    child: Icon(Icons.check_box,color: Theme.of(context).primaryColor,),
-                                  ),
-                              
-                              ],),
+                                  if (isSelectedSize == index)
+                                    Positioned(
+                                      top: -3,
+                                      right: 2,
+                                      child: Icon(
+                                        Icons.check_box,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             )
                           : Container(
                               width: MediaQuery.of(context).size.width / 3 -
@@ -539,10 +634,14 @@ class _InfoProductState extends State<InfoProduct> {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: isSelectedSize == index
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey,),
-                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                  color: isSelectedSize == index
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.grey,
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                ),
                               ),
                               child: Text(
                                 widget.sCart.sizes![index].name!,
@@ -579,31 +678,42 @@ class _InfoProductState extends State<InfoProduct> {
                                   isSelectedMaterial = index;
                                 });
                               },
-                              child: Stack(children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width / 3 -
-                                      (widget.sCart.material!.length * 5),
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width / 3 -
+                                            (widget.sCart.material!.length * 5),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                    ),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
                                         color: isSelectedMaterial == index
                                             ? Theme.of(context).primaryColor
-                                            : Colors.grey,),
-                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                            : Colors.grey,
+                                      ),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(8),
+                                        bottomRight: Radius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      widget.sCart.material![index].name!,
+                                    ),
                                   ),
-                                  child:
-                                      Text(widget.sCart.material![index].name!),
-                                ),
-                                if(isSelectedMaterial==index)
-                                  Positioned(
-                                    top: -3,
-                                    right: 2,
-                                    child: Icon(Icons.check_box,color: Theme.of(context).primaryColor,),
-                                  ),
-                              
-                              ],),
+                                  if (isSelectedMaterial == index)
+                                    Positioned(
+                                      top: -3,
+                                      right: 2,
+                                      child: Icon(
+                                        Icons.check_box,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             )
                           : Container(
                               width: MediaQuery.of(context).size.width / 3 -
@@ -612,10 +722,14 @@ class _InfoProductState extends State<InfoProduct> {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: isSelectedMaterial == index
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey,),
-                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                                  color: isSelectedMaterial == index
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.grey,
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                ),
                               ),
                               child: Text(
                                 widget.sCart.material![index].name!,
@@ -628,7 +742,7 @@ class _InfoProductState extends State<InfoProduct> {
               ],
             )
           else
-            const SizedBox(),
+            const SizedBox(), */
           BlocBuilder<UserBloc, UserState>(
             builder: (final context, final state) {
               if (state is UserLoading) {
@@ -636,59 +750,229 @@ class _InfoProductState extends State<InfoProduct> {
                   child: CircularProgressIndicator.adaptive(),
                 );
               }
-
-              return Visibility(
-                visible: widget.sCart.product_item!.SKU!<widget.sCart.product_item!.qty_in_stock!?true:false,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 10, left: 15, right: 15, bottom: 20,),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(Colors.red),
-                        ),
-                        onPressed: () {
-                          /* context.read<UserBloc>().add(AddProduct(Provider.of<UserProvider>(
+              if (state is UserLoaded) {
+                log('ID ${widget.sCart.id!}');
+                if(state.user!.shopping_cart!.items!.any((final element) => element.product_item_id==widget.sCart.id!)){
+                  maxQuanlityCart=state.user!.shopping_cart!.items!.firstWhere((final element) => element.product_item_id==widget.sCart.id!).qty!;
+                  return Visibility(
+                  visible: widget.sCart.product_item!.SKU! <
+                          widget.sCart.product_item!
+                              .qty_in_stock! 
+                      ? true
+                      : false,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 10,
+                      left: 15,
+                      right: 15,
+                      bottom: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          style: const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Colors.red),
+                          ),
+                          onPressed: () {
+                            /* context.read<UserBloc>().add(AddProduct(Provider.of<UserProvider>(
                               context,
                               listen: false,
                             ).getUser!.id!,
                             widget.sCart,
                             quanlity,),); */
-                          ProductInCart(
-                            Provider.of<UserProvider>(
+
+                            if (maxQuanlityCart <
+                                widget.sCart.product_item!.qty_in_stock!) {
+                              ProductInCart(
+                                Provider.of<UserProvider>(
+                                  context,
+                                  listen: false,
+                                ).getUser!.id!,
+                                widget.sCart,
+                                quanlity,
+                              ).then(
+                                (final value) => context.read<UserBloc>().add(
+                                      GetUserById2(
+                                        Provider.of<UserProvider>(
+                                          context,
+                                          listen: false,
+                                        ).getUser!.id!,
+                                      ),
+                                    ),
+                              );
+                              showDialog(
+                                context: context,
+                                builder: (final BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thông báo'),
+                                    content:
+                                        const Text('Sản phẩm đã thêm vào giỏ!'),
+                                    actions: [
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStatePropertyAll(
+                                            Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (final BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thông báo'),
+                                    content: const Text(
+                                      'Số lượng tồn của sản phẩm đã hết',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStatePropertyAll(
+                                            Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          },
+                          child: Text(
+                            'ADD TO CART',
+                            style: textStyleInterMedium14W,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+                }
+                else {
+                  return Visibility(
+                  visible: widget.sCart.product_item!.SKU! <
+                          widget.sCart.product_item!
+                              .qty_in_stock! 
+                      ? true
+                      : false,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 10,
+                      left: 15,
+                      right: 15,
+                      bottom: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          style: const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Colors.red),
+                          ),
+                          onPressed: () {
+                            /* context.read<UserBloc>().add(AddProduct(Provider.of<UserProvider>(
                               context,
                               listen: false,
                             ).getUser!.id!,
                             widget.sCart,
-                            quanlity,
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(duration: Duration(seconds: 1),showCloseIcon: true,content: Text('Sản phẩm đã thêm vào giỏ hàng')),
-                        );
-                        },
-                        child: Text(
-                          'Thêm vào giỏ hàng',
-                          style: textStyleInterMedium14W,
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).primaryColor,
+                            quanlity,),); */
+
+                            if (maxQuanlityCart <
+                                widget.sCart.product_item!.qty_in_stock!) {
+                              ProductInCart(
+                                Provider.of<UserProvider>(
+                                  context,
+                                  listen: false,
+                                ).getUser!.id!,
+                                widget.sCart,
+                                quanlity,
+                              ).then(
+                                (final value) => context.read<UserBloc>().add(
+                                      GetUserById2(
+                                        Provider.of<UserProvider>(
+                                          context,
+                                          listen: false,
+                                        ).getUser!.id!,
+                                      ),
+                                    ),
+                              );
+                              showDialog(
+                                context: context,
+                                builder: (final BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thông báo'),
+                                    content:
+                                        const Text('Sản phẩm đã thêm vào giỏ!'),
+                                    actions: [
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStatePropertyAll(
+                                            Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (final BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thông báo'),
+                                    content: const Text(
+                                      'Số lượng tồn của sản phẩm đã hết',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStatePropertyAll(
+                                            Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          },
+                          child: Text(
+                            'ADD TO CART',
+                            style: textStyleInterMedium14W,
                           ),
                         ),
-                        onPressed: () {},
-                        child: Text(
-                          'Mua ngay',
-                          style: textStyleInterMedium14W,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
+                );
+                }
+              }
+              return Container();
             },
           ),
         ],
