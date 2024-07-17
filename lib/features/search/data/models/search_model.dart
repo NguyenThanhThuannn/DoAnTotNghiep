@@ -1,6 +1,7 @@
 import 'package:floor/floor.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../homepage/domain/entities/product.dart';
 import '../../domain/entities/search.dart';
 
 part 'search_model.g.dart';
@@ -26,7 +27,7 @@ class SearchResponseModel {
 class SearchModel extends SearchEntity {
   SearchModel({
     this.id,
-    this.title,
+    this.name,
   });
 
   factory SearchModel.fromJson(final Map<String, dynamic> json) =>
@@ -35,12 +36,12 @@ class SearchModel extends SearchEntity {
   factory SearchModel.fromEntity(final SearchEntity entity) {
     return SearchModel(
       id: entity.id,
-      title: entity.title,
+      name: entity.name,
     );
   }
   @override
   int? id;
   @override
-  String? title;
+  String? name;
   Map<String, dynamic> toJson() => _$SearchModelToJson(this);
 }

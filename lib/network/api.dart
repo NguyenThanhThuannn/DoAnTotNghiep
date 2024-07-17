@@ -3,13 +3,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:provider/provider.dart';
-
+import 'package:dio/dio.dart';
+import '../features/checkoutpage/data/shipping_method_response_model.dart';
 import '../features/faqpage/data/models/faq_response_model.dart';
+import '../features/favoritepage/data/favourite_response_model.dart';
 import '../features/homepage/data/models/product_response_model.dart';
+import '../features/homepage/domain/entities/product.dart';
 import '../features/loginregisterpage/data/model/user_model.dart';
 import '../features/loginregisterpage/data/services/provider.dart';
 import '../features/loginregisterpage/domain/entities/user.dart';
+import '../features/orderpage/data/model/order_response_model.dart';
+import '../features/paymenttype/data/payment_response_model.dart';
 import '../features/policypage/data/models/policy_response_model.dart';
+import '../features/reviewpage/data/review_response_model.dart';
 import '../features/shopbycategorypage/data/models/category_response_model.dart';
 import '../features/termpage/data/models/term_response_model.dart';
 import 'api_provider.dart';
@@ -70,6 +76,85 @@ class Api {
     }
   }
 
+  Future<OrderResponseModel?> getOrder(final int userId) async {
+    try{
+      final res = await http.getRequest('${EndPoints.order}/$userId');
+      final result = OrderResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('OrderResponseModel lỗi $e');
+      return null;
+    }
+  }
+
+  Future<FavouriteResponseModel?> getFavourite(final int userId) async {
+    try{
+      final res = await http.getRequest('${EndPoints.user}/${EndPoints.favourite}/$userId');
+      final result = FavouriteResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('FavouriteResponseModel lỗi $e');
+      return null;
+    }
+  }
+
+  Future<ShippingMethodResponse?> getShippingMethod() async {
+    try{
+      final res = await http.getRequest(EndPoints.shippingmethod);
+      final result = ShippingMethodResponse.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('OrderResponseModel lỗi $e');
+      return null;
+    }
+  }
+
+  Future<ReviewResponseModel?> getReview(final int productId) async{
+    try{
+      final res = await http.getRequest('${EndPoints.review}/$productId');
+      final result = ReviewResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('ReviewResponseModel lỗi $e');
+      return null;
+    }
+  }
+  Future<PaymentResponseModel?> getPaymentType() async{
+    try{
+      final res = await http.getRequest('payment_type');
+      final result = PaymentResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('PaymentResponseModel lỗi $e');
+      return null;
+    }
+  }
+
+  /* Future<UserResponseModel?> addProductInCart(final int userId, final ProductEntity pro, final int qty) async {
+    try{
+      final res = await http.postRequest('shopping_cart/${EndPoints.user}',
+        body: {
+          'cart_id': userId,
+          'product_item_id': pro.id,
+          'qty': qty,
+          'product_image': pro.product_image,
+        },        
+      );
+      log('Thêm thành công');
+      final result = UserResponseModel.fromJson(res!);
+      handleExceptionCase(result.code);
+      return result;
+    } catch(e){
+      log('Lỗi khi thêm sản phẩm vào giỏ: $e');
+      return null;
+    }
+  } */
+
   Future<UserResponseModel?> updateUser(final User user)async{
     try{
       final res = await http.putRequest('${EndPoints.user}/${user.id}',
@@ -86,8 +171,8 @@ class Api {
 
   Future<PolicyResponseModel?> getPolicy() async {
     try{
-      final res = await http.getRequest(EndPoints.policy);
-      final result = PolicyResponseModel.fromJson(res!);
+      final res = await Dio().get('${EndPoints.baseUrlGit}${EndPoints.policy}');
+      final result = PolicyResponseModel.fromJson(jsonDecode(res.data));
       handleExceptionCase(result.code);
       return result;
     } catch(e){
@@ -98,8 +183,8 @@ class Api {
 
   Future<TermResponseModel?> getTerm() async {
     try{
-      final res = await http.getRequest(EndPoints.term);
-      final result = TermResponseModel.fromJson(res!);
+      final res = await Dio().get('${EndPoints.baseUrlGit}${EndPoints.term}');
+      final result = TermResponseModel.fromJson(jsonDecode(res.data));
       handleExceptionCase(result.code);
       return result;
     } catch(e){
@@ -110,8 +195,8 @@ class Api {
   
   Future<FAQResponseModel?> getFAQ() async {
     try{
-      final res = await http.getRequest(EndPoints.faq);
-      final result = FAQResponseModel.fromJson(res!);
+      final res = await Dio().get('${EndPoints.baseUrlGit}${EndPoints.faq}');
+      final result = FAQResponseModel.fromJson(jsonDecode(res.data));
       handleExceptionCase(result.code);
       return result;
     } catch(e){

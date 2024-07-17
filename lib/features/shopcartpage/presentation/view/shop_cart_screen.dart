@@ -1,14 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_expandable_text/flutter_expandable_text.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
 import '../../../../widgets/appbar.dart';
 import '../../../../widgets/drawer.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../../../homepage/presentation/widgets/dailyDealItemTab_widget.dart';
 import '../../../homepage/presentation/widgets/footer.dart';
+import '../../../reviewpage/presentation/view/review_screen.dart';
 import '../../data/models/shop_cart_response_model.dart';
 import '../widgets/bundleItem_widget.dart';
 import '../widgets/colorDropDown_widget.dart';
@@ -24,48 +30,6 @@ class ShopCartScreen extends StatefulWidget {
 }
 
 class _ShopCartScreenState extends State<ShopCartScreen> {
-  /* ShopCartData sCart = ShopCartData(
-    type: 'AUDIO',
-    title:
-        'Bose SoundLink Revolve+ Portable Bluetooth Speaker, with Bose Charging',
-    price: '5,792,000Đ',
-    price_sale: '4,290,000Đ',
-    tag: '-35%',
-    status: true,
-    description:
-        'Meet SoundLink Revolve+, the best-performing portable Bluetooth speaker from Bose. It’s engineered to spread deep. jaw-dropping sound in every direction.',
-    subDesItem: [
-      SubDescription(item: '-The best-performing portable speaker from Bose'),
-      SubDescription(
-        item: '-Flexible fabric handle makes it easy to grab and go',
-      ),
-      SubDescription(
-        item: '-Pair two speakers together for stereo or party mode playback',
-      ),
-    ],
-    SKU: '93799',
-    pro: [
-      Product(price: '11.449.995Đ', title: 'DJI Goggles Immersive FPV'),
-      Product(price: '2.925.920Đ', title: 'Google Dual-Band Wi-Fi Router'),
-      Product(price: '2.543.227Đ', title: 'Gear Controller   Step Into Rift'),
-    ],
-    relatePro: [
-      Product(price: '7,489,000Đ', title: 'Hover Camera Passport Personal Photographer'),
-      Product(price: '5,550,000Đ',price_sale: '4,499,000Đ ', title: 'Bose SoundLink Revolve+ Bluetooth Speaker',tag: 'SALE'),
-      Product(price: '5,200,000Đ', title: 'GoPro HERO5 Session Camera'),
-      Product(price: '3,994,230Đ', title: 'AirPods White Color', tag: 'NEW'),
-      Product(price: '2,590,000Đ', title: 'Beats Black Earphones'),
-      Product(price: '12,950,000Đ', title: 'August Smart Lock HomeKit Enabled'),
-
-      Product(price: '7,489,000Đ', title: 'Hover Camera Passport Personal Photographer',tag: '-25%'),
-      Product(price: '5,550,000Đ',price_sale: '4,499,000Đ ', title: 'Bose SoundLink Revolve+ Bluetooth Speaker',tag: 'SALE'),
-      Product(price: '5,200,000Đ', title: 'GoPro HERO5 Session Camera'),
-      Product(price: '3,994,230Đ', title: 'AirPods White Color', tag: 'NEW'),
-      Product(price: '2,590,000Đ', title: 'Beats Black Earphones',tag: 'HOT'),
-      Product(price: '12,950,000Đ', title: 'August Smart Lock HomeKit Enabled'),
-    ],
-  ); */
-
   @override
   Widget build(final BuildContext context) {
     return Scaffold(
@@ -74,7 +38,7 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildImage(context,widget.sCart.product_image!),
+            _buildImage(context, widget.sCart),
             InfoProduct(sCart: widget.sCart),
             //_buildBundle(context, widget.sCart),
             ShopCartTab(
@@ -89,44 +53,46 @@ class _ShopCartScreenState extends State<ShopCartScreen> {
   }
 }
 
-Stack _buildImage(final BuildContext context, final String img) {
+Stack _buildImage(final BuildContext context, final ProductEntity pro) {
   return Stack(
     children: [
       CachedNetworkImage(
-          imageUrl: img,
-          imageBuilder: (final context, final imageProvider) {
-            return Container(
+        imageUrl: pro.product_image![0] == 'i'
+            ? '${EndPoints.urlImage}${pro.product_image}'
+            : pro.product_image!,
+        imageBuilder: (final context, final imageProvider) {
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+        progressIndicatorBuilder: (final context, final url, final progress) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            );
-          },
-          progressIndicatorBuilder: (final context, final url, final progress) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width / 3,
-                decoration:
-                    BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                child: const CupertinoActivityIndicator(),
-              ),
-            );
-          },
-          errorWidget: (final context, final url, final error) {
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width,
-              color: Colors.black.withOpacity(0.04),
-            );
-          },
-        ),
-      Column(
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.08)),
+              child: const CupertinoActivityIndicator(),
+            ),
+          );
+        },
+        errorWidget: (final context, final url, final error) {
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width,
+            color: Colors.black.withOpacity(0.04),
+          );
+        },
+      ),
+      /* Column(
         children: [
           Container(
             margin: const EdgeInsets.fromLTRB(12, 12, 0, 12),
@@ -178,7 +144,7 @@ Stack _buildImage(final BuildContext context, final String img) {
             color: Colors.grey,
           ),
         ),
-      ),
+      ), */
     ],
   );
 }
@@ -314,8 +280,8 @@ class ShopCartTab extends StatefulWidget {
 class _ShopCartTabState extends State<ShopCartTab> {
   final List<String> tab = [
     'DESCRIPTION',
-    'SPECIFICATION',
-    'SHIPPING',
+    '',
+    '',
     'REVIEWS',
   ];
   int selectedIndex = 0;
@@ -500,7 +466,9 @@ class _ShopCartTabState extends State<ShopCartTab> {
                   ),
                 ],
               ),
-              const ReviewPageView(),
+              ReviewPageView(
+                pro: widget.sCart,
+              ),
             ],
           ),
         ),
@@ -520,33 +488,22 @@ class _ShopCartTabState extends State<ShopCartTab> {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const Icon(
-                          Icons.star_half,
-                          color: Color.fromRGBO(245, 236, 11, 1),
-                        ),
-                        const SizedBox(
-                          width: 5,
+                        RatingBar.builder(
+                          initialRating: widget.sCart.product_item!.rating!,
+                          itemSize: 24,
+                          unratedColor: Colors.grey,
+                          itemBuilder: (final context, final index) {
+                            return const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            );
+                          },
+                          onRatingUpdate: (final value) {},
                         ),
                         Text(
-                          '(Based on 97 reviews)',
+                          '${widget.sCart.product_item!.rating}/5',
                           style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Colors.grey,
                           ),
@@ -555,12 +512,17 @@ class _ShopCartTabState extends State<ShopCartTab> {
                     ),
                   ),
                   Text(widget.sCart.name!, style: textStyleInterSemiBold18W),
-                  Text(
-                    widget.sCart.description!,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.sCart.description!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                   Container(
@@ -635,9 +597,11 @@ class _ShopCartTabState extends State<ShopCartTab> {
 }
 
 class ReviewPageView extends StatelessWidget {
-  const ReviewPageView({
+  ReviewPageView({
     super.key,
+    required this.pro,
   });
+  ProductEntity pro;
 
   @override
   Widget build(final BuildContext context) {
@@ -646,23 +610,15 @@ class ReviewPageView extends StatelessWidget {
         color: Colors.black.withOpacity(0.04),
       ),
       padding: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Reviews'),
-              GestureDetector(
-                //onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ,)),
-                child: const Icon(Icons.navigate_next_outlined),
-              ),
-            ],
-          ),
-          ReviewUsernameUI(star: 5,),
-          const SizedBox(height: 15,),
-          ReviewUsernameUI(star: 1,),
-        ],
+      child: ListTile(
+        title: const Text('Reviews'),
+        trailing: const Icon(Icons.navigate_next),
+        onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (final context) =>
+                          ReviewScreen(productID: pro.id!),
+                    ),),
       ),
     );
   }

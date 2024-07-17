@@ -42,7 +42,9 @@ class _PolicyScreenState extends State<PolicyScreen> {
             return Scaffold(
               appBar: AppBar(
                 leading: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                   child: const Icon(Icons.keyboard_arrow_left_outlined),
                 ),
                 title: Text(

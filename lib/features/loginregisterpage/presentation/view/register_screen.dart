@@ -21,8 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmpasswordController = TextEditingController();
-  bool isHiddenPW = false;
-  bool isHiddenCPW = false;
+  bool isHiddenPW = true;
+  bool isHiddenCPW = true;
   @override
   Widget build(final BuildContext context) {
     return GestureDetector(
@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   margin: const EdgeInsets.only(top: 25.0),
                   width: MediaQuery.of(context).size.width / 2,
                   child: Text(
-                    'Tạo một tài khoản',
+                    'Create an account',
                     style: textStyleMontserratBold36,
                   ),
                 ),
@@ -119,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                         child: isHiddenCPW
                             ? const Icon(Icons.visibility_off)
-                            : const Icon(Icons.visibility_outlined),
+                            : const Icon(Icons.visibility),
                       ),
                     ),
                   ),
@@ -182,7 +182,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           });
                         },
                         child: Text(
-                          'Tạo tài khoản',
+                          'Create an account',
                           style: textStyleMontserratSemiBold20,
                         ),
                       ),
@@ -255,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Tôi đã có tài khoản '),
+                          const Text('I already have an account '),
                           GestureDetector(
                             onTap: () {
                               setState(() {
@@ -268,7 +268,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               });
                             },
                             child: Text(
-                              'Đăng nhập',
+                              'Login',
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 color: Theme.of(context).primaryColor,

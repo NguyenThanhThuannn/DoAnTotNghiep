@@ -14,6 +14,7 @@ import '../../../homepage/presentation/view/home_page_screen.dart';
 import '../../data/services/provider.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
+import '../bloc/user_bloc.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController txt1 = TextEditingController();
   TextEditingController txt2 = TextEditingController();
-  bool isHidden = false;
+  bool isHidden = true;
   @override
   Widget build(final BuildContext context) {
     return GestureDetector(
@@ -47,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: const EdgeInsets.only(top: 25.0),
                     width: MediaQuery.of(context).size.width / 1.5,
                     child: Text(
-                      'Chào mừng trở lại',
+                      'Welcome',
                       style: textStyleMontserratBold36,
                     ),
                   ),
@@ -84,13 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                           },
                           child: isHidden
-                              ? const Icon(Icons.remove_red_eye_outlined)
-                              : const Icon(Icons.abc),
+                              ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility),
                         ),
                       ),
                     ),
                   ),
-                  GestureDetector(
+                  /* GestureDetector(
                     onTap: () {
                       print('clicked QMK');
                     },
@@ -106,8 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                  ),
-                  BlocConsumer<AuthBloc,AuthState>(
+                  ), */
+                  BlocConsumer<AuthBloc, AuthState>(
                     builder: (final context, final state) {
                       if (state is AuthLoading) {
                         return const Center(child: CircularProgressIndicator());
@@ -139,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                           },
                           child: Text(
-                            'Đăng nhập',
+                            'Login',
                             style: textStyleMontserratSemiBold20,
                           ),
                         ),
@@ -156,9 +157,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SnackBar(content: Text('Login Success')),
                         );
                         final User? user = state.user;
-                        Provider.of<UserProvider>(context,listen: false).setUser(user);
-                        log('User được set: ${Provider.of<UserProvider>(context, listen: false).getUser}');
-                        Navigator.push(context, MaterialPageRoute(builder: (final context) => const HomePageScreen(),));
+                        Provider.of<UserProvider>(context, listen: false)
+                            .setUser(user);
+                        // Gửi sự kiện GetUserById đến UserBloc
+                        context.read<UserBloc>().add(GetUserById(
+                            Provider.of<UserProvider>(context, listen: false)
+                                .getUser!
+                                .id!,),);
+                        log('User được set với ID là: ${Provider.of<UserProvider>(context, listen: false).getUser!.id!}');
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (final context) => const HomePageScreen(),
+                          ),
+                          (final route) => false,
+                        );
                       }
                     },
                   ),
@@ -169,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        /* Text(
                           '- OR Continue with -',
                           style: textStyleMontserratMedium14,
                         ),
@@ -210,23 +223,23 @@ class _LoginScreenState extends State<LoginScreen> {
                               icon: const Icon(Icons.abc),
                             ),
                           ],
-                        ),
+                        ), */
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Tạo một tài khoản '),
+                            const Text('Create an account '),
                             GestureDetector(
                               onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (final context) =>
-                                          const RegisterScreen(),
-                                    ),
-                                  );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (final context) =>
+                                        const RegisterScreen(),
+                                  ),
+                                );
                               },
                               child: Text(
-                                'Đăng ký',
+                                'Register',
                                 style: GoogleFonts.montserrat(
                                   fontSize: 14,
                                   color: Theme.of(context).primaryColor,
@@ -256,7 +269,9 @@ class AuthService {
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> login(
-      final String email, final String password,) async {
+    final String email,
+    final String password,
+  ) async {
     try {
       final Response response = await _dio.post(
         '${EndPoints.baseUrl}login',
@@ -274,7 +289,9 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> register(
-      final String email, final String password,) async {
+    final String email,
+    final String password,
+  ) async {
     try {
       final Response response = await _dio.post(
         '${EndPoints.baseUrl}signup',

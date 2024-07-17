@@ -5,8 +5,10 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/constaint.dart';
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
 import '../../../../network/api_provider.dart';
+import '../../../../network/end_points.dart';
 import '../../../homepage/domain/entities/product.dart';
 import '../../../loginregisterpage/data/services/provider.dart';
 import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
@@ -36,42 +38,43 @@ class CateListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CachedNetworkImage(
-              imageUrl: pro.product_image!,
-              imageBuilder: (final context, final imageProvider) {
-                return Container(
-                  width: MediaQuery.of(context).size.width / 2.5,
-                  height: MediaQuery.of(context).size.width / 2.5 + 10,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8),bottomLeft: Radius.circular(8)),
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                );
-              },
-              progressIndicatorBuilder:
-                  (final context, final url, final progress) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width / 3,
-                    decoration:
-                        BoxDecoration(color: Colors.black.withOpacity(0.08)),
-                    child: const CupertinoActivityIndicator(),
-                  ),
-                );
-              },
-              errorWidget: (final context, final url, final error) {
-                return Container(
-                  width: MediaQuery.of(context).size.width / 2.5,
-                  height: MediaQuery.of(context).size.width / 2.5 + 10,
-                  color: Colors.black.withOpacity(0.04),
-                );
-              },
-            ),
+           CachedNetworkImage(
+          imageUrl: pro.product_image![0] == 'i'
+              ? '${EndPoints.urlImage}${pro.product_image}'
+              : pro.product_image!,
+          imageBuilder: (final context, final imageProvider) {
+            return Container(
+              width: MediaQuery.of(context).size.width / 2.5,
+              height: MediaQuery.of(context).size.width / 2.5+10,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            );
+          },
+          progressIndicatorBuilder: (final context, final url, final progress) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 2.5,
+              height: MediaQuery.of(context).size.width / 2.5+10,
+                decoration:
+                    BoxDecoration(color: Colors.black.withOpacity(0.08)),
+                child: const CupertinoActivityIndicator(),
+              ),
+            );
+          },
+          errorWidget: (final context, final url, final error) {
+            return Container(
+              width: MediaQuery.of(context).size.width / 2.5,
+              height: MediaQuery.of(context).size.width / 2.5+10,
+              color: Colors.black.withOpacity(0.04),
+            );
+          },
+        ),
             Container(
               padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
               width: MediaQuery.of(context).size.width / 2 + 10,
@@ -107,7 +110,7 @@ class CateListItem extends StatelessWidget {
                       RatingBar.builder(
                         ignoreGestures: true,
                         minRating: 1,
-                        initialRating: 4.5,
+                        initialRating: pro.product_item!.rating!,
                         allowHalfRating: true,
                         itemSize: 24,
                         itemPadding:
@@ -119,12 +122,12 @@ class CateListItem extends StatelessWidget {
                         onRatingUpdate: (final rating) {},
                       ),
                       Text(
-                        '4.9/5',
+                        '${pro.product_item!.rating}/5',
                         style: textStyleInterMedium14,
                       ),
                     ],
                   ),
-                  ElevatedButton(
+                  /* ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor:
                           const MaterialStatePropertyAll(Colors.white),
@@ -144,7 +147,7 @@ class CateListItem extends StatelessWidget {
                       }); */
                     },
                     child: const Text('Mua ngay'),
-                  ),
+                  ), */
                 ],
               ),
             ),

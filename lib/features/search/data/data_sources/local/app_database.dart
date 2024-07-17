@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-
 import '../../models/search_model.dart';
 import 'DAO/search_dao.dart';
 import 'dart:async';

@@ -5,8 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
 import '../../../homepage/domain/entities/product.dart';
+import '../../../shopcartpage/presentation/view/shop_cart_screen.dart';
 
 class CateGridItem extends StatelessWidget {
   CateGridItem({super.key, required this.pro});
@@ -34,18 +37,22 @@ class CateGridItem extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black87),
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          CachedNetworkImage(
-            imageUrl: pro.product_image!,
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (final context) => ShopCartScreen(sCart: pro),)),
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black87),
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            CachedNetworkImage(
+            imageUrl: pro.product_image![0] == 'i'
+                ? '${EndPoints.urlImage}${pro.product_image}'
+                : pro.product_image!,
             imageBuilder: (final context, final imageProvider) {
               return Container(
                 width: MediaQuery.of(context).size.width / 2,
@@ -63,7 +70,8 @@ class CateGridItem extends StatelessWidget {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
                 child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: MediaQuery.of(context).size.width / 2,
                   decoration:
                       BoxDecoration(color: Colors.black.withOpacity(0.08)),
                   child: const CupertinoActivityIndicator(),
@@ -78,67 +86,68 @@ class CateGridItem extends StatelessWidget {
               );
             },
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10,0,10,0),
-            child: Text(
-              pro.name!,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10,0,10,0),
-            child: Text(
-              CurrencyFormatter().formatNumber(pro.product_item!.price!),
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10,0,10,0),
-            child: Row(
-              children: [
-                Text(
-                  CurrencyFormatter().formatNumber(pro.product_item!.price!),
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey,
-                    decoration: TextDecoration.lineThrough,
-                  ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10,0,10,0),
+              child: Text(
+                pro.name!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
-                /* Container(
-                  margin: const EdgeInsets.only(left: 5),
-                  width: 50,
-                  alignment: Alignment.center,
-                  color: Theme.of(context).primaryColor,
-                  child: Text(
-                    '${calculateDiscountPercentage(
-                      int.parse(priceWithoutDiacritics(pro.price!)),
-                      int.parse(priceWithoutDiacritics(pro.price_sale!)),
-                    )}%',
-                    style: textStyleKeaniaOne14W,
-                  ),
-                ), */
-              ],
+              ),
             ),
-          ),
-          ElevatedButton(
-            style: ButtonStyle(
-              foregroundColor: const MaterialStatePropertyAll(Colors.white),
-              backgroundColor: MaterialStatePropertyAll(Theme.of(context).primaryColor),
-              shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(0))),),
-            onPressed: () {
-            
-          }, child: const Text('Mua ngay'),),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10,0,10,0),
+              child: Text(
+                CurrencyFormatter().formatNumber(pro.product_item!.price!),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10,0,10,0),
+              child: Row(
+                children: [
+                  Text(
+                    CurrencyFormatter().formatNumber(pro.product_item!.price!),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                  /* Container(
+                    margin: const EdgeInsets.only(left: 5),
+                    width: 50,
+                    alignment: Alignment.center,
+                    color: Theme.of(context).primaryColor,
+                    child: Text(
+                      '${calculateDiscountPercentage(
+                        int.parse(priceWithoutDiacritics(pro.price!)),
+                        int.parse(priceWithoutDiacritics(pro.price_sale!)),
+                      )}%',
+                      style: textStyleKeaniaOne14W,
+                    ),
+                  ), */
+                ],
+              ),
+            ),
+            /* ElevatedButton(
+              style: ButtonStyle(
+                foregroundColor: const MaterialStatePropertyAll(Colors.white),
+                backgroundColor: MaterialStatePropertyAll(Theme.of(context).primaryColor),
+                shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(0))),),
+              onPressed: () {
+              
+            }, child: const Text('Mua ngay'),), */
+          ],
+        ),
       ),
     );
   }

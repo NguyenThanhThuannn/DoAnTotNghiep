@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
 import '../../domain/entities/product.dart';
 
 // ignore: must_be_immutable
@@ -22,14 +24,15 @@ class DealOfWeekItem extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
             ),
             CachedNetworkImage(
-              imageUrl: pro.product_image!,
+              imageUrl: pro.product_image![0] == 'i'
+                  ? '${EndPoints.urlImage}${pro.product_image}'
+                  : pro.product_image!,
               imageBuilder: (final context, final imageProvider) {
                 return Container(
                   width: MediaQuery.of(context).size.width / 2,
                   height: MediaQuery.of(context).size.width / 2,
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(100)),
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.white,
                     image: DecorationImage(
                       image: imageProvider,
                       fit: BoxFit.contain,
@@ -42,7 +45,8 @@ class DealOfWeekItem extends StatelessWidget {
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(20.0),
                   child: Container(
-                    width: MediaQuery.of(context).size.width / 3,
+                    width: MediaQuery.of(context).size.width / 2,
+                    height: MediaQuery.of(context).size.width / 2,
                     decoration:
                         BoxDecoration(color: Colors.black.withOpacity(0.08)),
                     child: const CupertinoActivityIndicator(),
@@ -51,7 +55,7 @@ class DealOfWeekItem extends StatelessWidget {
               },
               errorWidget: (final context, final url, final error) {
                 return Container(
-                  width: MediaQuery.of(context).size.width / 3,
+                  width: MediaQuery.of(context).size.width / 2,
                   height: MediaQuery.of(context).size.width / 2,
                   color: Colors.black.withOpacity(0.04),
                 );
@@ -155,7 +159,7 @@ class DealOfWeekItem extends StatelessWidget {
             ),
           ],
         ),
-        Padding(
+        /* Padding(
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 15),
           child: Stack(
             children: [
@@ -178,6 +182,16 @@ class DealOfWeekItem extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ), */
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: LinearProgressIndicator(
+            value: (pro.product_item!.qty_in_stock!-pro.product_item!.SKU!)/10.toDouble(),
+            minHeight: 5,
+            color: Colors.greenAccent[400],
+            backgroundColor: Colors.grey[200],
+            borderRadius: BorderRadius.circular(7),
           ),
         ),
         const Divider(thickness: 1),

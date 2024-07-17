@@ -27,7 +27,7 @@ class _FooterCustomState extends State<FooterCustom> {
   Widget build(final BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.width/1.6,
       child: Column(
         children: [
           /* SizedBox(
@@ -228,7 +228,7 @@ class _FooterCustomState extends State<FooterCustom> {
               const SizedBox(height: 50,),
             ],
           ),
-          Expanded(
+          /* Expanded(
             child: Container(
               height: MediaQuery.of(context).size.height / 2,
               decoration: const BoxDecoration(
@@ -274,7 +274,7 @@ class _FooterCustomState extends State<FooterCustom> {
                 ],
               ),
             ),
-          ),
+          ), */
         ],
       ),
     );

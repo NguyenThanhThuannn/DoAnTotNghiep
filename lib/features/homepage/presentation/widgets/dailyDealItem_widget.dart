@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/format_number.dart';
+import '../../../../config/image.dart';
 import '../../../../config/textStyle.dart';
+import '../../../../network/end_points.dart';
 import '../../domain/entities/product.dart';
 
 // ignore: must_be_immutable
 class DailyDealItem extends StatelessWidget {
   DailyDealItem({super.key, required this.pro});
   ProductEntity pro;
-
   @override
   Widget build(final BuildContext context) {
     return Column(
@@ -19,7 +20,9 @@ class DailyDealItem extends StatelessWidget {
         Stack(
           children: [
             CachedNetworkImage(
-              imageUrl: pro.product_image!,
+              imageUrl: pro.product_image![0] == 'i'
+                  ? '${EndPoints.urlImage}${pro.product_image}'
+                  : pro.product_image!,
               imageBuilder: (final context, final imageProvider) {
                 return Container(
                   width: MediaQuery.of(context).size.width / 3,
@@ -39,6 +42,7 @@ class DailyDealItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.0),
                   child: Container(
                     width: MediaQuery.of(context).size.width / 3,
+                    height: MediaQuery.of(context).size.width / 2,
                     decoration:
                         BoxDecoration(color: Colors.black.withOpacity(0.08)),
                     child: const CupertinoActivityIndicator(),

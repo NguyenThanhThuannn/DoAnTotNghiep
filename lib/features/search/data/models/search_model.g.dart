@@ -23,11 +23,11 @@ Map<String, dynamic> _$SearchResponseModelToJson(
 
 SearchModel _$SearchModelFromJson(Map<String, dynamic> json) => SearchModel(
       id: json['id'] as int?,
-      title: json['title'] as String?,
+      name: json['name'] as String?,
     );
 
 Map<String, dynamic> _$SearchModelToJson(SearchModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'title': instance.title,
+      'name': instance.name,
     };

@@ -30,9 +30,24 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       name: json['name'] as String?,
       description: json['description'] as String?,
       product_image: json['product_image'] as String?,
-      create_at: json['create_at'] as String?,
-      update_at: json['update_at'] as String?,
+      created_at: json['created_at'] as String?,
+      updated_at: json['updated_at'] as String?,
       type: json['type'] as String?,
+      colors: (json['colors'] as List<dynamic>?)
+          ?.map((e) => ColorsModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      sizes: (json['sizes'] as List<dynamic>?)
+          ?.map((e) => SizesModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      storage: (json['storage'] as List<dynamic>?)
+          ?.map((e) => StorageModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      ram: (json['ram'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList(),
+      material: (json['material'] as List<dynamic>?)
+          ?.map((e) => MaterialModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       product_item: json['product_item'] == null
           ? null
           : ProductItemsModel.fromJson(
@@ -41,20 +56,247 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
           ? null
           : ProductCategoryModel.fromJson(
               json['category'] as Map<String, dynamic>),
-    );
+    )
+      ..product = json['product'] == null
+          ? null
+          : ProductItemsModel.fromJson(json['product'] as Map<String, dynamic>)
+      ..order_id = json['order_id'] as int?
+      ..user_review = json['user_review'] == null
+          ? null
+          : UserReviewModel.fromJson(
+              json['user_review'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
     <String, dynamic>{
+      'product': instance.product,
+      'order_id': instance.order_id,
+      'user_review': instance.user_review,
       'id': instance.id,
       'category_id': instance.category_id,
       'name': instance.name,
       'description': instance.description,
       'product_image': instance.product_image,
-      'create_at': instance.create_at,
-      'update_at': instance.update_at,
+      'created_at': instance.created_at,
+      'updated_at': instance.updated_at,
       'type': instance.type,
+      'colors': instance.colors,
+      'sizes': instance.sizes,
+      'storage': instance.storage,
+      'ram': instance.ram,
+      'material': instance.material,
       'product_item': instance.product_item,
       'category': instance.category,
+    };
+
+ColorsModel _$ColorsModelFromJson(Map<String, dynamic> json) => ColorsModel(
+      name: json['name'] as String?,
+      class_bg: json['class'] as String?,
+      selectedClass: json['selectedClass'] as String?,
+    )
+      ..colors = (json['colors'] as List<dynamic>?)
+          ?.map((e) => ColorsModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..sizes = (json['sizes'] as List<dynamic>?)
+          ?.map((e) => SizesModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..storage = (json['storage'] as List<dynamic>?)
+          ?.map((e) => StorageModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..ram = (json['ram'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList()
+      ..material = (json['material'] as List<dynamic>?)
+          ?.map((e) => MaterialModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..product_item = json['product_item'] == null
+          ? null
+          : ProductItemsModel.fromJson(
+              json['product_item'] as Map<String, dynamic>)
+      ..category = json['category'] == null
+          ? null
+          : ProductCategoryModel.fromJson(
+              json['category'] as Map<String, dynamic>)
+      ..product = json['product'] == null
+          ? null
+          : ProductItemsModel.fromJson(json['product'] as Map<String, dynamic>)
+      ..order_id = json['order_id'] as int?
+      ..user_review = json['user_review'] == null
+          ? null
+          : UserReviewModel.fromJson(
+              json['user_review'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$ColorsModelToJson(ColorsModel instance) =>
+    <String, dynamic>{
+      'colors': instance.colors,
+      'sizes': instance.sizes,
+      'storage': instance.storage,
+      'ram': instance.ram,
+      'material': instance.material,
+      'product_item': instance.product_item,
+      'category': instance.category,
+      'product': instance.product,
+      'order_id': instance.order_id,
+      'user_review': instance.user_review,
+      'name': instance.name,
+      'class': instance.class_bg,
+      'selectedClass': instance.selectedClass,
+    };
+
+SizesModel _$SizesModelFromJson(Map<String, dynamic> json) => SizesModel(
+      name: json['name'] as String?,
+      inStock: json['inStock'] as bool?,
+    )
+      ..colors = (json['colors'] as List<dynamic>?)
+          ?.map((e) => ColorsModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..sizes = (json['sizes'] as List<dynamic>?)
+          ?.map((e) => SizesModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..storage = (json['storage'] as List<dynamic>?)
+          ?.map((e) => StorageModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..ram = (json['ram'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList()
+      ..material = (json['material'] as List<dynamic>?)
+          ?.map((e) => MaterialModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..product_item = json['product_item'] == null
+          ? null
+          : ProductItemsModel.fromJson(
+              json['product_item'] as Map<String, dynamic>)
+      ..category = json['category'] == null
+          ? null
+          : ProductCategoryModel.fromJson(
+              json['category'] as Map<String, dynamic>)
+      ..product = json['product'] == null
+          ? null
+          : ProductItemsModel.fromJson(json['product'] as Map<String, dynamic>)
+      ..order_id = json['order_id'] as int?
+      ..user_review = json['user_review'] == null
+          ? null
+          : UserReviewModel.fromJson(
+              json['user_review'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$SizesModelToJson(SizesModel instance) =>
+    <String, dynamic>{
+      'colors': instance.colors,
+      'sizes': instance.sizes,
+      'storage': instance.storage,
+      'ram': instance.ram,
+      'material': instance.material,
+      'product_item': instance.product_item,
+      'category': instance.category,
+      'product': instance.product,
+      'order_id': instance.order_id,
+      'user_review': instance.user_review,
+      'name': instance.name,
+      'inStock': instance.inStock,
+    };
+
+StorageModel _$StorageModelFromJson(Map<String, dynamic> json) => StorageModel(
+      name: json['name'] as String?,
+      inStock: json['inStock'] as bool?,
+    )
+      ..colors = (json['colors'] as List<dynamic>?)
+          ?.map((e) => ColorsModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..sizes = (json['sizes'] as List<dynamic>?)
+          ?.map((e) => SizesModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..storage = (json['storage'] as List<dynamic>?)
+          ?.map((e) => StorageModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..ram = (json['ram'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList()
+      ..material = (json['material'] as List<dynamic>?)
+          ?.map((e) => MaterialModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..product_item = json['product_item'] == null
+          ? null
+          : ProductItemsModel.fromJson(
+              json['product_item'] as Map<String, dynamic>)
+      ..category = json['category'] == null
+          ? null
+          : ProductCategoryModel.fromJson(
+              json['category'] as Map<String, dynamic>)
+      ..product = json['product'] == null
+          ? null
+          : ProductItemsModel.fromJson(json['product'] as Map<String, dynamic>)
+      ..order_id = json['order_id'] as int?
+      ..user_review = json['user_review'] == null
+          ? null
+          : UserReviewModel.fromJson(
+              json['user_review'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$StorageModelToJson(StorageModel instance) =>
+    <String, dynamic>{
+      'colors': instance.colors,
+      'sizes': instance.sizes,
+      'storage': instance.storage,
+      'ram': instance.ram,
+      'material': instance.material,
+      'product_item': instance.product_item,
+      'category': instance.category,
+      'product': instance.product,
+      'order_id': instance.order_id,
+      'user_review': instance.user_review,
+      'name': instance.name,
+      'inStock': instance.inStock,
+    };
+
+MaterialModel _$MaterialModelFromJson(Map<String, dynamic> json) =>
+    MaterialModel(
+      name: json['name'] as String?,
+      inStock: json['inStock'] as bool?,
+    )
+      ..colors = (json['colors'] as List<dynamic>?)
+          ?.map((e) => ColorsModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..sizes = (json['sizes'] as List<dynamic>?)
+          ?.map((e) => SizesModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..storage = (json['storage'] as List<dynamic>?)
+          ?.map((e) => StorageModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..ram = (json['ram'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList()
+      ..material = (json['material'] as List<dynamic>?)
+          ?.map((e) => MaterialModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..product_item = json['product_item'] == null
+          ? null
+          : ProductItemsModel.fromJson(
+              json['product_item'] as Map<String, dynamic>)
+      ..category = json['category'] == null
+          ? null
+          : ProductCategoryModel.fromJson(
+              json['category'] as Map<String, dynamic>)
+      ..product = json['product'] == null
+          ? null
+          : ProductItemsModel.fromJson(json['product'] as Map<String, dynamic>)
+      ..order_id = json['order_id'] as int?
+      ..user_review = json['user_review'] == null
+          ? null
+          : UserReviewModel.fromJson(
+              json['user_review'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$MaterialModelToJson(MaterialModel instance) =>
+    <String, dynamic>{
+      'colors': instance.colors,
+      'sizes': instance.sizes,
+      'storage': instance.storage,
+      'ram': instance.ram,
+      'material': instance.material,
+      'product_item': instance.product_item,
+      'category': instance.category,
+      'product': instance.product,
+      'order_id': instance.order_id,
+      'user_review': instance.user_review,
+      'name': instance.name,
+      'inStock': instance.inStock,
     };
 
 ProductItemsModel _$ProductItemsModelFromJson(Map<String, dynamic> json) =>
@@ -67,8 +309,23 @@ ProductItemsModel _$ProductItemsModelFromJson(Map<String, dynamic> json) =>
       price: json['price'] as String?,
       create_at: json['create_at'] as String?,
       update_at: json['update_at'] as String?,
-      rating: json['rating'] as int?,
+      rating: (json['rating'] as num?)?.toDouble(),
     )
+      ..colors = (json['colors'] as List<dynamic>?)
+          ?.map((e) => ColorsModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..sizes = (json['sizes'] as List<dynamic>?)
+          ?.map((e) => SizesModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..storage = (json['storage'] as List<dynamic>?)
+          ?.map((e) => StorageModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..ram = (json['ram'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList()
+      ..material = (json['material'] as List<dynamic>?)
+          ?.map((e) => MaterialModel.fromJson(e as Map<String, dynamic>))
+          .toList()
       ..product_item = json['product_item'] == null
           ? null
           : ProductItemsModel.fromJson(
@@ -76,12 +333,28 @@ ProductItemsModel _$ProductItemsModelFromJson(Map<String, dynamic> json) =>
       ..category = json['category'] == null
           ? null
           : ProductCategoryModel.fromJson(
-              json['category'] as Map<String, dynamic>);
+              json['category'] as Map<String, dynamic>)
+      ..product = json['product'] == null
+          ? null
+          : ProductItemsModel.fromJson(json['product'] as Map<String, dynamic>)
+      ..order_id = json['order_id'] as int?
+      ..user_review = json['user_review'] == null
+          ? null
+          : UserReviewModel.fromJson(
+              json['user_review'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ProductItemsModelToJson(ProductItemsModel instance) =>
     <String, dynamic>{
+      'colors': instance.colors,
+      'sizes': instance.sizes,
+      'storage': instance.storage,
+      'ram': instance.ram,
+      'material': instance.material,
       'product_item': instance.product_item,
       'category': instance.category,
+      'product': instance.product,
+      'order_id': instance.order_id,
+      'user_review': instance.user_review,
       'id': instance.id,
       'product_id': instance.product_id,
       'SKU': instance.SKU,
@@ -102,6 +375,21 @@ ProductCategoryModel _$ProductCategoryModelFromJson(
       create_at: json['create_at'] as String?,
       update_at: json['update_at'] as String?,
     )
+      ..colors = (json['colors'] as List<dynamic>?)
+          ?.map((e) => ColorsModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..sizes = (json['sizes'] as List<dynamic>?)
+          ?.map((e) => SizesModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..storage = (json['storage'] as List<dynamic>?)
+          ?.map((e) => StorageModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..ram = (json['ram'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList()
+      ..material = (json['material'] as List<dynamic>?)
+          ?.map((e) => MaterialModel.fromJson(e as Map<String, dynamic>))
+          .toList()
       ..product_item = json['product_item'] == null
           ? null
           : ProductItemsModel.fromJson(
@@ -109,13 +397,29 @@ ProductCategoryModel _$ProductCategoryModelFromJson(
       ..category = json['category'] == null
           ? null
           : ProductCategoryModel.fromJson(
-              json['category'] as Map<String, dynamic>);
+              json['category'] as Map<String, dynamic>)
+      ..product = json['product'] == null
+          ? null
+          : ProductItemsModel.fromJson(json['product'] as Map<String, dynamic>)
+      ..order_id = json['order_id'] as int?
+      ..user_review = json['user_review'] == null
+          ? null
+          : UserReviewModel.fromJson(
+              json['user_review'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ProductCategoryModelToJson(
         ProductCategoryModel instance) =>
     <String, dynamic>{
+      'colors': instance.colors,
+      'sizes': instance.sizes,
+      'storage': instance.storage,
+      'ram': instance.ram,
+      'material': instance.material,
       'product_item': instance.product_item,
       'category': instance.category,
+      'product': instance.product,
+      'order_id': instance.order_id,
+      'user_review': instance.user_review,
       'id': instance.id,
       'parent_category_id': instance.parent_category_id,
       'category_name': instance.category_name,

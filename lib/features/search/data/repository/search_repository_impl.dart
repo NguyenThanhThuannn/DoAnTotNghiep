@@ -1,4 +1,5 @@
 import '../../../../network/api.dart';
+import '../../../homepage/domain/entities/product.dart';
 import '../../domain/entities/search.dart';
 import '../../domain/repository/search_repository.dart';
 import '../data_sources/local/app_database.dart';

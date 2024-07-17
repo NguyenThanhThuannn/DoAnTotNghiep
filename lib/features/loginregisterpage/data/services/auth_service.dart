@@ -25,7 +25,7 @@ class AuthService {
         throw Exception(e.response!.data['error']);
       } else {
         // Xử lý các lỗi khác
-        print('Lỗi không xác định: ${e.message}');
+        print('Lỗi không xác định: ${e.response!.data['message']}');
       }
       rethrow;
     }
@@ -49,6 +49,7 @@ class AuthService {
       );
       return UserModel.fromJson(response.data);
     } on DioException catch (e) {
+      throwIf(e.response!.statusCode==302, 'Email phải có định dạng @gmail.com');
       throwIf(e.response!.statusCode==500, 'Email đã tồn tại');
       rethrow;
     }

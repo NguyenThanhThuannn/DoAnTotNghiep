@@ -7,7 +7,29 @@ class Shimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: GridView.builder(
+        itemCount: 10,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2), itemBuilder: (context, index) {
+        return Container(
+          child: Column(
+            children: [
+              Sketon(width: 240,height: 240,),
+              Sketon(width: 50,height: 20,)
+            ],
+          ),
+        );
+      },),
+    );
+  }
+}
+class ShimmerItem extends StatelessWidget {
+  const ShimmerItem({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
       children: [
         SizedBox(width: 10,),
         Sketon(width: 130,height: 130,),
@@ -34,9 +56,8 @@ class Shimmer extends StatelessWidget {
     );
   }
 }
-
 class Sketon extends StatelessWidget {
-  const Sketon({
+  Sketon({
     super.key, this.height, this.width,
   });
   final double? height;
